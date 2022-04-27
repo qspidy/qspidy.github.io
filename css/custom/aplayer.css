@@ -2,3 +2,8 @@
   left: -66px !important;
   /* 默认情况下缩进左侧66px，只留一点箭头部分 */
 }
+
+.aplayer.aplayer-fixed .aplayer-body {
+    background-image: initial;
+    background-color: rgb(42, 45, 46);
+}

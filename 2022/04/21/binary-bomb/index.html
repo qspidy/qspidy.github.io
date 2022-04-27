@@ -1,0 +1,451 @@
+<!DOCTYPE html><html lang="en" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>使用GDB+pwndbg轻松解决BinaryBomb！ | Orangeの小窝</title><meta name="keywords" content="gdb,binarybomb,c,debug,reverse,ctf,assembly,language"><meta name="author" content="MrOrange"><meta name="copyright" content="MrOrange"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="前言最近终于把鸽了近一年多的BinaryBomb给做完了，花了一天时间，内力修炼的还不够啊。这里记录一下解题思路，方便以后回顾，同时也疏理一下解题用到的技术点。注意：本文主要讲解题的过程和思路，可在Binary-Bomb’s Readme中查看相关的基础知识。  BinaryBomb简介BinaryBomb是Carnegie Mellon University(卡内基·梅隆大学) CS课上发布的一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用GDB+pwndbg轻松解决BinaryBomb！">
+<meta property="og:url" content="https://qspidy.github.io/2022/04/21/binary-bomb/index.html">
+<meta property="og:site_name" content="Orangeの小窝">
+<meta property="og:description" content="前言最近终于把鸽了近一年多的BinaryBomb给做完了，花了一天时间，内力修炼的还不够啊。这里记录一下解题思路，方便以后回顾，同时也疏理一下解题用到的技术点。注意：本文主要讲解题的过程和思路，可在Binary-Bomb’s Readme中查看相关的基础知识。  BinaryBomb简介BinaryBomb是Carnegie Mellon University(卡内基·梅隆大学) CS课上发布的一">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://qspidy.github.io/2022/04/21/binary-bomb/cover.png">
+<meta property="article:published_time" content="2022-04-21T15:11:47.000Z">
+<meta property="article:modified_time" content="2022-04-27T15:10:11.605Z">
+<meta property="article:author" content="MrOrange">
+<meta property="article:tag" content="gdb">
+<meta property="article:tag" content="binarybomb">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="debug">
+<meta property="article:tag" content="reverse">
+<meta property="article:tag" content="ctf">
+<meta property="article:tag" content="assembly">
+<meta property="article:tag" content="language">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qspidy.github.io/2022/04/21/binary-bomb/cover.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://qspidy.github.io/2022/04/21/binary-bomb/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":500,"position":"top","messagePrev":"It has been","messageNext":"days since the last update, the content of the article may be outdated."},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '使用GDB+pwndbg轻松解决BinaryBomb！',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-04-27 23:10:11'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom/fixed_comment.css"  media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/custom/aplayer.css"  media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 6.1.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">9</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">1</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/2022/04/21/binary-bomb/cover.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Orangeの小窝</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">使用GDB+pwndbg轻松解决BinaryBomb！</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2022-04-21T15:11:47.000Z" title="Created 2022-04-21 23:11:47">2022-04-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2022-04-27T15:10:11.605Z" title="Updated 2022-04-27 23:10:11">2022-04-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/CS-APP2e-Lab-Assignments/">CS:APP2e Lab Assignments</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="使用GDB+pwndbg轻松解决BinaryBomb！"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">Comments:</span><span class="disqus-comment-count"><a href="https://qspidy.github.io/2022/04/21/binary-bomb/#disqus_thread"></a></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近终于把鸽了近一年多的<strong>BinaryBomb</strong>给做完了，花了一天时间，内力修炼的还不够啊。这里记录一下解题思路，方便以后回顾，同时也疏理一下解题用到的技术点。注意：本文主要讲解题的过程和思路，可在<a target="_blank" rel="noopener" href="https://github.com/NagleZhang/Binary-Bomb#readme">Binary-Bomb’s Readme</a>中查看相关的基础知识。</p>
+<hr>
+<h2 id="BinaryBomb简介"><a href="#BinaryBomb简介" class="headerlink" title="BinaryBomb简介"></a><strong>BinaryBomb</strong>简介</h2><p><strong>BinaryBomb</strong>是<em>Carnegie Mellon University(卡内基·梅隆大学)</em> CS课上发布的一道作业，在<a target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/public/labs.html">“Lab Assignments” page of Bryant and O’Hallaron’s website</a>中可以找到以下对BinaryBomb的介绍:</p>
+<ul>
+<li><code>A &quot;binary bomb&quot; is a program provided to students as an object code file. When run, it prompts the user to type in 6 different strings. If any of these is incorrect, the bomb ``explodes,&#39;&#39; printing an error message and logging the event on a grading server. Students must ``defuse&#39;&#39; their own unique bomb by disassembling and reverse engineering the program to determine what the 6 strings should be. The lab teaches students to understand assembly language, and also forces them to learn how to use a debugger. It&#39;s also great fun. A legendary lab among the CMU undergrads.</code></li>
+</ul>
+<p>译文：</p>
+<ul>
+<li><code>“二进制炸弹”是作为目标代码文件提供给学生的程序。 运行时，它会提示用户输入 6 个不同的字符串。 如果其中任何一个不正确，炸弹就会“爆炸”，打印错误消息并将事件记录在评分服务器上。 学生必须通过对程序进行分解和逆向工程来确定 6 个字符串应该是什么，从而“化解”他们自己独特的炸弹。 实验室教学生理解汇编语言，并迫使他们学习如何使用调试器。 这也很有趣。 CMU 本科生中的传奇实验室。</code></li>
+</ul>
+<p>正如介绍所说，BinaryBomb非常用趣，虽然这作业是2013年发布的，但时至今日，仍能从中学到许多有用的东西。毕竟我们现在用的计算机除了从32位变成了64位外，寄存器种类，栈结构，函数调用机制等基本没有变化。</p>
+<hr>
+<h2 id="GDB-pwndbg简介"><a href="#GDB-pwndbg简介" class="headerlink" title="GDB+pwndbg简介"></a>GDB+pwndbg简介</h2><ul>
+<li><p><strong>GDB</strong>即GNU Debugger，是GNU软件系统中的<em>标准调试器</em>，此外GDB也是个具有移携性的调试器，经过移携需求的调修与重新编译，如今许多的类UNIX操作系统上都可以使用GDB，而现有GDB所能支持调试的编程语言有C、C++、Pascal以及FORTRAN。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/pwndbg/pwndbg"><strong>pwndbg</strong></a>是一个<em>GDB插件</em>，它可以减少使用 GDB 进行调试，重点关注低级软件开发人员、硬件黑客、逆向工程师和漏洞利用开发人员所需的功能。</p>
+</li>
+</ul>
+<p>简单来说，就是用linux自带的古老而又强大的调试器配上一个现代的好用插件，在鸽了一年后用一天时间解决一个差不多十年前发布的CS课作业。也许单用GDB才是这个作业的初衷，但裸GDB用起来非常的麻烦，所有想看的信息都得自己一个个敲命令，完了还运行一步敲一次，等到做完作业，手都起茧喽。人生苦短，用GDB前记得上pwndbg。</p>
+<hr>
+<h2 id="本人运行环境"><a href="#本人运行环境" class="headerlink" title="本人运行环境"></a>本人运行环境</h2><ul>
+<li>OS: Arch Linux x86_64</li>
+<li>Shell: zsh 5.8.1</li>
+<li>Debuger: GNU gdb (GDB) 11.2 + pwndbg 1.0.3</li>
+</ul>
+<p>关于pwndbg的安装，在<a target="_blank" rel="noopener" href="https://github.com/pwndbg/pwndbg">github-pwndbg</a>上有详细描述；所有linux都有自带gdb，建议用Ubuntu，Windows上可以用WSL或者MinGW，又或者直接上虚拟机，具体操作网上教程很多，这里不再赘述。</p>
+<p>BinaryBomb二进制文件可以在<a target="_blank" rel="noopener" href="https://github.com/qspidy/BinaryBomb">github-qspidy-BinaryBomb</a>上下载，里面有许多不同的BinaryBomb，虽然答案不同，但解答的过程基本一样。懒人命令：<code>git clone https://github.com/qspidy/BinaryBomb</code></p>
+<p>同时附上<a target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/3e/bomb.tar">官方bomb下载链接</a>。下载完在下载文件的目录执行<code>tar xvf bomb.tar</code>即可解压。</p>
+<hr>
+<h2 id="用到的gdb命令一览表"><a href="#用到的gdb命令一览表" class="headerlink" title="用到的gdb命令一览表"></a>用到的gdb命令一览表</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>r</td>
+<td>即run，开始运行调试的程序</td>
+</tr>
+<tr>
+<td>x</td>
+<td>检查内存(Examine memory)，将指定地址的内容按指定格式和长度输出</td>
+</tr>
+<tr>
+<td>b</td>
+<td>即break，在指定位置设置断点</td>
+</tr>
+<tr>
+<td>c</td>
+<td>即continue，fg，从当前开始继续运行</td>
+</tr>
+<tr>
+<td>h</td>
+<td>即help，显示命令的帮助说明，善用help命令是变强的第一步</td>
+</tr>
+<tr>
+<td>si</td>
+<td>即stepi，执行一条汇编指令（遇到函数跳入）</td>
+</tr>
+<tr>
+<td>ni</td>
+<td>即nexti，执行一条汇编指令（遇到函数跳过）</td>
+</tr>
+<tr>
+<td>bt</td>
+<td>即backtrace，输出所有回溯栈帧，又称调用堆栈</td>
+</tr>
+<tr>
+<td>fin</td>
+<td>即finish，执行完当前函数并break</td>
+</tr>
+<tr>
+<td>disas</td>
+<td>即disassemble，反汇编指定内存区域</td>
+</tr>
+<tr>
+<td>stack</td>
+<td>输出当前活动记录的栈信息</td>
+</tr>
+<tr>
+<td>info r</td>
+<td>即info registers，列出寄存器和其中的内容</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="开始调试BinaryBomb"><a href="#开始调试BinaryBomb" class="headerlink" title="开始调试BinaryBomb"></a>开始调试BinaryBomb</h2><ul>
+<li>在BinaryBomb二进制文件目录下执行<code>gdb bomb</code>开始调试：<img src="/2022/04/21/binary-bomb/2022-04-22_15-31.png" class="" title="gdb bomb output"></li>
+<li>个人习惯先把所有的phases给反汇编出来复制到记事本，方便之后查看和相关地址的复制。执行<code>disas phase_1</code>显示<strong>phase_1</strong>的反汇编：<img src="/2022/04/21/binary-bomb/2022-04-22_15-42.png" class="" title="disassemble **phase_1**"></li>
+</ul>
+<h3 id="phase-1"><a href="#phase-1" class="headerlink" title="phase_1"></a><strong>phase_1</strong></h3><ol>
+<li>直接进入正题，一切准备就绪后，在<strong>phase_1</strong>函数入口处下断点：<code>b phase_1</code>，执行程序<code>r</code>：<img src="/2022/04/21/binary-bomb/2022-04-22_15-55.png" class="" title="下断点，运行"></li>
+<li>因为还不知道正确答案，这里随便输入一串字符<code>helloworld</code>，继续执行<code>c</code>，这时<strong>pwndbg</strong>的作用就开始体现了，每次运行到断点停下时，都默认会显示下列信息：</li>
+</ol>
+<ul>
+<li><strong>Registers</strong>，即寄存器信息，与gdb中运行<code>info r</code>输出类似：<img src="/2022/04/21/binary-bomb/2022-04-22_16-29.png" class="" title="pwndbg registers"></li>
+<li><strong>Disasm</strong>，即反汇编信息，与gdb中运行<code>disas</code>输出类似：<img src="/2022/04/21/binary-bomb/2022-04-22_16-30.png" class="" title="pwndbg disasm"></li>
+<li><strong>Stack</strong>，即当前活动记录的栈信息，与gdb中运行<code>stack</code>输出类似：<img src="/2022/04/21/binary-bomb/2022-04-22_16-30_1.png" class="" title="pwndbg stack"></li>
+<li><strong>Backtrack</strong>，即堆栈回溯，显示线程的函数调用堆栈，与gdb中运行<code>bt</code>输出类似<img src="/2022/04/21/binary-bomb/2022-04-22_16-30_2.png" class="" title="pwndbg backtrace"></li>
+</ul>
+<ol start="3">
+<li>注意这句：<code>0x400e96 &lt;phase_1+9&gt;     call   strings_not_equal</code>，从函数名能看出是调用了一个比较字符串是否相等的函数，那比较的是哪两个字符串呢？上一句指令是<code>0x400e91 &lt;phase_1+4&gt;     mov    esi, 0x402490</code>，可以合理怀疑地址<code>0x402490</code>是其中一个字符串首地址，且作为参数传入该函数，执行<code>x/s 0x402490</code>尝试以字符串格式输出该地址信息：<img src="/2022/04/21/binary-bomb/2022-04-22_18-45.png" class="" title="x&#x2F;s 0x402490">
+好家伙，看来这个就是答案了。</li>
+<li>但假如没有经验，不知道应该看地址<code>0x402490</code>的信息呢？那只能一步步运行看看了，连续执行<code>si</code>直到<code>strings_not_equal</code>函数，可以注意到下面这一段：<img src="/2022/04/21/binary-bomb/2022-04-22_18-55.png" class="" title="call strings_not_equal">
+很明显，参与比较的两个字符串分别是<code>rdi</code>指向的<code>helloworld</code>和<code>rsi</code>指向的<code>Why make trillions when we could make... billions?</code>，前者是之前随便输的，后者是程序里写好的。</li>
+<li>后面的几句汇编是判断eax即strings_not_equal函数的返回值是否为0，为0则说明两字符串相等，<strong>phase_1</strong>退出，否则执行到<code>explode_bomb</code>函数，BOOM!!!</li>
+</ol>
+<h3 id="phase-2"><a href="#phase-2" class="headerlink" title="phase_2"></a><strong>phase_2</strong></h3><ol>
+<li><p><strong>phase_1</strong>顶多算是热身，接下来的才是真正的puzzle。先看一眼<strong>phase_2</strong>的反汇编：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">Dump of assembler code for function phase_2:</span><br><span class="line">   0x0000000000400ea9 &lt;+0&gt;:     push   rbp</span><br><span class="line">   0x0000000000400eaa &lt;+1&gt;:     push   rbx</span><br><span class="line">   0x0000000000400eab &lt;+2&gt;:     sub    rsp,0x28</span><br><span class="line">   0x0000000000400eaf &lt;+6&gt;:     mov    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x0000000000400eb8 &lt;+15&gt;:    mov    QWORD PTR [rsp+0x18],rax</span><br><span class="line">   0x0000000000400ebd &lt;+20&gt;:    xor    eax,eax</span><br><span class="line">   0x0000000000400ebf &lt;+22&gt;:    mov    rsi,rsp</span><br><span class="line">   0x0000000000400ec2 &lt;+25&gt;:    call   0x40152b &lt;read_six_numbers&gt;</span><br><span class="line">   0x0000000000400ec7 &lt;+30&gt;:    cmp    DWORD PTR [rsp],0x0</span><br><span class="line">   0x0000000000400ecb &lt;+34&gt;:    jne    0x400ed4 &lt;phase_2+43&gt;</span><br><span class="line">   0x0000000000400ecd &lt;+36&gt;:    cmp    DWORD PTR [rsp+0x4],0x1</span><br><span class="line">   0x0000000000400ed2 &lt;+41&gt;:    je     0x400ed9 &lt;phase_2+48&gt;</span><br><span class="line">   0x0000000000400ed4 &lt;+43&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400ed9 &lt;+48&gt;:    mov    rbx,rsp</span><br><span class="line">   0x0000000000400edc &lt;+51&gt;:    lea    rbp,[rsp+0x10]</span><br><span class="line">   0x0000000000400ee1 &lt;+56&gt;:    mov    eax,DWORD PTR [rbx+0x4]</span><br><span class="line">   0x0000000000400ee4 &lt;+59&gt;:    add    eax,DWORD PTR [rbx]</span><br><span class="line">   0x0000000000400ee6 &lt;+61&gt;:    cmp    DWORD PTR [rbx+0x8],eax</span><br><span class="line">   0x0000000000400ee9 &lt;+64&gt;:    je     0x400ef0 &lt;phase_2+71&gt;</span><br><span class="line">   0x0000000000400eeb &lt;+66&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400ef0 &lt;+71&gt;:    add    rbx,0x4</span><br><span class="line">   0x0000000000400ef4 &lt;+75&gt;:    cmp    rbx,rbp</span><br><span class="line">   0x0000000000400ef7 &lt;+78&gt;:    jne    0x400ee1 &lt;phase_2+56&gt;</span><br><span class="line">   0x0000000000400ef9 &lt;+80&gt;:    mov    rax,QWORD PTR [rsp+0x18]</span><br><span class="line">   0x0000000000400efe &lt;+85&gt;:    xor    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x0000000000400f07 &lt;+94&gt;:    je     0x400f0e &lt;phase_2+101&gt;</span><br><span class="line">   0x0000000000400f09 &lt;+96&gt;:    call   0x400b00 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">   0x0000000000400f0e &lt;+101&gt;:   add    rsp,0x28</span><br><span class="line">   0x0000000000400f12 &lt;+105&gt;:   pop    rbx</span><br><span class="line">   0x0000000000400f13 &lt;+106&gt;:   pop    rbp</span><br><span class="line">   0x0000000000400f14 &lt;+107&gt;:   ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<p>同样，在<strong>phase_2</strong>函数入口下断点<code>b phase_2</code>，继续执行<code>c</code>，因为注意到<strong>phase_2</strong>的反汇编中有调用一个叫<code>read_six_numbers</code>的函数，所以输入的应该是六个数字，这里输入了<code>1 2 3 4 5 6</code>，因为计算机内通常不会有这种简单的数字，所以这样输可以帮助我们观察哪些指令对输入的哪些参数进行了处理，更方便观察程序逻辑。</p>
+</li>
+<li><p>多次执行命令<code>si</code>或直接<code>ni 8</code>(执行8次<code>ni</code>)到<code>read_six_numbers</code>函数结束：</p>
+<img src="/2022/04/21/binary-bomb/2.1.png" class="" title="**phase_2** read_six_numbers">
+<p><code>cmp    dword ptr [rsp], 0</code>一句表示将<code>rsp</code>寄存器指向的内容以4字节(dword)格式解释，相当于int型，再与右边的0相减(sub)，并改变相应的标志位。看一下当前的栈信息：</p>
+<img src="/2022/04/21/binary-bomb/2.2.png" class="" title="**phase_2** stack">
+<p>可以看到当前的栈里存的是之前输入的<code>1 2 3 4 5 6</code>，这样看可能不是很直观，输入<code>x/10wx $rsp</code>显示10个、地址从<code>rsp</code>开始连续的长度为4字节的内存信息：</p>
+<img src="/2022/04/21/binary-bomb/2.3.png" class="" title="**phase_2**">
+<p>这里就能直观的看到栈里存储的数据格式了，其中<code>dword ptr [rsp]</code>是第一个参数即<code>0x00000001</code>，<code>dword ptr [rsp+4]</code>是第二个参数<code>0x00000002</code>，<code>dword ptr [rsp+8]</code>是第三个参数<code>0x00000003</code>，以此类推。而<code>dword ptr [rsp]</code>指的正是栈顶的4字节，也即之前输入的第一个参数。它和0一比较，不相等，便跳到了<code>explode_bomb</code>函数。所以推出第一个参数应该为0。</p>
+</li>
+<li><p>知道了第一个参数，可以选择重新运行，把输入参数的第一个改为0，也可以先不管它，手动跳过<code>explode_bomb</code>函数继续运行。找到<code>jne    phase_2+43</code>下一条指令地址为<code>0x400ecd</code>，然后执行<code>set $rip=0x400ecd</code>设置<code>rip</code>寄存器值为该地址，因为<code>rip</code>(指令指针寄存器)始终存的是下一条即将执行的指令地址：</p>
+<img src="/2022/04/21/binary-bomb/2.4.png" class="" title="**phase_2**">
+<p>发现这一段与上一段代码类似，可知第二个参数应该为1。</p>
+</li>
+<li><p>同样的方法跳过<code>explode_bomb</code>函数，从这里开始就有对参数进行计算的操作了，之前全是将参数和某个字符或数字比较，很容易很获得答案。继续一步步执行，发现这样一段：</p>
+<img src="/2022/04/21/binary-bomb/2.5.png" class="" title="**phase_2**">
+<p>既然有条件跳转，就存在分支，这里pwndbg的输出默认只显示将会运行的指令，也就是说它预先执行了一下，帮你预测好了接下来几步的指令。为查看pwndbg省略掉的反汇编代码，执行<code>disas</code>输出当前函数反汇编，当前指令位置会有箭头标注：</p>
+<img src="/2022/04/21/binary-bomb/2.6.png" class="" title="**phase_2**">
+<p>很明显<code>cmp    DWORD PTR [rbx+0x8],eax</code>的结果应该为相等，其中前者<code>DWORD PTR [rbx+0x8]</code>是第三个参数，<code>eax</code>存的是前几行指令的结果，再看前几行指令：</p>
+<img src="/2022/04/21/binary-bomb/2.7.png" class="" title="**phase_2**">
+<p>对<code>rbp</code>和<code>rbx</code>进行赋值，然后计算第一参数与第二参数的和并赋于<code>eax</code>，所以<code>eax</code>的值应该为1，即第三个参数应该为1。<br>这里有一个小细节，因为<code>rbp</code>和<code>rbx</code>的旧值在这里被覆盖了，所以在函数开头有这样一句将<code>rbp</code>和<code>rbx</code>的旧值保存在栈里：</p>
+<img src="/2022/04/21/binary-bomb/2.8.png" class="" title="**phase_2**">
+<p>并在函数返回前进行恢复：</p>
+<img src="/2022/04/21/binary-bomb/2.9.png" class="" title="**phase_2**">
+<p>经典的保存现场和恢复现场操作，这在之后也会经常看到。</p>
+</li>
+<li><p>继续向下执行，发现有这样三行指令：</p>
+<img src="/2022/04/21/binary-bomb/2.10.png" class="" title="**phase_2**">
+<p><code>rbp</code>和<code>rbx</code>分别是之前赋的<code>rsp+0x10</code>和<code>rsp</code>，即第五个参数和第一个参数的地址，对<code>rbx</code>加4即让<code>rbx</code>指向第下一个参数，然后比较一下看<code>rbx</code>是不是已经到了第五个参数，不是则跳到之前的<code>0x400ee1 &lt;phase_2+56&gt;    mov    eax, dword ptr [rbx + 4]</code>位置执行，否则退出循环。循环里执行的即是上一步的内容：检查第x个参数与第x+1个参数的和是否等于第x+2个参数，x值为1到5。至此，<strong>phase_2</strong>已解决。</p>
+</li>
+</ol>
+<h3 id="phase-3"><a href="#phase-3" class="headerlink" title="phase_3"></a><strong>phase_3</strong></h3><ol>
+<li><p>到这里基本上已经上手了，不同于<strong>phase_2</strong>的数学计算，<strong>phase_3</strong>的重点在于理清程序执行逻辑，找出关键代码。同样附上<strong>phase_3</strong>的反汇编：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">Dump of assembler code for function phase_3:</span><br><span class="line">   0x0000000000400f15 &lt;+0&gt;:     sub    rsp,0x28</span><br><span class="line">   0x0000000000400f19 &lt;+4&gt;:     mov    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x0000000000400f22 &lt;+13&gt;:    mov    QWORD PTR [rsp+0x18],rax</span><br><span class="line">   0x0000000000400f27 &lt;+18&gt;:    xor    eax,eax</span><br><span class="line">   0x0000000000400f29 &lt;+20&gt;:    lea    r8,[rsp+0x14]</span><br><span class="line">   0x0000000000400f2e &lt;+25&gt;:    lea    rcx,[rsp+0xf]</span><br><span class="line">   0x0000000000400f33 &lt;+30&gt;:    lea    rdx,[rsp+0x10]</span><br><span class="line">   0x0000000000400f38 &lt;+35&gt;:    mov    esi,0x4024ee</span><br><span class="line">   0x0000000000400f3d &lt;+40&gt;:    call   0x400bb0 &lt;__isoc99_sscanf@plt&gt;</span><br><span class="line">   0x0000000000400f42 &lt;+45&gt;:    cmp    eax,0x2</span><br><span class="line">   0x0000000000400f45 &lt;+48&gt;:    jg     0x400f4c &lt;phase_3+55&gt;</span><br><span class="line">   0x0000000000400f47 &lt;+50&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400f4c &lt;+55&gt;:    cmp    DWORD PTR [rsp+0x10],0x7</span><br><span class="line">   0x0000000000400f51 &lt;+60&gt;:    ja     0x401053 &lt;phase_3+318&gt;</span><br><span class="line">   0x0000000000400f57 &lt;+66&gt;:    mov    eax,DWORD PTR [rsp+0x10]</span><br><span class="line">=&gt; 0x0000000000400f5b &lt;+70&gt;:    jmp    QWORD PTR [rax*8+0x402500]</span><br><span class="line">   0x0000000000400f62 &lt;+77&gt;:    mov    eax,0x69</span><br><span class="line">   0x0000000000400f67 &lt;+82&gt;:    cmp    DWORD PTR [rsp+0x14],0x33c</span><br><span class="line">   0x0000000000400f6f &lt;+90&gt;:    je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400f75 &lt;+96&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400f7a &lt;+101&gt;:   mov    eax,0x69</span><br><span class="line">   0x0000000000400f7f &lt;+106&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400f84 &lt;+111&gt;:   mov    eax,0x66</span><br><span class="line">   0x0000000000400f89 &lt;+116&gt;:   cmp    DWORD PTR [rsp+0x14],0x30b</span><br><span class="line">   0x0000000000400f91 &lt;+124&gt;:   je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400f97 &lt;+130&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400f9c &lt;+135&gt;:   mov    eax,0x66</span><br><span class="line">   0x0000000000400fa1 &lt;+140&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400fa6 &lt;+145&gt;:   mov    eax,0x71</span><br><span class="line">   0x0000000000400fab &lt;+150&gt;:   cmp    DWORD PTR [rsp+0x14],0x2d5</span><br><span class="line">   0x0000000000400fb3 &lt;+158&gt;:   je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400fb9 &lt;+164&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400fbe &lt;+169&gt;:   mov    eax,0x71</span><br><span class="line">   0x0000000000400fc3 &lt;+174&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400fc8 &lt;+179&gt;:   mov    eax,0x7a</span><br><span class="line">   0x0000000000400fcd &lt;+184&gt;:   cmp    DWORD PTR [rsp+0x14],0x235</span><br><span class="line">   0x0000000000400fd5 &lt;+192&gt;:   je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400fdb &lt;+198&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400fe0 &lt;+203&gt;:   mov    eax,0x7a</span><br><span class="line">   0x0000000000400fe5 &lt;+208&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400fe7 &lt;+210&gt;:   mov    eax,0x6c</span><br><span class="line">   0x0000000000400fec &lt;+215&gt;:   cmp    DWORD PTR [rsp+0x14],0x192</span><br><span class="line">   0x0000000000400ff4 &lt;+223&gt;:   je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000400ff6 &lt;+225&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000400ffb &lt;+230&gt;:   mov    eax,0x6c</span><br><span class="line">   0x0000000000401000 &lt;+235&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000401002 &lt;+237&gt;:   mov    eax,0x70</span><br><span class="line">   0x0000000000401007 &lt;+242&gt;:   cmp    DWORD PTR [rsp+0x14],0x1a6</span><br><span class="line">   0x000000000040100f &lt;+250&gt;:   je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000401011 &lt;+252&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000401016 &lt;+257&gt;:   mov    eax,0x70</span><br><span class="line">   0x000000000040101b &lt;+262&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x000000000040101d &lt;+264&gt;:   mov    eax,0x73</span><br><span class="line">   0x0000000000401022 &lt;+269&gt;:   cmp    DWORD PTR [rsp+0x14],0x325</span><br><span class="line">   0x000000000040102a &lt;+277&gt;:   je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x000000000040102c &lt;+279&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000401031 &lt;+284&gt;:   mov    eax,0x73</span><br><span class="line">   0x0000000000401036 &lt;+289&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000401038 &lt;+291&gt;:   mov    eax,0x6d</span><br><span class="line">   0x000000000040103d &lt;+296&gt;:   cmp    DWORD PTR [rsp+0x14],0x217</span><br><span class="line">   0x0000000000401045 &lt;+304&gt;:   je     0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000401047 &lt;+306&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x000000000040104c &lt;+311&gt;:   mov    eax,0x6d</span><br><span class="line">   0x0000000000401051 &lt;+316&gt;:   jmp    0x40105d &lt;phase_3+328&gt;</span><br><span class="line">   0x0000000000401053 &lt;+318&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000401058 &lt;+323&gt;:   mov    eax,0x79</span><br><span class="line">   0x000000000040105d &lt;+328&gt;:   cmp    al,BYTE PTR [rsp+0xf]</span><br><span class="line">   0x0000000000401061 &lt;+332&gt;:   je     0x401068 &lt;phase_3+339&gt;</span><br><span class="line">   0x0000000000401063 &lt;+334&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000401068 &lt;+339&gt;:   mov    rax,QWORD PTR [rsp+0x18]</span><br><span class="line">   0x000000000040106d &lt;+344&gt;:   xor    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x0000000000401076 &lt;+353&gt;:   je     0x40107d &lt;phase_3+360&gt;</span><br><span class="line">   0x0000000000401078 &lt;+355&gt;:   call   0x400b00 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">   0x000000000040107d &lt;+360&gt;:   add    rsp,0x28</span><br><span class="line">   0x0000000000401081 &lt;+364&gt;:   ret</span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<p>不像<strong>phase_2</strong>中有<code>read_six_numbers</code>，<strong>phase_3</strong>没法直接从反汇编中窥见输入的参数格式，那就暂时输<code>mrorange</code>好了，然后一步步执行，并观察pwndbg输出的registers信息，直到<code>scanf</code>函数：</p>
+<img src="/2022/04/21/binary-bomb/3.1.png" class="" title="**phase_3**">
+<p>pwndbg直接将传入<code>scanf</code>的参数展示出来，哪怕是新手小白也可以注意到<code>‘%d %c %d‘</code>就是<strong>phase_3</strong>正解的输入格式。有经验的话就可以直接<code>x/s 0x4024ee</code>查看输入格式了，因为<code>call scanf</code>的上一句指令即是用格式字符串地址赋值<code>rsi</code>寄存器，再作为参数传给<code>scanf</code>函数。</p>
+</li>
+<li><p>确定了输入格式，重新运行输入<code>1 o 1</code>开始进一步分析：</p>
+<img src="/2022/04/21/binary-bomb/3.2.png" class="" title="**phase_3**">
+<p>代码在<code>scanf</code>之后判断了输入参数个数是否大于2个，又判断了第一个参数是否小于等于7，都通过则跳转到<code>第一个参数*8 + 0x402500</code>处，先不管这是哪，继续往下执行。注意到这句<code>cmp    dword ptr [rsp + 0x14], 0x30b</code>，看似是在判断一个参数是否为<code>0x30b</code>，但是哪一个参数呢？之前输入的<code>1 o 1</code>不是很合适，因为第一个参数和第三个参数一样，在栈里就看不出哪个位置对应哪个参数，我这里又将输入改成了<code>1 o 2</code>，再看一下栈区：</p>
+<img src="/2022/04/21/binary-bomb/3.3.png" class="" title="**phase_3**">
+<p><code>dword ptr [rsp + 0x14]</code>的值是2，所以<code>dword ptr [rsp + 0x14]</code>对应的是第三个参数。因此，第三个参数应该为<code>0x30b</code>，但注意这个数是十六进制，而输入格式是<code>%d</code>即十进制，所以真正的第三参数是<code>779</code>。</p>
+</li>
+<li><p>继续向下，跳转到了<code>phase_3+3280x40105d &lt;phase_3+328&gt;    cmp    al, byte ptr [rsp + 0xf]</code>，<code>byte ptr [rsp + 0xf]</code>的值可以在栈里看到是<code>0x6f</code>，也即第二个参数<code>o</code>的ASCII码，可以输入<code>x/bc $rsp+0xf</code>验证。将第二个参数和<code>al</code>即<code>rax</code>的最后一字节比较，那现在<code>rax</code>里存的又是什么呢？可以注意到是在比较第三个参数前有不显眼的一行<code>mov    eax, 0x66</code>，<code>0x66</code>对应的字母是<code>f</code>。至此，可以确定一组正确的答案为<code>1 f 779</code>。</p>
+</li>
+</ol>
+<ul>
+<li>Tip: 在Python命令行中，输入十六进制数会输出它的十进制；使用<code>print(&#39;&#123;:c&#125;&#39;.format(0x66))</code>可以输出<code>0x66</code>对应的ASCII字符。<img src="/2022/04/21/binary-bomb/3.4.png" class="" title="Tip"></li>
+</ul>
+<ol start="4">
+<li>之所以说得到的只是其中一组正确答案，是因为第一个参数的值会决定跳转到的<code>第一个参数*8 + 0x402500</code>位置，而第一个参数值又小于等于7，不能为负，所以对应不同的第一参数，一共会有八个不同的答案。得出答案的步骤完全一样，就不再赘述。</li>
+</ol>
+<h3 id="phase-4"><a href="#phase-4" class="headerlink" title="phase_4"></a><strong>phase_4</strong></h3><ol>
+<li><p>先附上<strong>phase_4</strong>和内部函数<strong>func4</strong>的反汇编：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Dump of assembler code for function phase_4:</span><br><span class="line">   0x00000000004010b5 &lt;+0&gt;:     sub    rsp,0x18</span><br><span class="line">   0x00000000004010b9 &lt;+4&gt;:     mov    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x00000000004010c2 &lt;+13&gt;:    mov    QWORD PTR [rsp+0x8],rax</span><br><span class="line">   0x00000000004010c7 &lt;+18&gt;:    xor    eax,eax</span><br><span class="line">   0x00000000004010c9 &lt;+20&gt;:    lea    rcx,[rsp+0x4]</span><br><span class="line">   0x00000000004010ce &lt;+25&gt;:    mov    rdx,rsp</span><br><span class="line">   0x00000000004010d1 &lt;+28&gt;:    mov    esi,0x40268f</span><br><span class="line">   0x00000000004010d6 &lt;+33&gt;:    call   0x400bb0 &lt;__isoc99_sscanf@plt&gt;</span><br><span class="line">   0x00000000004010db &lt;+38&gt;:    cmp    eax,0x2</span><br><span class="line">   0x00000000004010de &lt;+41&gt;:    jne    0x4010e6 &lt;phase_4+49&gt;</span><br><span class="line">   0x00000000004010e0 &lt;+43&gt;:    cmp    DWORD PTR [rsp],0xe</span><br><span class="line">   0x00000000004010e4 &lt;+47&gt;:    jbe    0x4010eb &lt;phase_4+54&gt;</span><br><span class="line">   0x00000000004010e6 &lt;+49&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x00000000004010eb &lt;+54&gt;:    mov    edx,0xe</span><br><span class="line">   0x00000000004010f0 &lt;+59&gt;:    mov    esi,0x0</span><br><span class="line">   0x00000000004010f5 &lt;+64&gt;:    mov    edi,DWORD PTR [rsp]</span><br><span class="line">   0x00000000004010f8 &lt;+67&gt;:    call   0x401082 &lt;func4&gt;</span><br><span class="line">   0x00000000004010fd &lt;+72&gt;:    cmp    eax,0x13</span><br><span class="line">   0x0000000000401100 &lt;+75&gt;:    jne    0x401109 &lt;phase_4+84&gt;</span><br><span class="line">   0x0000000000401102 &lt;+77&gt;:    cmp    DWORD PTR [rsp+0x4],0x13</span><br><span class="line">   0x0000000000401107 &lt;+82&gt;:    je     0x40110e &lt;phase_4+89&gt;</span><br><span class="line">   0x0000000000401109 &lt;+84&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x000000000040110e &lt;+89&gt;:    mov    rax,QWORD PTR [rsp+0x8]</span><br><span class="line">   0x0000000000401113 &lt;+94&gt;:    xor    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x000000000040111c &lt;+103&gt;:   je     0x401123 &lt;phase_4+110&gt;</span><br><span class="line">   0x000000000040111e &lt;+105&gt;:   call   0x400b00 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">   0x0000000000401123 &lt;+110&gt;:   add    rsp,0x18</span><br><span class="line">   0x0000000000401127 &lt;+114&gt;:   ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Dump of assembler code for function func4:</span><br><span class="line">   0x0000000000401082 &lt;+0&gt;:     push   rbx</span><br><span class="line">   0x0000000000401083 &lt;+1&gt;:     mov    eax,edx</span><br><span class="line">   0x0000000000401085 &lt;+3&gt;:     sub    eax,esi</span><br><span class="line">   0x0000000000401087 &lt;+5&gt;:     mov    ebx,eax</span><br><span class="line">   0x0000000000401089 &lt;+7&gt;:     shr    ebx,0x1f</span><br><span class="line">   0x000000000040108c &lt;+10&gt;:    add    eax,ebx</span><br><span class="line">   0x000000000040108e &lt;+12&gt;:    sar    eax,1</span><br><span class="line">   0x0000000000401090 &lt;+14&gt;:    lea    ebx,[rax+rsi*1]</span><br><span class="line">   0x0000000000401093 &lt;+17&gt;:    cmp    ebx,edi</span><br><span class="line">   0x0000000000401095 &lt;+19&gt;:    jle    0x4010a3 &lt;func4+33&gt;</span><br><span class="line">   0x0000000000401097 &lt;+21&gt;:    lea    edx,[rbx-0x1]</span><br><span class="line">   0x000000000040109a &lt;+24&gt;:    call   0x401082 &lt;func4&gt;</span><br><span class="line">   0x000000000040109f &lt;+29&gt;:    add    eax,ebx</span><br><span class="line">   0x00000000004010a1 &lt;+31&gt;:    jmp    0x4010b3 &lt;func4+49&gt;</span><br><span class="line">   0x00000000004010a3 &lt;+33&gt;:    mov    eax,ebx</span><br><span class="line">   0x00000000004010a5 &lt;+35&gt;:    cmp    ebx,edi</span><br><span class="line">   0x00000000004010a7 &lt;+37&gt;:    jge    0x4010b3 &lt;func4+49&gt;</span><br><span class="line">   0x00000000004010a9 &lt;+39&gt;:    lea    esi,[rbx+0x1]</span><br><span class="line">   0x00000000004010ac &lt;+42&gt;:    call   0x401082 &lt;func4&gt;</span><br><span class="line">   0x00000000004010b1 &lt;+47&gt;:    add    eax,ebx</span><br><span class="line">   0x00000000004010b3 &lt;+49&gt;:    pop    rbx</span><br><span class="line">   0x00000000004010b4 &lt;+50&gt;:    ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<p>首先仍然是确定输入的格式。找到<code>scanf</code>函数，从其上一行中得到格式字符串地址，执行<code>x/s 0x40268f</code>，得到格式字符串为<code>&quot;%d %d&quot;</code>。</p>
+</li>
+<li><p><strong>phase_4</strong>的主函数部分的逻辑很简单，有了前三个phase的热身，应该可以轻松从反汇编中看出其逻辑：先判断输入参数个数是否为2，再判断第一个参数是否小于14，通过则调用函数<code>func4</code>，并判断返回值是否为19，最后判断初始输入的第二个参数是否为19，均为是则顺利过关。</p>
+</li>
+<li><p>光从第二步就能得知第一个参数是小于等于14的自然数，第二个参数是19，通过暴力枚举15个可能的输入就能得到答案，甚至不用分析<code>func4</code>函数。但是前提是<code>func4</code>函数里没有改动最初输入的参数，也没有调用<code>explode_bomb</code>函数。前者在这种级别的题应该不会有，后者通过反汇编发现也满足。赶时间的话就可以开始试答案了，这里不再分析<code>func4</code>函数，附上伪代码（仅供参考，源自IDA，其中参数a1&#x3D;输入的第一参数, a2&#x3D;0, a3&#x3D;14）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">__int64 <span class="title">func4</span><span class="params">(__int64 a1, __int64 a2, <span class="type">int</span> a3)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="type">int</span> v3; <span class="comment">// ebx</span></span><br><span class="line">  __int64 result; <span class="comment">// rax</span></span><br><span class="line"></span><br><span class="line">  v3 = (a3 - (<span class="type">int</span>)a2) / <span class="number">2</span> + a2;</span><br><span class="line">  <span class="keyword">if</span> ( v3 &gt; (<span class="type">int</span>)a1 )</span><br><span class="line">    <span class="keyword">return</span> v3 + (<span class="type">unsigned</span> <span class="type">int</span>)<span class="built_in">func4</span>(a1, a2);</span><br><span class="line">  result = (<span class="type">unsigned</span> <span class="type">int</span>)v3;</span><br><span class="line">  <span class="keyword">if</span> ( v3 &lt; (<span class="type">int</span>)a1 )</span><br><span class="line">    result = v3 + (<span class="type">unsigned</span> <span class="type">int</span>)<span class="built_in">func4</span>(a1, (<span class="type">unsigned</span> <span class="type">int</span>)(v3 + <span class="number">1</span>));</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="phase-5"><a href="#phase-5" class="headerlink" title="phase_5"></a><strong>phase_5</strong></h3><ol>
+<li><p>先附上<strong>phase_5</strong>的反汇编：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">Dump of assembler code for function phase_5:</span><br><span class="line">=&gt; 0x0000000000401128 &lt;+0&gt;:     sub    rsp,0x18</span><br><span class="line">   0x000000000040112c &lt;+4&gt;:     mov    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x0000000000401135 &lt;+13&gt;:    mov    QWORD PTR [rsp+0x8],rax</span><br><span class="line">   0x000000000040113a &lt;+18&gt;:    xor    eax,eax</span><br><span class="line">   0x000000000040113c &lt;+20&gt;:    lea    rcx,[rsp+0x4]</span><br><span class="line">   0x0000000000401141 &lt;+25&gt;:    mov    rdx,rsp</span><br><span class="line">   0x0000000000401144 &lt;+28&gt;:    mov    esi,0x40268f</span><br><span class="line">   0x0000000000401149 &lt;+33&gt;:    call   0x400bb0 &lt;__isoc99_sscanf@plt&gt;</span><br><span class="line">   0x000000000040114e &lt;+38&gt;:    cmp    eax,0x1</span><br><span class="line">   0x0000000000401151 &lt;+41&gt;:    jg     0x401158 &lt;phase_5+48&gt;</span><br><span class="line">   0x0000000000401153 &lt;+43&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000401158 &lt;+48&gt;:    mov    eax,DWORD PTR [rsp]</span><br><span class="line">   0x000000000040115b &lt;+51&gt;:    and    eax,0xf</span><br><span class="line">   0x000000000040115e &lt;+54&gt;:    mov    DWORD PTR [rsp],eax</span><br><span class="line">   0x0000000000401161 &lt;+57&gt;:    cmp    eax,0xf</span><br><span class="line">   0x0000000000401164 &lt;+60&gt;:    je     0x401195 &lt;phase_5+109&gt;</span><br><span class="line">   0x0000000000401166 &lt;+62&gt;:    mov    ecx,0x0</span><br><span class="line">   0x000000000040116b &lt;+67&gt;:    mov    edx,0x0</span><br><span class="line">   0x0000000000401170 &lt;+72&gt;:    add    edx,0x1</span><br><span class="line">   0x0000000000401173 &lt;+75&gt;:    cdqe   </span><br><span class="line">   0x0000000000401175 &lt;+77&gt;:    mov    eax,DWORD PTR [rax*4+0x402540]</span><br><span class="line">   0x000000000040117c &lt;+84&gt;:    add    ecx,eax</span><br><span class="line">   0x000000000040117e &lt;+86&gt;:    cmp    eax,0xf</span><br><span class="line">   0x0000000000401181 &lt;+89&gt;:    jne    0x401170 &lt;phase_5+72&gt;</span><br><span class="line">   0x0000000000401183 &lt;+91&gt;:    mov    DWORD PTR [rsp],0xf</span><br><span class="line">   0x000000000040118a &lt;+98&gt;:    cmp    edx,0xf</span><br><span class="line">   0x000000000040118d &lt;+101&gt;:   jne    0x401195 &lt;phase_5+109&gt;</span><br><span class="line">   0x000000000040118f &lt;+103&gt;:   cmp    ecx,DWORD PTR [rsp+0x4]</span><br><span class="line">   0x0000000000401193 &lt;+107&gt;:   je     0x40119a &lt;phase_5+114&gt;</span><br><span class="line">   0x0000000000401195 &lt;+109&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x000000000040119a &lt;+114&gt;:   mov    rax,QWORD PTR [rsp+0x8]</span><br><span class="line">   0x000000000040119f &lt;+119&gt;:   xor    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x00000000004011a8 &lt;+128&gt;:   je     0x4011af &lt;phase_5+135&gt;</span><br><span class="line">   0x00000000004011aa &lt;+130&gt;:   call   0x400b00 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">   0x00000000004011af &lt;+135&gt;:   add    rsp,0x18</span><br><span class="line">   0x00000000004011b3 &lt;+139&gt;:   ret    </span><br><span class="line">End of assembler dump.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>同样，通过观察反汇编得到格式字符串地址为<code>0x40268f</code>，执行<code>x/s 0x40268f</code>得到格式字符串为<code>&quot;%d %d&quot;</code>，这里输入<code>5 10</code>后继续分析。</p>
+</li>
+<li><p>从<code>scanf</code>函数下一行开始一步步执行：判断输入参数个数是否大于1，是则继续；取第一参数的后四位，并覆盖原来的参数，且第一参数的后四位不全为1；这时第一参数的值转化成为0～14之间一个数；从<code>0x0000000000401170 &lt;+72&gt;:    add    edx,0x1</code>开始进入循环：</p>
+<img src="/2022/04/21/binary-bomb/5.1.png" class="" title="**phase_5**"></li>
+</ol>
+<ul>
+<li>其中<code>cdqe</code>是使用<code>eax</code>的最高位拓展<code>rax</code>高32位的所有位。</li>
+</ul>
+<ol start="2">
+<li><p>注意到这一行<code>mov    eax, dword ptr [rax*4 + 0x402540]</code>，不禁好奇地址<code>0x402540</code>里存了什么，执行<code>x/20wx 0x402540</code>查看内存：</p>
+<img src="/2022/04/21/binary-bomb/5.2.png" class="" title="**phase_5**">
+<p>果然是一个数组，每个元素长度为4字节，所以<code>dword ptr [rax*4 + 0x402540]</code>值为该数组的第<code>rax</code>个元素。再来看这段循环，它不断的将数组的第<code>rax</code>个元素再次赋予<code>rax</code>，同时将<code>rax</code>的值累加到<code>ecx</code>寄存器。<code>edx</code>记录循环的次数，直到<code>rax</code>值为<code>0xf</code>时退出循环：</p>
+<img src="/2022/04/21/binary-bomb/5.3.png" class="" title="**phase_5**">
+</li>
+<li><p>退出循环后，判断<code>edx</code>的值是否为<code>0xf</code>，然后判断<code>ecx</code>和第二参数是否相等，均为是则过关。<code>edx</code>值为<code>0xf</code>即循环次数为15次，数组长度为16，所以很有可能<code>ecx</code>最后就是数组所有元素的和（除下标为<code>0xf</code>的元素）。再观察数组，发现通过不断的将数组下标对应元素作为新的数组下标，可以遍历完整个数组，因此在15次循环中必然完成了数组的一次遍历，<code>ecx</code>值即所有元素和（除下标为<code>0xf</code>的元素）为<code>115</code>。因此第二个参数应该为<code>115</code>。</p>
+</li>
+<li><p>那么第一个参数呢？第一个参数是<code>eax</code>的初值，也就是第一个下标，然后需要让<code>eax</code>遍历数组的时候正好在最后才被赋值<code>0xf</code>，并退出循环。可以暴力枚举，也可以用逆推的方法：最后<code>eax</code>值为<code>0xf</code>，那么<code>eax</code>前一个值为元素<code>0xf</code>的下标<code>0x6</code>，再前一个值为元素<code>0x6</code>的下标<code>0xe</code>，以此类推，得到最初下标应该为<code>0x5</code>。或者直接正推，下标为<code>0xf</code>的元素<code>0x5</code>即为所求值。故第一个参数应该为<code>0x5</code>。</p>
+</li>
+</ol>
+<h3 id="phase-6"><a href="#phase-6" class="headerlink" title="phase_6"></a>phase_6</h3><ol>
+<li><p>先附上<strong>phase_6</strong>的反汇编：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line">Dump of assembler code for function phase_6:</span><br><span class="line">   0x00000000004011b4 &lt;+0&gt;:     push   r14</span><br><span class="line">   0x00000000004011b6 &lt;+2&gt;:     push   r13</span><br><span class="line">   0x00000000004011b8 &lt;+4&gt;:     push   r12</span><br><span class="line">   0x00000000004011ba &lt;+6&gt;:     push   rbp</span><br><span class="line">   0x00000000004011bb &lt;+7&gt;:     push   rbx</span><br><span class="line">   0x00000000004011bc &lt;+8&gt;:     sub    rsp,0x60</span><br><span class="line">   0x00000000004011c0 &lt;+12&gt;:    mov    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x00000000004011c9 &lt;+21&gt;:    mov    QWORD PTR [rsp+0x58],rax</span><br><span class="line">   0x00000000004011ce &lt;+26&gt;:    xor    eax,eax</span><br><span class="line">   0x00000000004011d0 &lt;+28&gt;:    mov    rsi,rsp</span><br><span class="line">   0x00000000004011d3 &lt;+31&gt;:    call   0x40152b &lt;read_six_numbers&gt;</span><br><span class="line">   0x00000000004011d8 &lt;+36&gt;:    mov    r12,rsp</span><br><span class="line">   0x00000000004011db &lt;+39&gt;:    mov    r13,rsp</span><br><span class="line">   0x00000000004011de &lt;+42&gt;:    mov    r14d,0x0</span><br><span class="line">   0x00000000004011e4 &lt;+48&gt;:    mov    rbp,r13</span><br><span class="line">   0x00000000004011e7 &lt;+51&gt;:    mov    eax,DWORD PTR [r13+0x0]</span><br><span class="line">   0x00000000004011eb &lt;+55&gt;:    sub    eax,0x1</span><br><span class="line">   0x00000000004011ee &lt;+58&gt;:    cmp    eax,0x5</span><br><span class="line">   0x00000000004011f1 &lt;+61&gt;:    jbe    0x4011f8 &lt;phase_6+68&gt;</span><br><span class="line">   0x00000000004011f3 &lt;+63&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x00000000004011f8 &lt;+68&gt;:    add    r14d,0x1</span><br><span class="line">   0x00000000004011fc &lt;+72&gt;:    cmp    r14d,0x6</span><br><span class="line">   0x0000000000401200 &lt;+76&gt;:    je     0x401223 &lt;phase_6+111&gt;</span><br><span class="line">   0x0000000000401202 &lt;+78&gt;:    mov    ebx,r14d</span><br><span class="line">   0x0000000000401205 &lt;+81&gt;:    movsxd rax,ebx</span><br><span class="line">   0x0000000000401208 &lt;+84&gt;:    mov    eax,DWORD PTR [rsp+rax*4]</span><br><span class="line">   0x000000000040120b &lt;+87&gt;:    cmp    DWORD PTR [rbp+0x0],eax</span><br><span class="line">   0x000000000040120e &lt;+90&gt;:    jne    0x401215 &lt;phase_6+97&gt;</span><br><span class="line">   0x0000000000401210 &lt;+92&gt;:    call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x0000000000401215 &lt;+97&gt;:    add    ebx,0x1</span><br><span class="line">   0x0000000000401218 &lt;+100&gt;:   cmp    ebx,0x5</span><br><span class="line">   0x000000000040121b &lt;+103&gt;:   jle    0x401205 &lt;phase_6+81&gt;</span><br><span class="line">   0x000000000040121d &lt;+105&gt;:   add    r13,0x4</span><br><span class="line">   0x0000000000401221 &lt;+109&gt;:   jmp    0x4011e4 &lt;phase_6+48&gt;</span><br><span class="line">   0x0000000000401223 &lt;+111&gt;:   lea    rcx,[rsp+0x18]</span><br><span class="line">   0x0000000000401228 &lt;+116&gt;:   mov    edx,0x7</span><br><span class="line">   0x000000000040122d &lt;+121&gt;:   mov    eax,edx</span><br><span class="line">   0x000000000040122f &lt;+123&gt;:   sub    eax,DWORD PTR [r12]</span><br><span class="line">   0x0000000000401233 &lt;+127&gt;:   mov    DWORD PTR [r12],eax</span><br><span class="line">   0x0000000000401237 &lt;+131&gt;:   add    r12,0x4</span><br><span class="line">   0x000000000040123b &lt;+135&gt;:   cmp    rcx,r12</span><br><span class="line">   0x000000000040123e &lt;+138&gt;:   jne    0x40122d &lt;phase_6+121&gt;</span><br><span class="line">   0x0000000000401240 &lt;+140&gt;:   mov    esi,0x0</span><br><span class="line">   0x0000000000401245 &lt;+145&gt;:   jmp    0x401261 &lt;phase_6+173&gt;</span><br><span class="line">   0x0000000000401247 &lt;+147&gt;:   mov    rdx,QWORD PTR [rdx+0x8]</span><br><span class="line">   0x000000000040124b &lt;+151&gt;:   add    eax,0x1</span><br><span class="line">   0x000000000040124e &lt;+154&gt;:   cmp    eax,ecx</span><br><span class="line">   0x0000000000401250 &lt;+156&gt;:   jne    0x401247 &lt;phase_6+147&gt;</span><br><span class="line">   0x0000000000401252 &lt;+158&gt;:   mov    QWORD PTR [rsp+rsi*2+0x20],rdx</span><br><span class="line">   0x0000000000401257 &lt;+163&gt;:   add    rsi,0x4</span><br><span class="line">   0x000000000040125b &lt;+167&gt;:   cmp    rsi,0x18</span><br><span class="line">   0x000000000040125f &lt;+171&gt;:   je     0x401275 &lt;phase_6+193&gt;</span><br><span class="line">   0x0000000000401261 &lt;+173&gt;:   mov    ecx,DWORD PTR [rsp+rsi*1]</span><br><span class="line">   0x0000000000401264 &lt;+176&gt;:   mov    eax,0x1</span><br><span class="line">   0x0000000000401269 &lt;+181&gt;:   mov    edx,0x6042f0</span><br><span class="line">   0x000000000040126e &lt;+186&gt;:   cmp    ecx,0x1</span><br><span class="line">   0x0000000000401271 &lt;+189&gt;:   jg     0x401247 &lt;phase_6+147&gt;</span><br><span class="line">   0x0000000000401273 &lt;+191&gt;:   jmp    0x401252 &lt;phase_6+158&gt;</span><br><span class="line">   0x0000000000401275 &lt;+193&gt;:   mov    rbx,QWORD PTR [rsp+0x20]</span><br><span class="line">   0x000000000040127a &lt;+198&gt;:   lea    rax,[rsp+0x20]</span><br><span class="line">   0x000000000040127f &lt;+203&gt;:   lea    rsi,[rsp+0x48]</span><br><span class="line">   0x0000000000401284 &lt;+208&gt;:   mov    rcx,rbx</span><br><span class="line">   0x0000000000401287 &lt;+211&gt;:   mov    rdx,QWORD PTR [rax+0x8]</span><br><span class="line">   0x000000000040128b &lt;+215&gt;:   mov    QWORD PTR [rcx+0x8],rdx</span><br><span class="line">   0x000000000040128f &lt;+219&gt;:   add    rax,0x8</span><br><span class="line">   0x0000000000401293 &lt;+223&gt;:   mov    rcx,rdx</span><br><span class="line">   0x0000000000401296 &lt;+226&gt;:   cmp    rsi,rax</span><br><span class="line">   0x0000000000401299 &lt;+229&gt;:   jne    0x401287 &lt;phase_6+211&gt;</span><br><span class="line">   0x000000000040129b &lt;+231&gt;:   mov    QWORD PTR [rdx+0x8],0x0</span><br><span class="line">   0x00000000004012a3 &lt;+239&gt;:   mov    ebp,0x5</span><br><span class="line">   0x00000000004012a8 &lt;+244&gt;:   mov    rax,QWORD PTR [rbx+0x8]</span><br><span class="line">   0x00000000004012ac &lt;+248&gt;:   mov    eax,DWORD PTR [rax]</span><br><span class="line">   0x00000000004012ae &lt;+250&gt;:   cmp    DWORD PTR [rbx],eax</span><br><span class="line">   0x00000000004012b0 &lt;+252&gt;:   jge    0x4012b7 &lt;phase_6+259&gt;</span><br><span class="line">   0x00000000004012b2 &lt;+254&gt;:   call   0x401509 &lt;explode_bomb&gt;</span><br><span class="line">   0x00000000004012b7 &lt;+259&gt;:   mov    rbx,QWORD PTR [rbx+0x8]</span><br><span class="line">   0x00000000004012bb &lt;+263&gt;:   sub    ebp,0x1</span><br><span class="line">   0x00000000004012be &lt;+266&gt;:   jne    0x4012a8 &lt;phase_6+244&gt;</span><br><span class="line">   0x00000000004012c0 &lt;+268&gt;:   mov    rax,QWORD PTR [rsp+0x58]</span><br><span class="line">   0x00000000004012c5 &lt;+273&gt;:   xor    rax,QWORD PTR fs:0x28</span><br><span class="line">   0x00000000004012ce &lt;+282&gt;:   je     0x4012d5 &lt;phase_6+289&gt;</span><br><span class="line">   0x00000000004012d0 &lt;+284&gt;:   call   0x400b00 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">   0x00000000004012d5 &lt;+289&gt;:   add    rsp,0x60</span><br><span class="line">   0x00000000004012d9 &lt;+293&gt;:   pop    rbx</span><br><span class="line">   0x00000000004012da &lt;+294&gt;:   pop    rbp</span><br><span class="line">   0x00000000004012db &lt;+295&gt;:   pop    r12</span><br><span class="line">   0x00000000004012dd &lt;+297&gt;:   pop    r13</span><br><span class="line">   0x00000000004012df &lt;+299&gt;:   pop    r14</span><br><span class="line">   0x00000000004012e1 &lt;+301&gt;:   ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<p>作为最后一个phase，上来就给了个下马威，这反汇编在6个phase中最长，逻辑也是最复杂的。看一下反汇编，注意到<strong>phase_6</strong>调用了<code>read_six_numbers</code>函数，所以输入格式是和<strong>phase_2</strong>相同的六个数字。这里输入<code>1 2 3 4 5 6</code>继续分析。</p>
+</li>
+<li><p>直接看不容易看出程序的规律，那就从<code>read_six_numbers</code>函数下一行开始一步步运行：</p>
+<img src="/2022/04/21/binary-bomb/6.1.png" class="" title="**phase_6**">
+<p>上面这第一段代码主要判断第一个参数是否小于6，再往下执行：</p>
+<img src="/2022/04/21/binary-bomb/6.2.png" class="" title="**phase_6**">
+<p>从这段可基本判断现在位于一个循环中，<code>r14d</code>中存循环变量，且这个循环要执行6次，继续向下执行：</p>
+<img src="/2022/04/21/binary-bomb/6.3.png" class="" title="**phase_6**">
+<p>这段将当前第<code>ebx</code>个参数即第二个参数赋予<code>eax</code>，并和第一个参数是否不相等，是则继续，接下来似乎是这个循环的最后一段：</p>
+<img src="/2022/04/21/binary-bomb/6.4.png" class="" title="**phase_6**">
+<p>出现了另一个循环变量<code>ebx</code>，且其控制的循环要执行5次。</p>
+</li>
+<li><p>再往下，程序跳转到了<code>0x401205 &lt;phase_6+81&gt;     movsxd rax, ebx</code>，从之前的分析看，这一段是判断第<code>ebx</code>个参数是否和第一个参数不相等，所以<code>ebx</code>控制的循环功能是判断6个参数中其它5个参数是否和第一个参数相等。</p>
+</li>
+<li><p>继续运行到<code>ebx</code>控制的循环结束：</p>
+<img src="/2022/04/21/binary-bomb/6.5.png" class="" title="**phase_6**">
+<p>这里对<code>r13</code>加4后直接一个大跳转，继续跟进，发现继续执行的是第2步分析的判断参数是否小于6，只不过这次判断的是第二个参数。分析到这，基本可以确定，以上这一整段是个双重循环，用于判断输入的六个数是不是为1～6，且互不相等。</p>
+</li>
+<li><p>检验完输入后就快进入关键逻辑了，循环结束继续向下执行：</p>
+<img src="/2022/04/21/binary-bomb/6.6.png" class="" title="**phase_6**">
+<p>这又是一个小循环，但比起之前那个要简单得多。其功能是对每个参数x进行处理，使每个参数x都变为7-x，比如第一个参数为1，处理后变成6。</p>
+</li>
+<li><p>继续向下执行，程序跳转到了<code>0x401261 &lt;phase_6+173&gt;    mov    ecx, dword ptr [rsp + rsi]</code>：</p>
+<img src="/2022/04/21/binary-bomb/6.7.png" class="" title="**phase_6**">
+<p>这里开始又是一个循环，注意到出现了<code>node1 &lt;0x6042f0&gt;</code>，不防看一眼里面都有什么，执行<code>x/25wx 0x6042f0</code>：</p>
+<img src="/2022/04/21/binary-bomb/6.8.png" class="" title="**phase_6**">
+<p>很明显这是一个单链表，<code>node1</code>指向<code>node2</code>，<code>node2</code>指向<code>node3</code>，依次类推。继续向下执行：</p>
+<img src="/2022/04/21/binary-bomb/6.9.png" class="" title="**phase_6**">
+<p>令当前第x个参数为a(x)，x为1～6。结合上一个片段看，可以判断这一段是遍历到第a(1)个节点，将其地址存入<code>rsp + rsi*2 + 0x20</code>位置，最后更改循环变量<code>rsi</code>，判断是否要退出循环。</p>
+</li>
+<li><p>上一步在<code>rsi</code>控制下一共执行了六次，功能是将第a(x)个节点放入<code>rsp + x*4*2 + 0x20</code>位置，结果如下图：</p>
+<img src="/2022/04/21/binary-bomb/6.10.png" class="" title="**phase_6**">
+<p>继续向下执行，又是一个小循环：</p>
+<img src="/2022/04/21/binary-bomb/6.11.png" class="" title="**phase_6**">
+<p>令节点n的下一节点指针为flink(n)。这个小循环的功能为将节点a(x)的flink(a(x))置为节点a(x+1)的地址。比如当前参数为<code>6 5 4 3 2 1</code>，则循环处理后六个节点就会变成<code>node6-&gt;node5-&gt;node4-&gt;node3-&gt;node2-&gt;node1</code>。</p>
+</li>
+<li><p>退出循环后继续向下执行：</p>
+<img src="/2022/04/21/binary-bomb/6.12.png" class="" title="**phase_6**">
+<p>这段先将最末节点的flink置0，然后比较链表中第一个节点的值和第二个节点的值，如果前者大于后者则跳转：</p>
+<img src="/2022/04/21/binary-bomb/6.13.png" class="" title="**phase_6**">
+<p>这里让<code>rbx</code>指向下一个节点，然后循环变量<code>ebp</code>减1，继续上一步，即比较<code>rbx</code>指向的当前节点和下一节点的值，前者大于后者则跳转，否则BOOM！</p>
+</li>
+<li><p>上一步循环顺利退出即可过关。前提是当前链表中前一个节点中的数据始终大于后一个节点的数据，根据第六步中的节点信息，可以知道节点最后的顺序应该为<code>node2-&gt;node5-&gt;node4-&gt;node3-&gt;node6-&gt;node1</code>。所以经第五步处理后的参数应该为<code>2 5 4 3 6 1</code>。即最初输入的参数应该为<code>5 2 3 4 1 6</code>。</p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总的来说，这个作业并不算难，程序用到的都是最基本的逻辑和计算。但是想要顺利的解出答案，除了要对<strong>GDB</strong>的操作和命令熟练外，还要程序的基本运行原理和相关的汇编指令有一定程度的掌握。</p>
+<p>我认为这六个Phase中唯一棘手的就是最后一个了，几乎全是循环逻辑，甚至是双重循环，对这种逻辑的处理没太多经验的话很容易望而却步，哪怕是硬着头皮上，也会身心俱疲。但总之，程序的运行逻辑无非就这几种：顺序、分支、循环。基本逻辑搞定了，分析解决再大的程序也不过是时间问题。</p>
+<p>当然，每个问题通常都不会只有一种解法，比如<strong>phase_4</strong>就可以配合暴力枚举找出答案，节省大量时间。灵活的运用工具，善于思考，尝试用不同的角度去审视和解决难题，能够让我思维更加开阔。</p>
+<p>这篇博客算是我第一篇技术长篇，或许还有许多表述不周的地方。欢迎在下方评论，我们一起学习进步，努力变强。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">MrOrange</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://qspidy.github.io/2022/04/21/binary-bomb/">https://qspidy.github.io/2022/04/21/binary-bomb/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/gdb/">gdb</a><a class="post-meta__tags" href="/tags/binarybomb/">binarybomb</a><a class="post-meta__tags" href="/tags/c/">c</a><a class="post-meta__tags" href="/tags/debug/">debug</a><a class="post-meta__tags" href="/tags/reverse/">reverse</a><a class="post-meta__tags" href="/tags/ctf/">ctf</a><a class="post-meta__tags" href="/tags/assembly/">assembly</a><a class="post-meta__tags" href="/tags/language/">language</a></div><div class="post_share"><div class="social-share" data-image="/2022/04/21/binary-bomb/cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/04/12/firstpost/"><img class="next-cover" src="/img/covers/CharacterDesign_UNTAMED_Final.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">Welcome Orangeの小窝!!!</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div></div><div class="comment-wrap"><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">MrOrange</div><div class="author-info__description"></div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">9</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">1</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qspidy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/qspidy" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:qspidyx@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Welcome Orangeの小窝!!!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BinaryBomb%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">BinaryBomb简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GDB-pwndbg%E7%AE%80%E4%BB%8B"><span class="toc-number">3.</span> <span class="toc-text">GDB+pwndbg简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E4%BA%BA%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">4.</span> <span class="toc-text">本人运行环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E5%88%B0%E7%9A%84gdb%E5%91%BD%E4%BB%A4%E4%B8%80%E8%A7%88%E8%A1%A8"><span class="toc-number">5.</span> <span class="toc-text">用到的gdb命令一览表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E8%B0%83%E8%AF%95BinaryBomb"><span class="toc-number">6.</span> <span class="toc-text">开始调试BinaryBomb</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#phase-1"><span class="toc-number">6.1.</span> <span class="toc-text">phase_1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#phase-2"><span class="toc-number">6.2.</span> <span class="toc-text">phase_2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#phase-3"><span class="toc-number">6.3.</span> <span class="toc-text">phase_3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#phase-4"><span class="toc-number">6.4.</span> <span class="toc-text">phase_4</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#phase-5"><span class="toc-number">6.5.</span> <span class="toc-text">phase_5</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#phase-6"><span class="toc-number">6.6.</span> <span class="toc-text">phase_6</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/04/21/binary-bomb/" title="使用GDB+pwndbg轻松解决BinaryBomb！"><img src="/2022/04/21/binary-bomb/cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用GDB+pwndbg轻松解决BinaryBomb！"/></a><div class="content"><a class="title" href="/2022/04/21/binary-bomb/" title="使用GDB+pwndbg轻松解决BinaryBomb！">使用GDB+pwndbg轻松解决BinaryBomb！</a><time datetime="2022-04-21T15:11:47.000Z" title="Created 2022-04-21 23:11:47">2022-04-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/12/firstpost/" title="Welcome Orangeの小窝!!!"><img src="/img/covers/CharacterDesign_UNTAMED_Final.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Welcome Orangeの小窝!!!"/></a><div class="content"><a class="title" href="/2022/04/12/firstpost/" title="Welcome Orangeの小窝!!!">Welcome Orangeの小窝!!!</a><time datetime="2022-04-12T08:52:07.000Z" title="Created 2022-04-12 16:52:07">2022-04-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/09/hello-world/" title="Hello World"><img src="/img/default_cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2022/04/09/hello-world/" title="Hello World">Hello World</a><time datetime="2022-04-09T01:13:35.093Z" title="Created 2022-04-09 09:13:35">2022-04-09</time></div></div></div></div><div class="card-widget card-weibo"><div class="card-content"><div class="item-headline"><i class="fab fa-weibo"></i><span>微博热搜</span></div><div id="weibo-container" style="width: 100%; height: 150px;font-size: 95%;"></div></div></div><script defer="defer" data-pjax="data-pjax" src="/js/custom/card_weibo.js"></script></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By MrOrange</div><div class="footer_custom_text"><p><a style="margin-inline:5px" target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a><a style="margin-inline:5px" target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a><a style="margin-inline:5px" target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a><a style="margin-inline:5px" target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vercel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a><a style="margin-inline:5px" target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a><a style="margin-inline:5px" target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Github托管"></a><a style="margin-inline:5px" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="Switch Between Traditional Chinese And Simplified Chinese">繁</button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="to_comment" type="button" title="Scroll To Comments" onclick="FixedCommentBtn();"><i class="fas fa-comments"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>function loadDisqus () {
+  var disqus_config = function () {
+    this.page.url = 'https://qspidy.github.io/2022/04/21/binary-bomb/'
+    this.page.identifier = '2022/04/21/binary-bomb/'
+    this.page.title = '使用GDB+pwndbg轻松解决BinaryBomb！'
+  };
+
+  window.disqusReset = () => {
+    DISQUS.reset({
+      reload: true,
+      config: disqus_config
+    })
+  }
+
+  if (window.DISQUS) disqusReset()
+  else {
+    (function() { 
+      var d = document, s = d.createElement('script');
+      s.src = 'https://MrOrange.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  }
+}
+
+if ('Disqus' === 'Disqus' || !false) {
+  if (false) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+  else loadDisqus()
+} else {
+  function loadOtherComment () {
+    loadDisqus()
+  }
+}
+</script><script>if (window.DISQUSWIDGETS === undefined) {
+  var d = document, s = d.createElement('script');
+  s.src = 'https://MrOrange.disqus.com/count.js';
+  s.id = 'dsq-count-scr';
+  (d.head || d.body).appendChild(s);
+} else {
+  DISQUSWIDGETS.getCount({reset: true});
+}</script></div><script async src="/js/custom/diytitle.js"></script><div class="aplayer no-destroy" data-id="7382987157" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="true" theme="#FF9F30" muted></div><script defer src="/live2d-widget/autoload.js"></script><script data-pjax defer src="/js/custom/fixed_comment.js"></script><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
