@@ -13,34 +13,6 @@
       </tags>
   </entry>
   <entry>
-    <title>使用Qemu替代VirtualBox并进行相关配置</title>
-    <url>/2022/05/29/replace-vbox-with-qemu/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
-<p>油管博主<em>Chris Titus</em>在视频里展示了相同的虚拟机Guest在Qemu下和在VirtualBox下的启动时间，结论是<code>11.17s</code>比<code>35.28s</code>！我当时就震撼了。如果说只是快个百分之二三十，我还可以认为只是简单的因为VirtualBox提供了更多的管理功能而导致的性能下降，但事实摆在我面前，速度提升<code>68.3%</code>！这是什么概念，要知道实际性能的提升和启动速度的提升并不是成正比的，通常来说实际性能的提升的比例会高于启动速度的提升比例，也就是说使用Qemu的虚拟机性能效果比VirtualBox的虚拟机性能效果提升超过一倍甚至更多。这让我没有理由不选择使用Qemu。</p>
-<h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><p>Qemu本身只提供了命令行工具来管理虚拟机，也不会保存虚拟机的相关配置信息。实际使用时通常是同时安装<code>Libvert</code>（一套用于管理硬件虚拟化的开源API、守护进程与管理工具）配合<code>Libvert clients</code>来实现使用图形界面管理Qemu虚拟机。</p>
-<p><code>Libvert clients</code>是<code>Libvert</code>的前端，常用的<code>Libvert clients</code>在<a href="https://wiki.archlinux.org/title/Libvirt#Client">这里</a>。我使用的是Virt-Manager来管理Qemu虚拟机，因为在使用过程中Virt-Manager提供的管理功能和VirtualBox比较接近。使用教程参考<em>Derek Taylor</em>的<a href="https://www.youtube.com/watch?v=p1d_b_91YlU">Virt-Manager Is The Better Way To Manage VMs</a>。</p>
-<p>使用Virt-Manager创建虚拟机的过程和VirtualBox类似，通常（对我来说）只需要改一下内存大小、CPU数量和磁盘容量，其它无脑下一步就行。与VirtualBox不同的是Virt-Manager还提供了通过网络安装（HTTP, HTTPS or FTP），安装过程要提供操作系统安装URL，估计进行大规模安装的时候会用到，一般来说还是使用镜像文件来安装。</p>
-<h2 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h2><p>不得不承认，Qemu虚拟机的启动速度是肉眼可见的提升了，对CPU的占用也比VirtualBox少，至少不会动不动就让CPU进入暴走状态（Windows背大锅）。除了没有剪切板共享功能有点不方便之外，其它使用体验和VirtualBox基本一致。</p>
-<p>我主要使用虚拟机来调试一些应用程序，比如在Windows上运行IDA，在Linux上运行GDB。另外也会在Linux上运行些有意思的Github项目啥的，比如QQ bot。</p>
-<p>顺便提一嘴文件共享的问题。我不喜欢使用虚拟机软件提供的文件共享服务，一个是麻烦，有时还得重启配置才能生效；另一个是不灵活，不方便配置多个共享文件夹和控制权限。我使用网络来实现文件共享，同时也是因为对这方面比较熟。对于Windows虚拟机，只要开启网络文件共享，然后把想要共享的文件夹设置为对指定用户共享，就可以在主机（我这里用的Linux，Windows类似）使用<code>smb</code>协议连上Windows虚拟机，访问共享文件。对于Linux虚拟机就更简单了，直接在Linux虚拟机里开启<code>SSHD/SSH</code>服务，使用<code>SSHFS</code>挂载Linux的文件系统或者直接<code>SCP</code>，我选择的是使用<strong>VS Code</strong>的远程连接来直接编辑Linux虚拟机里的文件。这个过程在Qemu下更加方便，因为Qemu直接虚拟出一个主机层面的虚拟网卡，也就不需要像VirtualBox那样使用<code>NAT</code>时还得配置端口转发才能从主机连上虚拟机了。</p>
-<h2 id="实际使用中的问题"><a href="#实际使用中的问题" class="headerlink" title="实际使用中的问题"></a>实际使用中的问题</h2><p>使用Docker和部署Github项目就不得不考虑配置代理的问题。因为我在主机使用的是<em>透明代理</em>，所以在VirtualBox虚拟机里就不需要考虑配置网络代理的问题，网络数据自动由主机代理接管。而Qemu虚拟的是主机层面的网卡，导致它的网络数据不由<em>透明代理</em>接管。（也可能是<code>iptables</code>配置的问题，反正我弄了好久也没搞清楚是什么原因在开了<code>cgproxy</code>后Qemu虚拟机就连不上网，似乎可以对外请求，但返回的数据包没能回到虚拟机）</p>
-<p>为了让虚拟机流量走主机代理，就只能是使用配置<code>http_proxy</code>和<code>https_proxy</code>环境变量来试图让流量走主机代理了，但很多应用却并不使用<code>http_proxy</code>和<code>https_proxy</code>环境变量，搞自己的代理配置那一套。其中就包括<code>apt</code>、<code>docker</code>和Python脚本。好在找到了一篇比较全的代理配置博文：<a href="https://qiita.com/daichi-ishida/items/b77c151067427806ede5">UbuntuのProxy設定備忘録</a>。里面包含了对<code>http_proxy</code>和<code>https_proxy</code>环境变量、<code>apt</code>、<code>git</code>、<code>docker</code>和<code>wget</code>的代理配置方法。关于Python的代理配置我参考的是Stack Overflow中的<a href="https://stackoverflow.com/questions/31639742/how-to-pass-all-pythons-traffics-through-a-http-proxy">How to pass all Python’s traffics through a http proxy?</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>当需要考虑虚拟机性能时，毫无疑问应该选择Qemu&#x2F;KVM。这也是现在许多云服务厂商使用的虚拟方案。但如果只是简单的虚拟需求如尝试各种Linux发行版啥的，那选择VirtualBox还很要更方便的，毕竟VirtualBox对虚拟机的管理配置很全，基本上普通的需求都可以在VirtualBox的设置面板动动鼠标解决，这对新手非常友好。</p>
-<p>折腾网络配置说实话挺烦的，尤其是我还没深入研究过<code>Netfilter</code>和<code>Iptables</code>。一些配置出问题虽然知道大概是哪有问题，但却不会修复&#x3D;-&#x3D;。网上也不一定找得到答案，只能是论坛求助。但折腾的好处则是我可以在解决问题的过程中学到不少新的东西，这些经验会在不经意间发挥意想不到的作用。</p>
-]]></content>
-      <categories>
-        <category>折腾合集</category>
-      </categories>
-      <tags>
-        <tag>Qemu</tag>
-        <tag>VirtualBox</tag>
-        <tag>Virtualization</tag>
-        <tag>Arch</tag>
-        <tag>Linux</tag>
-        <tag>tweak/toss</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用GDB+pwndbg轻松解决BinaryBomb！</title>
     <url>/2022/04/21/binary-bomb/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近终于把鸽了近一年多的<strong>BinaryBomb</strong>给做完了，花了一天时间，内力修炼的还不够啊。这里记录一下解题思路，方便以后回顾，同时也疏理一下解题用到的技术点。注意：本文主要讲解题的过程和思路，可在<a href="https://github.com/NagleZhang/Binary-Bomb#readme">Binary-Bomb’s Readme</a>中查看相关的基础知识。</p>
@@ -297,8 +269,6 @@
         <category>CS:APP2e Lab Assignments</category>
       </categories>
       <tags>
-        <tag>Arch</tag>
-        <tag>Linux</tag>
         <tag>GDB</tag>
         <tag>Binarybomb</tag>
         <tag>C/Cpp</tag>
@@ -306,6 +276,40 @@
         <tag>Reverse</tag>
         <tag>CTF</tag>
         <tag>Assembly</tag>
+        <tag>Linux</tag>
+        <tag>Arch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Qemu替代VirtualBox并进行相关配置</title>
+    <url>/2022/05/29/replace-vbox-with-qemu/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
+<p>油管博主<em>Chris Titus</em>在视频里展示了相同的虚拟机Guest在Qemu下和在VirtualBox下的启动时间，结论是<code>11.17s</code>比<code>35.28s</code>！我当时就震撼了。如果说只是快个百分之二三十，我还可以认为只是简单的因为VirtualBox提供了更多的管理功能而导致的性能下降，但事实摆在我面前，速度提升<code>68.3%</code>！这是什么概念，要知道实际性能的提升和启动速度的提升并不是成正比的，通常来说实际性能的提升的比例会高于启动速度的提升比例，也就是说使用Qemu的虚拟机性能效果比VirtualBox的虚拟机性能效果提升超过一倍甚至更多。这让我没有理由不选择使用Qemu。</p>
+<hr>
+<h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><p>Qemu本身只提供了命令行工具来管理虚拟机，也不会保存虚拟机的相关配置信息。实际使用时通常是同时安装<code>Libvert</code>（一套用于管理硬件虚拟化的开源API、守护进程与管理工具）配合<code>Libvert clients</code>来实现使用图形界面管理Qemu虚拟机。</p>
+<p><code>Libvert clients</code>是<code>Libvert</code>的前端，常用的<code>Libvert clients</code>在<a href="https://wiki.archlinux.org/title/Libvirt#Client">这里</a>。我使用的是Virt-Manager来管理Qemu虚拟机，因为在使用过程中Virt-Manager提供的管理功能和VirtualBox比较接近。使用教程参考<em>Derek Taylor</em>的<a href="https://www.youtube.com/watch?v=p1d_b_91YlU">Virt-Manager Is The Better Way To Manage VMs</a>。</p>
+<p>使用Virt-Manager创建虚拟机的过程和VirtualBox类似，通常（对我来说）只需要改一下内存大小、CPU数量和磁盘容量，其它无脑下一步就行。与VirtualBox不同的是Virt-Manager还提供了通过网络安装（HTTP, HTTPS or FTP），安装过程要提供操作系统安装URL，估计进行大规模安装的时候会用到，一般来说还是使用镜像文件来安装。</p>
+<hr>
+<h2 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h2><p>不得不承认，Qemu虚拟机的启动速度是肉眼可见的提升了，对CPU的占用也比VirtualBox少，至少不会动不动就让CPU进入暴走状态（Windows背大锅）。除了没有剪切板共享功能有点不方便之外，其它使用体验和VirtualBox基本一致。</p>
+<p>我主要使用虚拟机来调试一些应用程序，比如在Windows上运行IDA，在Linux上运行GDB。另外也会在Linux上运行些有意思的Github项目啥的，比如QQ bot。</p>
+<p>顺便提一嘴文件共享的问题。我不喜欢使用虚拟机软件提供的文件共享服务，一个是麻烦，有时还得重启配置才能生效；另一个是不灵活，不方便配置多个共享文件夹和控制权限。我使用网络来实现文件共享，同时也是因为对这方面比较熟。对于Windows虚拟机，只要开启网络文件共享，然后把想要共享的文件夹设置为对指定用户共享，就可以在主机（我这里用的Linux，Windows类似）使用<code>smb</code>协议连上Windows虚拟机，访问共享文件。对于Linux虚拟机就更简单了，直接在Linux虚拟机里开启<code>SSHD/SSH</code>服务，使用<code>SSHFS</code>挂载Linux的文件系统或者直接<code>SCP</code>，我选择的是使用<strong>VS Code</strong>的远程连接来直接编辑Linux虚拟机里的文件。这个过程在Qemu下更加方便，因为Qemu直接虚拟出一个主机层面的虚拟网卡，也就不需要像VirtualBox那样使用<code>NAT</code>时还得配置端口转发才能从主机连上虚拟机了。</p>
+<hr>
+<h2 id="实际使用中的问题"><a href="#实际使用中的问题" class="headerlink" title="实际使用中的问题"></a>实际使用中的问题</h2><p>使用Docker和部署Github项目就不得不考虑配置代理的问题。因为我在主机使用的是<em>透明代理</em>，所以在VirtualBox虚拟机里就不需要考虑配置网络代理的问题，网络数据自动由主机代理接管。而Qemu虚拟的是主机层面的网卡，导致它的网络数据不由<em>透明代理</em>接管。（也可能是<code>iptables</code>配置的问题，反正我弄了好久也没搞清楚是什么原因在开了<code>cgproxy</code>后Qemu虚拟机就连不上网，似乎可以对外请求，但返回的数据包没能回到虚拟机）</p>
+<p>为了让虚拟机流量走主机代理，就只能是使用配置<code>http_proxy</code>和<code>https_proxy</code>环境变量来试图让流量走主机代理了，但很多应用却并不使用<code>http_proxy</code>和<code>https_proxy</code>环境变量，搞自己的代理配置那一套。其中就包括<code>apt</code>、<code>docker</code>和Python脚本。好在找到了一篇比较全的代理配置博文：<a href="https://qiita.com/daichi-ishida/items/b77c151067427806ede5">UbuntuのProxy設定備忘録</a>。里面包含了对<code>http_proxy</code>和<code>https_proxy</code>环境变量、<code>apt</code>、<code>git</code>、<code>docker</code>和<code>wget</code>的代理配置方法。关于Python的代理配置我参考的是Stack Overflow中的<a href="https://stackoverflow.com/questions/31639742/how-to-pass-all-pythons-traffics-through-a-http-proxy">How to pass all Python’s traffics through a http proxy?</a></p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>当需要考虑虚拟机性能时，毫无疑问应该选择Qemu&#x2F;KVM。这也是现在许多云服务厂商使用的虚拟方案。但如果只是简单的虚拟需求如尝试各种Linux发行版啥的，那选择VirtualBox还很要更方便的，毕竟VirtualBox对虚拟机的管理配置很全，基本上普通的需求都可以在VirtualBox的设置面板动动鼠标解决，这对新手非常友好。</p>
+<p>折腾网络配置说实话挺烦的，尤其是我还没深入研究过<code>Netfilter</code>和<code>Iptables</code>。一些配置出问题虽然知道大概是哪有问题，但却不会修复&#x3D;-&#x3D;。网上也不一定找得到答案，只能是论坛求助。但折腾的好处则是我可以在解决问题的过程中学到不少新的东西，这些经验会在不经意间发挥意想不到的作用。</p>
+]]></content>
+      <categories>
+        <category>折腾合集</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Arch</tag>
+        <tag>Qemu</tag>
+        <tag>VirtualBox</tag>
+        <tag>Virtualization</tag>
+        <tag>tweak/toss</tag>
       </tags>
   </entry>
 </search>
