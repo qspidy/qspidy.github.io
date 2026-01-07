@@ -3,7 +3,7 @@
   <entry>
     <title>BPI-R3mini 从入门到入土</title>
     <url>/2024/12/01/BPI-R3mini-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E5%9C%9F/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今年早些时候入手了巡天AX3000Pro+，本以为可以一步到位，结果发现它没法刷OpenWrt，无法配置DHCP分配固定IP以及配置DNS解析，使的我只能使用IP来访问内网设备，设备IP甚至还会不停的变，买之前还是功课做少了啊。所以又看了一圈，相中了BPI-R3mini，虽然有点贵，但鉴于我喜欢折腾，且BPI-R3mini有官方提供OpenWrt镜像支持，就咬牙入手了。</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>今年早些时候入手了巡天AX3000Pro+，本以为可以一步到位，结果发现它没法刷OpenWrt，无法配置DHCP分配固定IP以及配置DNS解析，使的我只能使用IP来访问内网设备，设备IP甚至还会不停的变，买之前还是功课做少了啊。所以又看了一圈，相中了BPI-R3mini，虽然有点贵，但鉴于我喜欢折腾，且BPI-R3mini有官方提供OpenWrt镜像支持，就咬牙入手了。</p>
 <hr>
 <h2 id="硬件组装"><a href="#硬件组装" class="headerlink" title="硬件组装"></a>硬件组装</h2><p>到手后的东西如下：</p>
 <img src="/2024/12/01/BPI-R3mini-%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E5%85%A5%E5%9C%9F/image20241201141956.jpg" class="">
@@ -57,7 +57,7 @@
   <entry>
     <title>Implementing An Simple IRC Bot Using Python</title>
     <url>/2024/11/22/Implementing-An-Simple-IRC-Bot-Using-Python/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
 <p><a href="https://github.com/qspidy/albot"><strong>Python实现简单IRC聊天机器人(A Simple IRC BOT Written in Python)</strong></a></p>
 <hr>
 <h2 id="关于IRC-Python"><a href="#关于IRC-Python" class="headerlink" title="关于IRC + Python"></a>关于IRC + Python</h2><p>作为一名命令行爱好者，我曾试图使用命令行实现所有我在电脑上要做的事，比如便捷的浏览文件、多终端同时运行、浏览网页、作为IDE写代码和即时通讯等，于是就找到了<code>ranger</code>、<code>tmux</code>、<code>w3m</code>、<code>NvChad</code>和<code>Irssi</code>等优秀的开源工具。</p>
@@ -94,7 +94,7 @@
   <entry>
     <title>Install and Setup NixOS + Hyprland from Scratch</title>
     <url>/2025/05/05/Install-and-Setup-NixOS-Hyprland-from-Scratch/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="First-of-all"><a href="#First-of-all" class="headerlink" title="First of all"></a>First of all</h2><p>Though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>First of all, though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
 <p>I fell in love with Nix for the first I have it installed cause it is definitely what I am searching for after more than three years of Arch usage. I have reinstalled my Arch many times, and each time I have to reinstall the packages manually and spend time to change the configurations, it’s fun and I enjoy it. But recently I don’t have much time left for it, so NixOS is definitely what I want.</p>
 <p>As for Hyprland, I found it very popular recently and it’s written in cpp, so I tried it with Arch from scratch and found it a fancy wm.</p>
 <hr>
@@ -172,7 +172,7 @@
   <entry>
     <title>Setup Orange Pi Zero 3 as a Debian Server</title>
     <url>/2025/01/05/Setup-Orange-Pi-Zero-3-as-a-Debian-Server/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>I got the board several days ago, and now it’s time to get it to work. However I got stuck on WiFi configuration again though I did it many times before. So I write this post to make the steps more clear in my mind.</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>I got the board several days ago, and now it’s time to get it to work. However I got stuck on WiFi configuration again though I did it many times before. So I write this post to make the steps more clear in my mind.</p>
 <hr>
 <h2 id="About-the-board"><a href="#About-the-board" class="headerlink" title="About the board"></a>About the board</h2><p>It’s <a href="http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-Zero-3.html">Orange Pi Zero 3</a>, a really small and powerful single-board computer! Here is its introduction from official:</p>
 <blockquote>
@@ -329,7 +329,7 @@
   <entry>
     <title>使用GDB+pwndbg轻松解决BinaryBomb！</title>
     <url>/2022/04/21/binary-bomb/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近终于把鸽了近一年多的<strong>BinaryBomb</strong>给做完了，花了一天时间，内力修炼的还不够啊。这里记录一下解题思路，方便以后回顾，同时也疏理一下解题用到的技术点。注意：本文主要讲解题的过程和思路，可在<a href="https://github.com/NagleZhang/Binary-Bomb#readme">Binary-Bomb’s Readme</a>中查看相关的基础知识。</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近终于把鸽了近一年多的<strong>BinaryBomb</strong>给做完了，花了一天时间，内力修炼的还不够啊。这里记录一下解题思路，方便以后回顾，同时也疏理一下解题用到的技术点。注意：本文主要讲解题的过程和思路，可在<a href="https://github.com/NagleZhang/Binary-Bomb#readme">Binary-Bomb’s Readme</a>中查看相关的基础知识。</p>
 <hr>
 <h2 id="BinaryBomb简介"><a href="#BinaryBomb简介" class="headerlink" title="BinaryBomb简介"></a><strong>BinaryBomb</strong>简介</h2><p><strong>BinaryBomb</strong>是<em>Carnegie Mellon University(卡内基·梅隆大学)</em> CS课上发布的一道作业，在<a href="http://csapp.cs.cmu.edu/public/labs.html">“Lab Assignments” page of Bryant and O’Hallaron’s website</a>中可以找到以下对BinaryBomb的介绍:</p>
 <ul>
@@ -597,7 +597,7 @@
   <entry>
     <title>使用Qemu替代VirtualBox并进行相关配置</title>
     <url>/2022/05/29/replace-vbox-with-qemu/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
 <p>油管博主<em>Chris Titus</em>在视频里展示了相同的虚拟机Guest在Qemu下和在VirtualBox下的启动时间，结论是<code>11.17s</code>比<code>35.28s</code>！我当时就震撼了。如果说只是快个百分之二三十，我还可以认为只是简单的因为VirtualBox提供了更多的管理功能而导致的性能下降，但事实摆在我面前，速度提升<code>68.3%</code>！这是什么概念，要知道实际性能的提升和启动速度的提升并不是成正比的，通常来说实际性能的提升的比例会高于启动速度的提升比例，也就是说使用Qemu的虚拟机性能效果比VirtualBox的虚拟机性能效果提升超过一倍甚至更多。这让我没有理由不选择使用Qemu。</p>
 <hr>
 <h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><p>Qemu本身只提供了命令行工具来管理虚拟机，也不会保存虚拟机的相关配置信息。实际使用时通常是同时安装<code>Libvert</code>（一套用于管理硬件虚拟化的开源API、守护进程与管理工具）配合<code>Libvert clients</code>来实现使用图形界面管理Qemu虚拟机。</p>
@@ -634,6 +634,115 @@
 ]]></content>
       <tags>
         <tag>Greetings</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Use NNG(Nanomsg-Next-Generation) with NNGPP(NNG C++ wrapper)</title>
+    <url>/2026/01/07/Use-NNG-Nanomsg-Next-Generation-with-NNGPP-NNG-C-wrapper/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>NNG, like its predecessors nanomsg (and to some extent ZeroMQ), is a lightweight, broker-less library, offering a simple API to solve common recurring messaging problems, such as publish&#x2F;subscribe, RPC-style request&#x2F;reply, or service discovery. – <a href="https://github.com/nanomsg/nng#nng-lightweight-messaging-library">nng</a></p>
+<p>NNGPP, C++ wrapper around the nanomsg NNG API. – <a href="https://github.com/cwzx/nngpp">nngpp</a></p>
+<p>Instead of Kafaka and DDS, NNG is broker-less and less compleicated but full featured with messaging patterns such as publish&#x2F;subscribe, RPC-style request&#x2F;reply, or service discovery. </p>
+<hr>
+<h2 id="Using-NNG-with-NNGPP"><a href="#Using-NNG-with-NNGPP" class="headerlink" title="Using NNG with NNGPP"></a>Using NNG with NNGPP</h2><p>Actually gpt is more good at demostrating usage cases of nng, but notice that nngpp’s last commit is 6 years ago, gpt can’t tell the right usage case of nngpp in my case and there are few problems with this old repository.</p>
+<p>Let’s go straight, when using nngpp for sub&#x2F;pub case, code like this:</p>
+<p><code>sub.cpp</code>:</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;nngpp/nngpp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;nngpp/protocol/sub0.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">  nng::socket sub_sock = nng::sub::<span class="built_in">open</span>();</span><br><span class="line"></span><br><span class="line">  nng::sub::<span class="built_in">set_opt_subscribe</span>(sub_sock, <span class="string">&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line">  sub_sock.<span class="built_in">dial</span>(<span class="string">&quot;tcp://127.0.0.1:5000&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">auto</span> msg = sub_sock.<span class="built_in">recv_msg</span>();</span><br><span class="line">    <span class="function">std::string <span class="title">s</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">reinterpret_cast</span>&lt;<span class="type">char</span>*&gt;(msg.body().data()),</span></span></span><br><span class="line"><span class="params"><span class="function">        msg.body().size()</span></span></span><br><span class="line"><span class="params"><span class="function">    )</span></span>;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;recv: &quot;</span> &lt;&lt; s &lt;&lt; std::endl;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>pub.cpp</code></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;nngpp/nngpp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;nngpp/protocol/pub0.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span> <span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  nng::socket pub = nng::pub::<span class="built_in">open</span>();</span><br><span class="line">  pub.<span class="built_in">listen</span>(<span class="string">&quot;tcp://127.0.0.1:5000&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    pub.<span class="built_in">send</span>(nng::<span class="built_in">view</span>(<span class="string">&quot;ping&quot;</span>, <span class="number">4</span>));</span><br><span class="line">    std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">milliseconds</span>(<span class="number">1000</span>));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The SUB can’t receive the message from the PUB even if the SUB subscribes all topics by <code>set_opt_subscribe(sub_sock, &quot;&quot;);</code>, and when I review the source of nngpp, everything looks ok. </p>
+<p>Then I tried using bearly nng for sub&#x2F;pub, it works can’t be more right. So it’s clearly that there is a problem with nngpp. It’s reasonalbe since it’s last commit has been so long.</p>
+<p>Digging into code with gdb, finally caught the bug: when calling <code>set_opt_subscribe</code> in nngpp, it finally calls the nng api <code>nng_socket_set</code>, but pass the wrong parameter “topic string size”.</p>
+<p><code>set_opt_subscribe</code>:</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">void</span> <span class="title">set_opt_subscribe</span><span class="params">( socket_view s, view v )</span> </span>&#123;</span><br><span class="line">	s.<span class="built_in">set_opt</span>( <span class="built_in">to_name</span>(option::subscribe), v );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>set_opt</code>:</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">set_opt</span><span class="params">( <span class="type">const</span> <span class="type">char</span>* name, view v )</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> r = <span class="built_in">nng_socket_set</span>(s,name,v.<span class="built_in">data</span>(),v.<span class="built_in">size</span>());</span><br><span class="line">    <span class="keyword">if</span>( r != <span class="number">0</span> ) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="built_in">exception</span>(r,<span class="string">&quot;nng_socket_set&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Check the code above, it pass the <code>v.size()</code> as the parameter “topic string size”. When the string is <code>&quot;&quot;</code>, the size should be <code>0</code>.</p>
+<p>But in fact the <code>v.size()</code>(nngpp’s custom class <code>view</code> for data manage) returns <code>1</code> while <code>v.data()</code> is <code>&quot;&quot;</code>, since it allocated buffer for <code>\0</code>.</p>
+<p>I’m not sure if it’s because of the update of nng that make nngpp doesn’t work as expected any more, or the sub&#x2F;pub is never tested in nngpp, but it’s indeed a bug which make pub&#x2F;sub in nngpp doesn’t work any more.</p>
+<p>Here is the correct version of <code>set_opt</code>:</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">set_opt</span><span class="params">( <span class="type">const</span> <span class="type">char</span>* name, view v )</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> r = <span class="built_in">nng_socket_set</span>(s,name,v.<span class="built_in">data</span>(),v.<span class="built_in">size</span>() - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span>( r != <span class="number">0</span> ) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="built_in">exception</span>(r,<span class="string">&quot;nng_socket_set&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="The-end"><a href="#The-end" class="headerlink" title="The end"></a>The end</h2><p>I may fork nngpp and maintain it as long as I am using it for my project.</p>
+<p>Transport types supported by nng, awesome!</p>
+<table>
+<thead>
+<tr>
+<th>Transport</th>
+<th>Scope</th>
+<th>Speed</th>
+<th>Secure</th>
+<th>Typical Use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>inproc://</code></td>
+<td>same process</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>❌</td>
+<td>threads</td>
+</tr>
+<tr>
+<td><code>ipc://</code></td>
+<td>same host</td>
+<td>⭐⭐⭐⭐</td>
+<td>OS perms</td>
+<td>local IPC</td>
+</tr>
+<tr>
+<td><code>tcp://</code></td>
+<td>network</td>
+<td>⭐⭐⭐</td>
+<td>❌</td>
+<td>simple network</td>
+</tr>
+<tr>
+<td><code>tls+tcp://</code></td>
+<td>network</td>
+<td>⭐⭐</td>
+<td>✅</td>
+<td>secure backend</td>
+</tr>
+<tr>
+<td><code>ws://</code></td>
+<td>network</td>
+<td>⭐⭐</td>
+<td>❌</td>
+<td>browser</td>
+</tr>
+<tr>
+<td><code>wss://</code></td>
+<td>network</td>
+<td>⭐⭐</td>
+<td>✅</td>
+<td>browser secure</td>
+</tr>
+<tr>
+<td><code>quic://</code></td>
+<td>network</td>
+<td>⭐⭐⭐⭐</td>
+<td>✅</td>
+<td>modern low-latency</td>
+</tr>
+</tbody></table>
+<p>Enjoy!</p>
+<hr>
+<h2 id="See-also"><a href="#See-also" class="headerlink" title="See also"></a>See also</h2><ul>
+<li><a href="https://nng.nanomsg.org/">NNG: Lightweight Messaging Library</a></li>
+</ul>
+<hr>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://github.com/nanomsg/nng">nanomsg&#x2F;nng</a></li>
+<li><a href="https://github.com/cwzx/nngpp">cwzx&#x2F;nngpp</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>C/Cpp</tag>
+        <tag>Development</tag>
       </tags>
   </entry>
 </search>
