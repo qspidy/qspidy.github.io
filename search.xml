@@ -55,6 +55,43 @@
       </tags>
   </entry>
   <entry>
+    <title>Implementing An Simple IRC Bot Using Python</title>
+    <url>/2024/11/22/Implementing-An-Simple-IRC-Bot-Using-Python/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
+<p><a href="https://github.com/qspidy/albot"><strong>Python实现简单IRC聊天机器人(A Simple IRC BOT Written in Python)</strong></a></p>
+<hr>
+<h2 id="关于IRC-Python"><a href="#关于IRC-Python" class="headerlink" title="关于IRC + Python"></a>关于IRC + Python</h2><p>作为一名命令行爱好者，我曾试图使用命令行实现所有我在电脑上要做的事，比如便捷的浏览文件、多终端同时运行、浏览网页、作为IDE写代码和即时通讯等，于是就找到了<code>ranger</code>、<code>tmux</code>、<code>w3m</code>、<code>NvChad</code>和<code>Irssi</code>等优秀的开源工具。</p>
+<p>其中IRC终端客户端<code>Irssi</code>是我入门终端聊天的工具，让我对这个古老又相对简洁的通讯协议产生了兴趣，<strong>是时候基于它做点有意思的事了</strong>。</p>
+<p>至于Python，众所周知：人生苦短，我用Python。如果后续对性能有需求，再用Go重构吧。</p>
+<h2 id="Albot"><a href="#Albot" class="headerlink" title="Albot"></a>Albot</h2><p>我给这聊天机器人取名Albot，不是AI，似是AI。它实现的功能有：</p>
+<ul>
+<li>从后台<code>ollama</code>接口生成AI回复</li>
+<li>针对不同的关键字触发不同的响应，比如收到<code>bilibili</code>后在服务器后台执行相应的脚本</li>
+<li>同时响应多个请求，即同时与多个对象，在不同频道中聊天对话</li>
+</ul>
+<p>通过设计不同的关键字和实现不同的脚本，我就可以通过和albot聊天的形式来灵活管理MiniPC了。</p>
+<h2 id="项目特点"><a href="#项目特点" class="headerlink" title="项目特点"></a>项目特点</h2><p>简单，简单，还是简单。使用最小的成本实现想要的效果，适合用来入门Python多线程和网络编程。</p>
+<ul>
+<li>网络模型参考的IOCP模型，主线程监听，监听到的连接分配给线程池中的线程去处理</li>
+<li>由于MiniPC性能有限，通过加锁限制了同时只能有一个对话可以请求后台<code>ollama</code></li>
+<li><code>ollama</code>每生成一行，<code>albot</code>会立即发出，而非等到AI回复全部生成</li>
+<li>仅使用Python默认库</li>
+<li>对于<code>ollama</code>的HTTP响应做了相对健壮的处理，同时以性能优先</li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p><strong>项目地址</strong>：<a href="https://github.com/qspidy/albot">https://github.com/qspidy/albot</a></p>
+<p>后续还会根据需要对其进行改进以及功能的添加和完善，比如使用数据库存聊天记录和AI对话的Prompt、设置不同的命令来灵活控制和<code>ollama</code>的交互、使用Docker打包成镜像等。主要以学习为目的，顺带让其产生点实际价值，只有实践才能知道以前以为很简单的功能实现起来也有不少细节啊。</p>
+<p>还在努力适应PDB中…</p>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Python</tag>
+        <tag>IRC</tag>
+        <tag>MultiThread</tag>
+        <tag>AI</tag>
+        <tag>Bot</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Install and Setup NixOS + Hyprland from Scratch</title>
     <url>/2025/05/05/Install-and-Setup-NixOS-Hyprland-from-Scratch/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>First of all, though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
@@ -130,43 +167,6 @@
         <tag>Linux</tag>
         <tag>WM</tag>
         <tag>NixOS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Implementing An Simple IRC Bot Using Python</title>
-    <url>/2024/11/22/Implementing-An-Simple-IRC-Bot-Using-Python/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
-<p><a href="https://github.com/qspidy/albot"><strong>Python实现简单IRC聊天机器人(A Simple IRC BOT Written in Python)</strong></a></p>
-<hr>
-<h2 id="关于IRC-Python"><a href="#关于IRC-Python" class="headerlink" title="关于IRC + Python"></a>关于IRC + Python</h2><p>作为一名命令行爱好者，我曾试图使用命令行实现所有我在电脑上要做的事，比如便捷的浏览文件、多终端同时运行、浏览网页、作为IDE写代码和即时通讯等，于是就找到了<code>ranger</code>、<code>tmux</code>、<code>w3m</code>、<code>NvChad</code>和<code>Irssi</code>等优秀的开源工具。</p>
-<p>其中IRC终端客户端<code>Irssi</code>是我入门终端聊天的工具，让我对这个古老又相对简洁的通讯协议产生了兴趣，<strong>是时候基于它做点有意思的事了</strong>。</p>
-<p>至于Python，众所周知：人生苦短，我用Python。如果后续对性能有需求，再用Go重构吧。</p>
-<h2 id="Albot"><a href="#Albot" class="headerlink" title="Albot"></a>Albot</h2><p>我给这聊天机器人取名Albot，不是AI，似是AI。它实现的功能有：</p>
-<ul>
-<li>从后台<code>ollama</code>接口生成AI回复</li>
-<li>针对不同的关键字触发不同的响应，比如收到<code>bilibili</code>后在服务器后台执行相应的脚本</li>
-<li>同时响应多个请求，即同时与多个对象，在不同频道中聊天对话</li>
-</ul>
-<p>通过设计不同的关键字和实现不同的脚本，我就可以通过和albot聊天的形式来灵活管理MiniPC了。</p>
-<h2 id="项目特点"><a href="#项目特点" class="headerlink" title="项目特点"></a>项目特点</h2><p>简单，简单，还是简单。使用最小的成本实现想要的效果，适合用来入门Python多线程和网络编程。</p>
-<ul>
-<li>网络模型参考的IOCP模型，主线程监听，监听到的连接分配给线程池中的线程去处理</li>
-<li>由于MiniPC性能有限，通过加锁限制了同时只能有一个对话可以请求后台<code>ollama</code></li>
-<li><code>ollama</code>每生成一行，<code>albot</code>会立即发出，而非等到AI回复全部生成</li>
-<li>仅使用Python默认库</li>
-<li>对于<code>ollama</code>的HTTP响应做了相对健壮的处理，同时以性能优先</li>
-</ul>
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p><strong>项目地址</strong>：<a href="https://github.com/qspidy/albot">https://github.com/qspidy/albot</a></p>
-<p>后续还会根据需要对其进行改进以及功能的添加和完善，比如使用数据库存聊天记录和AI对话的Prompt、设置不同的命令来灵活控制和<code>ollama</code>的交互、使用Docker打包成镜像等。主要以学习为目的，顺带让其产生点实际价值，只有实践才能知道以前以为很简单的功能实现起来也有不少细节啊。</p>
-<p>还在努力适应PDB中…</p>
-]]></content>
-      <tags>
-        <tag>Linux</tag>
-        <tag>Python</tag>
-        <tag>IRC</tag>
-        <tag>MultiThread</tag>
-        <tag>AI</tag>
-        <tag>Bot</tag>
       </tags>
   </entry>
   <entry>
@@ -705,6 +705,18 @@
       </tags>
   </entry>
   <entry>
+    <title>Welcome Orangeの小窝!!!</title>
+    <url>/2022/04/12/firstpost/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
+<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
+<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+]]></content>
+      <tags>
+        <tag>Greetings</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Qemu替代VirtualBox并进行相关配置</title>
     <url>/2022/05/29/replace-vbox-with-qemu/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
@@ -732,18 +744,6 @@
         <tag>Arch</tag>
         <tag>Virtualization</tag>
         <tag>tweak/toss</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Welcome Orangeの小窝!!!</title>
-    <url>/2022/04/12/firstpost/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
-<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
-<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-]]></content>
-      <tags>
-        <tag>Greetings</tag>
       </tags>
   </entry>
 </search>
