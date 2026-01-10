@@ -257,8 +257,7 @@
     <title>Use NNG(Nanomsg-Next-Generation) with NNGPP(NNG C++ wrapper)</title>
     <url>/2026/01/07/Use-NNG-Nanomsg-Next-Generation-with-NNGPP-NNG-C-wrapper/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>NNG, like its predecessors nanomsg (and to some extent ZeroMQ), is a lightweight, broker-less library, offering a simple API to solve common recurring messaging problems, such as publish&#x2F;subscribe, RPC-style request&#x2F;reply, or service discovery. – <a href="https://github.com/nanomsg/nng#nng-lightweight-messaging-library">nng</a></p>
-<p>NNGPP, C++ wrapper around the nanomsg NNG API. – <a href="https://github.com/cwzx/nngpp">nngpp</a></p>
-<p>Instead of Kafaka and DDS, NNG is broker-less and less compleicated but full featured with messaging patterns such as publish&#x2F;subscribe, RPC-style request&#x2F;reply, or service discovery. </p>
+<p>NNGPP, C++ wrapper around the nanomsg NNG API. – <a href="https://github.com/cwzx/nngpp">nngpp</a><br>Instead of Kafaka and DDS, NNG is broker-less and less compleicated but full featured with messaging patterns such as publish&#x2F;subscribe, RPC-style request&#x2F;reply, or service discovery. </p>
 <hr>
 <h2 id="Using-NNG-with-NNGPP"><a href="#Using-NNG-with-NNGPP" class="headerlink" title="Using NNG with NNGPP"></a>Using NNG with NNGPP</h2><p>Actually gpt is more good at demostrating usage cases of nng, but notice that nngpp’s last commit is 6 years ago, gpt can’t tell the right usage case of nngpp in my case and there are few problems with this old repository.</p>
 <p>Let’s go straight, when using nngpp for sub&#x2F;pub case, code like this:</p>
@@ -279,6 +278,8 @@
 
 <p>Check the code above, it pass the <code>v.size()</code> as the parameter “topic string size”. When the string is <code>&quot;&quot;</code>, the size should be <code>0</code>.</p>
 <p>But in fact the <code>v.size()</code>(nngpp’s custom class <code>view</code> for data manage) returns <code>1</code> while <code>v.data()</code> is <code>&quot;&quot;</code>, since it allocated buffer for <code>\0</code>.</p>
+<img src="/2026/01/07/Use-NNG-Nanomsg-Next-Generation-with-NNGPP-NNG-C-wrapper/1.1.jpg" class="">
+
 <p>I’m not sure if it’s because of the update of nng that make nngpp doesn’t work as expected any more, or the sub&#x2F;pub is never tested in nngpp, but it’s indeed a bug which make pub&#x2F;sub in nngpp doesn’t work any more.</p>
 <p>Here is the correct version of <code>set_opt</code>:</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">set_opt</span><span class="params">( <span class="type">const</span> <span class="type">char</span>* name, view v )</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> r = <span class="built_in">nng_socket_set</span>(s,name,v.<span class="built_in">data</span>(),v.<span class="built_in">size</span>() - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span>( r != <span class="number">0</span> ) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="built_in">exception</span>(r,<span class="string">&quot;nng_socket_set&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
