@@ -55,43 +55,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Implementing An Simple IRC Bot Using Python</title>
-    <url>/2024/11/22/Implementing-An-Simple-IRC-Bot-Using-Python/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
-<p><a href="https://github.com/qspidy/albot"><strong>Python实现简单IRC聊天机器人(A Simple IRC BOT Written in Python)</strong></a></p>
-<hr>
-<h2 id="关于IRC-Python"><a href="#关于IRC-Python" class="headerlink" title="关于IRC + Python"></a>关于IRC + Python</h2><p>作为一名命令行爱好者，我曾试图使用命令行实现所有我在电脑上要做的事，比如便捷的浏览文件、多终端同时运行、浏览网页、作为IDE写代码和即时通讯等，于是就找到了<code>ranger</code>、<code>tmux</code>、<code>w3m</code>、<code>NvChad</code>和<code>Irssi</code>等优秀的开源工具。</p>
-<p>其中IRC终端客户端<code>Irssi</code>是我入门终端聊天的工具，让我对这个古老又相对简洁的通讯协议产生了兴趣，<strong>是时候基于它做点有意思的事了</strong>。</p>
-<p>至于Python，众所周知：人生苦短，我用Python。如果后续对性能有需求，再用Go重构吧。</p>
-<h2 id="Albot"><a href="#Albot" class="headerlink" title="Albot"></a>Albot</h2><p>我给这聊天机器人取名Albot，不是AI，似是AI。它实现的功能有：</p>
-<ul>
-<li>从后台<code>ollama</code>接口生成AI回复</li>
-<li>针对不同的关键字触发不同的响应，比如收到<code>bilibili</code>后在服务器后台执行相应的脚本</li>
-<li>同时响应多个请求，即同时与多个对象，在不同频道中聊天对话</li>
-</ul>
-<p>通过设计不同的关键字和实现不同的脚本，我就可以通过和albot聊天的形式来灵活管理MiniPC了。</p>
-<h2 id="项目特点"><a href="#项目特点" class="headerlink" title="项目特点"></a>项目特点</h2><p>简单，简单，还是简单。使用最小的成本实现想要的效果，适合用来入门Python多线程和网络编程。</p>
-<ul>
-<li>网络模型参考的IOCP模型，主线程监听，监听到的连接分配给线程池中的线程去处理</li>
-<li>由于MiniPC性能有限，通过加锁限制了同时只能有一个对话可以请求后台<code>ollama</code></li>
-<li><code>ollama</code>每生成一行，<code>albot</code>会立即发出，而非等到AI回复全部生成</li>
-<li>仅使用Python默认库</li>
-<li>对于<code>ollama</code>的HTTP响应做了相对健壮的处理，同时以性能优先</li>
-</ul>
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p><strong>项目地址</strong>：<a href="https://github.com/qspidy/albot">https://github.com/qspidy/albot</a></p>
-<p>后续还会根据需要对其进行改进以及功能的添加和完善，比如使用数据库存聊天记录和AI对话的Prompt、设置不同的命令来灵活控制和<code>ollama</code>的交互、使用Docker打包成镜像等。主要以学习为目的，顺带让其产生点实际价值，只有实践才能知道以前以为很简单的功能实现起来也有不少细节啊。</p>
-<p>还在努力适应PDB中…</p>
-]]></content>
-      <tags>
-        <tag>Linux</tag>
-        <tag>Python</tag>
-        <tag>IRC</tag>
-        <tag>MultiThread</tag>
-        <tag>AI</tag>
-        <tag>Bot</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Install and Setup NixOS + Hyprland from Scratch</title>
     <url>/2025/05/05/Install-and-Setup-NixOS-Hyprland-from-Scratch/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>First of all, though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
@@ -167,6 +130,43 @@
         <tag>Linux</tag>
         <tag>WM</tag>
         <tag>NixOS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Implementing An Simple IRC Bot Using Python</title>
+    <url>/2024/11/22/Implementing-An-Simple-IRC-Bot-Using-Python/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
+<p><a href="https://github.com/qspidy/albot"><strong>Python实现简单IRC聊天机器人(A Simple IRC BOT Written in Python)</strong></a></p>
+<hr>
+<h2 id="关于IRC-Python"><a href="#关于IRC-Python" class="headerlink" title="关于IRC + Python"></a>关于IRC + Python</h2><p>作为一名命令行爱好者，我曾试图使用命令行实现所有我在电脑上要做的事，比如便捷的浏览文件、多终端同时运行、浏览网页、作为IDE写代码和即时通讯等，于是就找到了<code>ranger</code>、<code>tmux</code>、<code>w3m</code>、<code>NvChad</code>和<code>Irssi</code>等优秀的开源工具。</p>
+<p>其中IRC终端客户端<code>Irssi</code>是我入门终端聊天的工具，让我对这个古老又相对简洁的通讯协议产生了兴趣，<strong>是时候基于它做点有意思的事了</strong>。</p>
+<p>至于Python，众所周知：人生苦短，我用Python。如果后续对性能有需求，再用Go重构吧。</p>
+<h2 id="Albot"><a href="#Albot" class="headerlink" title="Albot"></a>Albot</h2><p>我给这聊天机器人取名Albot，不是AI，似是AI。它实现的功能有：</p>
+<ul>
+<li>从后台<code>ollama</code>接口生成AI回复</li>
+<li>针对不同的关键字触发不同的响应，比如收到<code>bilibili</code>后在服务器后台执行相应的脚本</li>
+<li>同时响应多个请求，即同时与多个对象，在不同频道中聊天对话</li>
+</ul>
+<p>通过设计不同的关键字和实现不同的脚本，我就可以通过和albot聊天的形式来灵活管理MiniPC了。</p>
+<h2 id="项目特点"><a href="#项目特点" class="headerlink" title="项目特点"></a>项目特点</h2><p>简单，简单，还是简单。使用最小的成本实现想要的效果，适合用来入门Python多线程和网络编程。</p>
+<ul>
+<li>网络模型参考的IOCP模型，主线程监听，监听到的连接分配给线程池中的线程去处理</li>
+<li>由于MiniPC性能有限，通过加锁限制了同时只能有一个对话可以请求后台<code>ollama</code></li>
+<li><code>ollama</code>每生成一行，<code>albot</code>会立即发出，而非等到AI回复全部生成</li>
+<li>仅使用Python默认库</li>
+<li>对于<code>ollama</code>的HTTP响应做了相对健壮的处理，同时以性能优先</li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p><strong>项目地址</strong>：<a href="https://github.com/qspidy/albot">https://github.com/qspidy/albot</a></p>
+<p>后续还会根据需要对其进行改进以及功能的添加和完善，比如使用数据库存聊天记录和AI对话的Prompt、设置不同的命令来灵活控制和<code>ollama</code>的交互、使用Docker打包成镜像等。主要以学习为目的，顺带让其产生点实际价值，只有实践才能知道以前以为很简单的功能实现起来也有不少细节啊。</p>
+<p>还在努力适应PDB中…</p>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Python</tag>
+        <tag>IRC</tag>
+        <tag>MultiThread</tag>
+        <tag>AI</tag>
+        <tag>Bot</tag>
       </tags>
   </entry>
   <entry>
@@ -361,91 +361,6 @@
       <tags>
         <tag>C/Cpp</tag>
         <tag>Development</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【DST Dedicated Server】简单开服流程（Writen by MrOrange)</title>
-    <url>/2023/10/13/dst-dedicate-server-start/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><hr>
-<h2 id="拥有一台服务器"><a href="#拥有一台服务器" class="headerlink" title="拥有一台服务器"></a>拥有一台服务器</h2><ul>
-<li>首先，当然是有一台已经装好Debian的服务器（1Mbps带宽大概对应2~4人，一个存档2核就够，棱镜+勋章至少得3G内存），不建议Ubuntu，一些依赖似乎无法安装。</li>
-<li>安装之后可能用到的包：</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install tmux btop htop fish ranger git</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="配置基础环境（steamcmd-dst服务器）："><a href="#配置基础环境（steamcmd-dst服务器）：" class="headerlink" title="配置基础环境（steamcmd, dst服务器）："></a>配置基础环境（steamcmd, dst服务器）：</h2><ul>
-<li>一行行复制运行，注意是否报错</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo dpkg --add-architecture i386 <span class="comment"># If running a 64bit OS</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install lib32gcc1    <span class="comment"># If running a 64bit OS</span></span><br><span class="line"></span><br><span class="line">sudo apt-get install lib32stdc++6 <span class="comment"># If running a 64bit OS</span></span><br><span class="line">sudo apt-get install libgcc1      <span class="comment"># If running a 32bit OS</span></span><br><span class="line">sudo apt-get install libcurl4-gnutls-dev:i386</span><br><span class="line">sudo useradd -m steam</span><br><span class="line">sudo su - steam</span><br><span class="line"><span class="built_in">mkdir</span> ~/steamcmd</span><br><span class="line"><span class="built_in">cd</span> ~/steamcmd</span><br><span class="line">wget &lt;https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz&gt;</span><br><span class="line">tar -xvzf steamcmd_linux.tar.gz</span><br><span class="line">./steamcmd.sh</span><br><span class="line">force_install_dir /home/steam/steamapps/DST (or whatever absolute path is wanted)</span><br><span class="line">login anonymous</span><br><span class="line">app_update 343050 validate</span><br><span class="line">quit</span><br><span class="line"><span class="built_in">cd</span> /home/steam/steamapps/DST/bin/</span><br><span class="line">./dontstarve_dedicated_server_nullrenderer</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>最后一句尝试启动服务器，会生成一些简单的配置，如无报错则基本环境已经配置好。</li>
-</ul>
-<hr>
-<h2 id="克隆MrOrange的服务器管理脚本，给予执行权限："><a href="#克隆MrOrange的服务器管理脚本，给予执行权限：" class="headerlink" title="克隆MrOrange的服务器管理脚本，给予执行权限："></a>克隆MrOrange的服务器管理脚本，给予执行权限：</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/qspidy/dst-dedicated-server-admin-scripts.git</span><br><span class="line"><span class="built_in">chmod</span> +x dst-dedicated-server-admin-scripts/dst*</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="生成并上传cluster-token-txt"><a href="#生成并上传cluster-token-txt" class="headerlink" title="生成并上传cluster_token.txt"></a>生成并上传cluster_token.txt</h2><ul>
-<li>本地DST控制台运行<code>TheNet:GenerateClusterToken()</code>生成令牌文件<code>cluster_token.txt</code>，位置在<code>C:/Users/&lt;yourusername&gt;/Documents/Klei/DoNotStarveTogether</code>（大概，也可能在某个子文件夹），然后上传至服务器<code>/home/steam/.klei/DoNotStarveTogether/</code>目录。该文件相当于身份认证，即只有买了这游戏的人才能创服务器（当然也可以白嫖其它人的）。</li>
-</ul>
-<hr>
-<h2 id="常规开服步骤"><a href="#常规开服步骤" class="headerlink" title="常规开服步骤"></a>常规开服步骤</h2><h3 id="创建新世界"><a href="#创建新世界" class="headerlink" title="创建新世界"></a>创建新世界</h3><ul>
-<li>在本地DST游戏中创建新世界，配置想要的模组，世界类型等等。</li>
-</ul>
-<h3 id="上传存档文件夹"><a href="#上传存档文件夹" class="headerlink" title="上传存档文件夹"></a>上传存档文件夹</h3><ul>
-<li>找到新世界的存档文件夹（游戏里存档设置页有“打开世界文件夹”选项），通常叫<code>Cluster_xx</code>，把<code>Cluster_xx</code>文件夹上传到服务器的存档目录<code>/home/steam/.klei/DoNotStarveTogether/</code>。</li>
-</ul>
-<h3 id="修改相应配置（主要是cluster-ini）"><a href="#修改相应配置（主要是cluster-ini）" class="headerlink" title="修改相应配置（主要是cluster.ini）"></a>修改相应配置（主要是cluster.ini）</h3><ul>
-<li>打开服务器新世界存档文件夹<code>Cluster_xx</code>里的<code>cluster.ini</code>文件，修改相应的配置，主要是修改人数。</li>
-<li>[可选]直连端口在<code>Cluster_xx/Master/server.ini</code>里可以查看和修改。同时开不同的存档需要修改<code>Cluster_xx/Master/server.ini</code>和<code>Cluster_xx/Caves/server.ini</code>里的<code>server_port</code>，以及<code>cluster.ini</code>里的<code>master_port</code>，以避免端口冲突。</li>
-</ul>
-<hr>
-<h2 id="启动和维护"><a href="#启动和维护" class="headerlink" title="启动和维护"></a>启动和维护</h2><h3 id="启动dst服务器-这里假设存档文件夹为Cluster-12-："><a href="#启动dst服务器-这里假设存档文件夹为Cluster-12-：" class="headerlink" title="启动dst服务器(这里假设存档文件夹为Cluster_12 )："></a>启动dst服务器(这里假设存档文件夹为<code>Cluster_12</code> )：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_start.sh -C 12</span><br><span class="line"><span class="comment"># 如要进行服务器交互和查看输出（默认 dst-12 为对应的tmux会话名）</span></span><br><span class="line">tmux attach -t dst-12</span><br></pre></td></tr></table></figure>
-
-<h3 id="完全关闭dst服务器："><a href="#完全关闭dst服务器：" class="headerlink" title="完全关闭dst服务器："></a>完全关闭dst服务器：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_shutdown.sh -C 12</span><br></pre></td></tr></table></figure>
-
-<h3 id="生成备份文件："><a href="#生成备份文件：" class="headerlink" title="生成备份文件："></a>生成备份文件：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_backup_cluster.sh -C 12</span><br></pre></td></tr></table></figure>
-
-<h3 id="单独更新dst服务器和mods："><a href="#单独更新dst服务器和mods：" class="headerlink" title="单独更新dst服务器和mods："></a>单独更新dst服务器和mods：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_update_modlist.sh 12</span><br><span class="line">./dst-dedicated-server-admin-scripts/dst_update.sh</span><br></pre></td></tr></table></figure>
-
-<h3 id="更新中-发送服务器指令（如保存世界、踢出某人）："><a href="#更新中-发送服务器指令（如保存世界、踢出某人）：" class="headerlink" title="(更新中)发送服务器指令（如保存世界、踢出某人）："></a>(更新中)发送服务器指令（如保存世界、踢出某人）：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 保存世界</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_save()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 踢出某人</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_kill(<span class="string">&quot;player_id&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>常用指令（大概）：<code>c_save()</code> , <code>c_shutdown()</code> , <code>c_announce(&quot;message&quot;)</code> , <code>c_regenerateworld()</code> , <code>c_rollback()</code> , <code>c_listallplayers()</code> , <code>c_kill(&quot;player_id&quot;)</code> .</li>
-<li>打印当前世界信息（天数、季节、时段）指令： <code>TheNet:Announce(&quot;Current day: &quot;..TheWorld.state.cycles..&quot; Season: &quot;..TheWorld.state.season..&quot;, Phase: &quot;..TheWorld.state.phase)</code></li>
-</ul>
-<h3 id="查看跟踪日志："><a href="#查看跟踪日志：" class="headerlink" title="查看跟踪日志："></a>查看跟踪日志：</h3><ul>
-<li>查看跟踪当前服务器日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_log.txt</code></li>
-<li>查看跟踪当前服务器聊天日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_chat_log.txt</code></li>
-</ul>
-<hr>
-<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><ol>
-<li><a href="https://dontstarve.fandom.com/wiki/Guides/Don%E2%80%99t_Starve_Together_Dedicated_Servers">Guides&#x2F;Don’t Starve Together Dedicated Servers - FANDOM</a></li>
-<li><a href="https://forums.kleientertainment.com/forums/topic/64441-dedicated-server-quick-setup-guide-linux/">Dedicated Server Quick Setup Guide - Linux</a></li>
-<li><strong><a href="https://www.youtube.com/watch?v=ZkGPlQsiXzQ&list=PLaovyrM6DB1BIqTXAF6LZjQHSZHWqSIYz&ab_channel=Jazzy%27sGames">DEDICATED SERVER QUICK SETUP (Windows) | Don’t Starve Together</a></strong></li>
-<li><strong><a href="https://steamcommunity.com/sharedfiles/filedetails/?l=schinese&id=1616647350">Dedicated Server配置项和命令行参数详解</a></strong></li>
-</ol>
-]]></content>
-      <categories>
-        <category>折腾合集</category>
-        <category>Game</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>Game</tag>
-        <tag>DST</tag>
-        <tag>Server</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Welcome Orangeの小窝!!!</title>
-    <url>/2022/04/12/firstpost/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
-<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
-<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-]]></content>
-      <tags>
-        <tag>Greetings</tag>
       </tags>
   </entry>
   <entry>
@@ -717,6 +632,121 @@
       </tags>
   </entry>
   <entry>
+    <title>【DST Dedicated Server】简单开服流程（Writen by MrOrange)</title>
+    <url>/2023/10/13/dst-dedicate-server-start/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><hr>
+<h2 id="拥有一台服务器"><a href="#拥有一台服务器" class="headerlink" title="拥有一台服务器"></a>拥有一台服务器</h2><ul>
+<li>首先，当然是有一台已经装好Debian的服务器（1Mbps带宽大概对应2~4人，一个存档2核就够，棱镜+勋章至少得3G内存），不建议Ubuntu，一些依赖似乎无法安装。</li>
+<li>安装之后可能用到的包：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install tmux btop htop fish ranger git</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="配置基础环境（steamcmd-dst服务器）："><a href="#配置基础环境（steamcmd-dst服务器）：" class="headerlink" title="配置基础环境（steamcmd, dst服务器）："></a>配置基础环境（steamcmd, dst服务器）：</h2><ul>
+<li>一行行复制运行，注意是否报错</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo dpkg --add-architecture i386 <span class="comment"># If running a 64bit OS</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install lib32gcc1    <span class="comment"># If running a 64bit OS</span></span><br><span class="line"></span><br><span class="line">sudo apt-get install lib32stdc++6 <span class="comment"># If running a 64bit OS</span></span><br><span class="line">sudo apt-get install libgcc1      <span class="comment"># If running a 32bit OS</span></span><br><span class="line">sudo apt-get install libcurl4-gnutls-dev:i386</span><br><span class="line">sudo useradd -m steam</span><br><span class="line">sudo su - steam</span><br><span class="line"><span class="built_in">mkdir</span> ~/steamcmd</span><br><span class="line"><span class="built_in">cd</span> ~/steamcmd</span><br><span class="line">wget &lt;https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz&gt;</span><br><span class="line">tar -xvzf steamcmd_linux.tar.gz</span><br><span class="line">./steamcmd.sh</span><br><span class="line">force_install_dir /home/steam/steamapps/DST (or whatever absolute path is wanted)</span><br><span class="line">login anonymous</span><br><span class="line">app_update 343050 validate</span><br><span class="line">quit</span><br><span class="line"><span class="built_in">cd</span> /home/steam/steamapps/DST/bin/</span><br><span class="line">./dontstarve_dedicated_server_nullrenderer</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>最后一句尝试启动服务器，会生成一些简单的配置，如无报错则基本环境已经配置好。</li>
+</ul>
+<hr>
+<h2 id="克隆MrOrange的服务器管理脚本，给予执行权限："><a href="#克隆MrOrange的服务器管理脚本，给予执行权限：" class="headerlink" title="克隆MrOrange的服务器管理脚本，给予执行权限："></a>克隆MrOrange的服务器管理脚本，给予执行权限：</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/qspidy/dst-dedicated-server-admin-scripts.git</span><br><span class="line"><span class="built_in">chmod</span> +x dst-dedicated-server-admin-scripts/dst*</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="生成并上传cluster-token-txt"><a href="#生成并上传cluster-token-txt" class="headerlink" title="生成并上传cluster_token.txt"></a>生成并上传cluster_token.txt</h2><ul>
+<li>本地DST控制台运行<code>TheNet:GenerateClusterToken()</code>生成令牌文件<code>cluster_token.txt</code>，位置在<code>C:/Users/&lt;yourusername&gt;/Documents/Klei/DoNotStarveTogether</code>（大概，也可能在某个子文件夹），然后上传至服务器<code>/home/steam/.klei/DoNotStarveTogether/</code>目录。该文件相当于身份认证，即只有买了这游戏的人才能创服务器（当然也可以白嫖其它人的）。</li>
+</ul>
+<hr>
+<h2 id="常规开服步骤"><a href="#常规开服步骤" class="headerlink" title="常规开服步骤"></a>常规开服步骤</h2><h3 id="创建新世界"><a href="#创建新世界" class="headerlink" title="创建新世界"></a>创建新世界</h3><ul>
+<li>在本地DST游戏中创建新世界，配置想要的模组，世界类型等等。</li>
+</ul>
+<h3 id="上传存档文件夹"><a href="#上传存档文件夹" class="headerlink" title="上传存档文件夹"></a>上传存档文件夹</h3><ul>
+<li>找到新世界的存档文件夹（游戏里存档设置页有“打开世界文件夹”选项），通常叫<code>Cluster_xx</code>，把<code>Cluster_xx</code>文件夹上传到服务器的存档目录<code>/home/steam/.klei/DoNotStarveTogether/</code>。</li>
+</ul>
+<h3 id="修改相应配置（主要是cluster-ini）"><a href="#修改相应配置（主要是cluster-ini）" class="headerlink" title="修改相应配置（主要是cluster.ini）"></a>修改相应配置（主要是cluster.ini）</h3><ul>
+<li>打开服务器新世界存档文件夹<code>Cluster_xx</code>里的<code>cluster.ini</code>文件，修改相应的配置，主要是修改人数。</li>
+<li>[可选]直连端口在<code>Cluster_xx/Master/server.ini</code>里可以查看和修改。同时开不同的存档需要修改<code>Cluster_xx/Master/server.ini</code>和<code>Cluster_xx/Caves/server.ini</code>里的<code>server_port</code>，以及<code>cluster.ini</code>里的<code>master_port</code>，以避免端口冲突。</li>
+</ul>
+<hr>
+<h2 id="启动和维护"><a href="#启动和维护" class="headerlink" title="启动和维护"></a>启动和维护</h2><h3 id="启动dst服务器-这里假设存档文件夹为Cluster-12-："><a href="#启动dst服务器-这里假设存档文件夹为Cluster-12-：" class="headerlink" title="启动dst服务器(这里假设存档文件夹为Cluster_12 )："></a>启动dst服务器(这里假设存档文件夹为<code>Cluster_12</code> )：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_start.sh -C 12</span><br><span class="line"><span class="comment"># 如要进行服务器交互和查看输出（默认 dst-12 为对应的tmux会话名）</span></span><br><span class="line">tmux attach -t dst-12</span><br></pre></td></tr></table></figure>
+
+<h3 id="完全关闭dst服务器："><a href="#完全关闭dst服务器：" class="headerlink" title="完全关闭dst服务器："></a>完全关闭dst服务器：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_shutdown.sh -C 12</span><br></pre></td></tr></table></figure>
+
+<h3 id="生成备份文件："><a href="#生成备份文件：" class="headerlink" title="生成备份文件："></a>生成备份文件：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_backup_cluster.sh -C 12</span><br></pre></td></tr></table></figure>
+
+<h3 id="单独更新dst服务器和mods："><a href="#单独更新dst服务器和mods：" class="headerlink" title="单独更新dst服务器和mods："></a>单独更新dst服务器和mods：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_update_modlist.sh 12</span><br><span class="line">./dst-dedicated-server-admin-scripts/dst_update.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="更新中-发送服务器指令（如保存世界、踢出某人）："><a href="#更新中-发送服务器指令（如保存世界、踢出某人）：" class="headerlink" title="(更新中)发送服务器指令（如保存世界、踢出某人）："></a>(更新中)发送服务器指令（如保存世界、踢出某人）：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 保存世界</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_save()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 踢出某人</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_kill(<span class="string">&quot;player_id&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>常用指令（大概）：<code>c_save()</code> , <code>c_shutdown()</code> , <code>c_announce(&quot;message&quot;)</code> , <code>c_regenerateworld()</code> , <code>c_rollback()</code> , <code>c_listallplayers()</code> , <code>c_kill(&quot;player_id&quot;)</code> .</li>
+<li>打印当前世界信息（天数、季节、时段）指令： <code>TheNet:Announce(&quot;Current day: &quot;..TheWorld.state.cycles..&quot; Season: &quot;..TheWorld.state.season..&quot;, Phase: &quot;..TheWorld.state.phase)</code></li>
+</ul>
+<h3 id="查看跟踪日志："><a href="#查看跟踪日志：" class="headerlink" title="查看跟踪日志："></a>查看跟踪日志：</h3><ul>
+<li>查看跟踪当前服务器日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_log.txt</code></li>
+<li>查看跟踪当前服务器聊天日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_chat_log.txt</code></li>
+</ul>
+<hr>
+<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><ol>
+<li><a href="https://dontstarve.fandom.com/wiki/Guides/Don%E2%80%99t_Starve_Together_Dedicated_Servers">Guides&#x2F;Don’t Starve Together Dedicated Servers - FANDOM</a></li>
+<li><a href="https://forums.kleientertainment.com/forums/topic/64441-dedicated-server-quick-setup-guide-linux/">Dedicated Server Quick Setup Guide - Linux</a></li>
+<li><strong><a href="https://www.youtube.com/watch?v=ZkGPlQsiXzQ&list=PLaovyrM6DB1BIqTXAF6LZjQHSZHWqSIYz&ab_channel=Jazzy%27sGames">DEDICATED SERVER QUICK SETUP (Windows) | Don’t Starve Together</a></strong></li>
+<li><strong><a href="https://steamcommunity.com/sharedfiles/filedetails/?l=schinese&id=1616647350">Dedicated Server配置项和命令行参数详解</a></strong></li>
+</ol>
+]]></content>
+      <categories>
+        <category>折腾合集</category>
+        <category>Game</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Game</tag>
+        <tag>DST</tag>
+        <tag>Server</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Welcome Orangeの小窝!!!</title>
+    <url>/2022/04/12/firstpost/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
+<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
+<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+]]></content>
+      <tags>
+        <tag>Greetings</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Qemu替代VirtualBox并进行相关配置</title>
+    <url>/2022/05/29/replace-vbox-with-qemu/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
+<p>油管博主<em>Chris Titus</em>在视频里展示了相同的虚拟机Guest在Qemu下和在VirtualBox下的启动时间，结论是<code>11.17s</code>比<code>35.28s</code>！我当时就震撼了。如果说只是快个百分之二三十，我还可以认为只是简单的因为VirtualBox提供了更多的管理功能而导致的性能下降，但事实摆在我面前，速度提升<code>68.3%</code>！这是什么概念，要知道实际性能的提升和启动速度的提升并不是成正比的，通常来说实际性能的提升的比例会高于启动速度的提升比例，也就是说使用Qemu的虚拟机性能效果比VirtualBox的虚拟机性能效果提升超过一倍甚至更多。这让我没有理由不选择使用Qemu。</p>
+<hr>
+<h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><p>Qemu本身只提供了命令行工具来管理虚拟机，也不会保存虚拟机的相关配置信息。实际使用时通常是同时安装<code>Libvert</code>（一套用于管理硬件虚拟化的开源API、守护进程与管理工具）配合<code>Libvert clients</code>来实现使用图形界面管理Qemu虚拟机。</p>
+<p><code>Libvert clients</code>是<code>Libvert</code>的前端，常用的<code>Libvert clients</code>在<a href="https://wiki.archlinux.org/title/Libvirt#Client">这里</a>。我使用的是Virt-Manager来管理Qemu虚拟机，因为在使用过程中Virt-Manager提供的管理功能和VirtualBox比较接近。使用教程参考<em>Derek Taylor</em>的<a href="https://www.youtube.com/watch?v=p1d_b_91YlU">Virt-Manager Is The Better Way To Manage VMs</a>。</p>
+<p>使用Virt-Manager创建虚拟机的过程和VirtualBox类似，通常（对我来说）只需要改一下内存大小、CPU数量和磁盘容量，其它无脑下一步就行。与VirtualBox不同的是Virt-Manager还提供了通过网络安装（HTTP, HTTPS or FTP），安装过程要提供操作系统安装URL，估计进行大规模安装的时候会用到，一般来说还是使用镜像文件来安装。</p>
+<hr>
+<h2 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h2><p>不得不承认，Qemu虚拟机的启动速度是肉眼可见的提升了，对CPU的占用也比VirtualBox少，至少不会动不动就让CPU进入暴走状态（Windows背大锅）。除了没有剪切板共享功能有点不方便之外，其它使用体验和VirtualBox基本一致。</p>
+<p>我主要使用虚拟机来调试一些应用程序，比如在Windows上运行IDA，在Linux上运行GDB。另外也会在Linux上运行些有意思的Github项目啥的，比如QQ bot。</p>
+<p>顺便提一嘴文件共享的问题。我不喜欢使用虚拟机软件提供的文件共享服务，一个是麻烦，有时还得重启配置才能生效；另一个是不灵活，不方便配置多个共享文件夹和控制权限。我使用网络来实现文件共享，同时也是因为对这方面比较熟。对于Windows虚拟机，只要开启网络文件共享，然后把想要共享的文件夹设置为对指定用户共享，就可以在主机（我这里用的Linux，Windows类似）使用<code>smb</code>协议连上Windows虚拟机，访问共享文件。对于Linux虚拟机就更简单了，直接在Linux虚拟机里开启<code>SSHD/SSH</code>服务，使用<code>SSHFS</code>挂载Linux的文件系统或者直接<code>SCP</code>，我选择的是使用<strong>VS Code</strong>的远程连接来直接编辑Linux虚拟机里的文件。这个过程在Qemu下更加方便，因为Qemu直接虚拟出一个主机层面的虚拟网卡，也就不需要像VirtualBox那样使用<code>NAT</code>时还得配置端口转发才能从主机连上虚拟机了。</p>
+<hr>
+<h2 id="实际使用中的问题"><a href="#实际使用中的问题" class="headerlink" title="实际使用中的问题"></a>实际使用中的问题</h2><p>使用Docker和部署Github项目就不得不考虑配置代理的问题。因为我在主机使用的是<em>透明代理</em>，所以在VirtualBox虚拟机里就不需要考虑配置网络代理的问题，网络数据自动由主机代理接管。而Qemu虚拟的是主机层面的网卡，导致它的网络数据不由<em>透明代理</em>接管。（也可能是<code>iptables</code>配置的问题，反正我弄了好久也没搞清楚是什么原因在开了<code>cgproxy</code>后Qemu虚拟机就连不上网，似乎可以对外请求，但返回的数据包没能回到虚拟机）</p>
+<p>为了让虚拟机流量走主机代理，就只能是使用配置<code>http_proxy</code>和<code>https_proxy</code>环境变量来试图让流量走主机代理了，但很多应用却并不使用<code>http_proxy</code>和<code>https_proxy</code>环境变量，搞自己的代理配置那一套。其中就包括<code>apt</code>、<code>docker</code>和Python脚本。好在找到了一篇比较全的代理配置博文：<a href="https://qiita.com/daichi-ishida/items/b77c151067427806ede5">UbuntuのProxy設定備忘録</a>。里面包含了对<code>http_proxy</code>和<code>https_proxy</code>环境变量、<code>apt</code>、<code>git</code>、<code>docker</code>和<code>wget</code>的代理配置方法。关于Python的代理配置我参考的是Stack Overflow中的<a href="https://stackoverflow.com/questions/31639742/how-to-pass-all-pythons-traffics-through-a-http-proxy">How to pass all Python’s traffics through a http proxy?</a></p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>当需要考虑虚拟机性能时，毫无疑问应该选择Qemu&#x2F;KVM。这也是现在许多云服务厂商使用的虚拟方案。但如果只是简单的虚拟需求如尝试各种Linux发行版啥的，那选择VirtualBox还很要更方便的，毕竟VirtualBox对虚拟机的管理配置很全，基本上普通的需求都可以在VirtualBox的设置面板动动鼠标解决，这对新手非常友好。</p>
+<p>折腾网络配置说实话挺烦的，尤其是我还没深入研究过<code>Netfilter</code>和<code>Iptables</code>。一些配置出问题虽然知道大概是哪有问题，但却不会修复&#x3D;-&#x3D;。网上也不一定找得到答案，只能是论坛求助。但折腾的好处则是我可以在解决问题的过程中学到不少新的东西，这些经验会在不经意间发挥意想不到的作用。</p>
+]]></content>
+      <categories>
+        <category>折腾合集</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Arch</tag>
+        <tag>Virtualization</tag>
+        <tag>tweak/toss</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>用OpenCode + GLM-4.7给Real-ESRGAN套Web UI，只用了一晚上？</title>
     <url>/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>前不久在网上找到一张喜欢的壁纸，但是查了半天没找着高清原图，只好先将就用着。而最近看着这略显模糊的壁纸实在是受不了了，就想着给它upscale一下。很自然的想起了以前用过的<a href="https://github.com/xinntao/Real-ESRGAN">xinntao&#x2F;Real-ESRGAN</a>，当时就觉得这东西巨好用，只是一直没有使用的场景，现在是时候给用起来了。</p>
@@ -756,33 +786,57 @@
       </tags>
   </entry>
   <entry>
-    <title>使用Qemu替代VirtualBox并进行相关配置</title>
-    <url>/2022/05/29/replace-vbox-with-qemu/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
-<p>油管博主<em>Chris Titus</em>在视频里展示了相同的虚拟机Guest在Qemu下和在VirtualBox下的启动时间，结论是<code>11.17s</code>比<code>35.28s</code>！我当时就震撼了。如果说只是快个百分之二三十，我还可以认为只是简单的因为VirtualBox提供了更多的管理功能而导致的性能下降，但事实摆在我面前，速度提升<code>68.3%</code>！这是什么概念，要知道实际性能的提升和启动速度的提升并不是成正比的，通常来说实际性能的提升的比例会高于启动速度的提升比例，也就是说使用Qemu的虚拟机性能效果比VirtualBox的虚拟机性能效果提升超过一倍甚至更多。这让我没有理由不选择使用Qemu。</p>
-<hr>
-<h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><p>Qemu本身只提供了命令行工具来管理虚拟机，也不会保存虚拟机的相关配置信息。实际使用时通常是同时安装<code>Libvert</code>（一套用于管理硬件虚拟化的开源API、守护进程与管理工具）配合<code>Libvert clients</code>来实现使用图形界面管理Qemu虚拟机。</p>
-<p><code>Libvert clients</code>是<code>Libvert</code>的前端，常用的<code>Libvert clients</code>在<a href="https://wiki.archlinux.org/title/Libvirt#Client">这里</a>。我使用的是Virt-Manager来管理Qemu虚拟机，因为在使用过程中Virt-Manager提供的管理功能和VirtualBox比较接近。使用教程参考<em>Derek Taylor</em>的<a href="https://www.youtube.com/watch?v=p1d_b_91YlU">Virt-Manager Is The Better Way To Manage VMs</a>。</p>
-<p>使用Virt-Manager创建虚拟机的过程和VirtualBox类似，通常（对我来说）只需要改一下内存大小、CPU数量和磁盘容量，其它无脑下一步就行。与VirtualBox不同的是Virt-Manager还提供了通过网络安装（HTTP, HTTPS or FTP），安装过程要提供操作系统安装URL，估计进行大规模安装的时候会用到，一般来说还是使用镜像文件来安装。</p>
-<hr>
-<h2 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h2><p>不得不承认，Qemu虚拟机的启动速度是肉眼可见的提升了，对CPU的占用也比VirtualBox少，至少不会动不动就让CPU进入暴走状态（Windows背大锅）。除了没有剪切板共享功能有点不方便之外，其它使用体验和VirtualBox基本一致。</p>
-<p>我主要使用虚拟机来调试一些应用程序，比如在Windows上运行IDA，在Linux上运行GDB。另外也会在Linux上运行些有意思的Github项目啥的，比如QQ bot。</p>
-<p>顺便提一嘴文件共享的问题。我不喜欢使用虚拟机软件提供的文件共享服务，一个是麻烦，有时还得重启配置才能生效；另一个是不灵活，不方便配置多个共享文件夹和控制权限。我使用网络来实现文件共享，同时也是因为对这方面比较熟。对于Windows虚拟机，只要开启网络文件共享，然后把想要共享的文件夹设置为对指定用户共享，就可以在主机（我这里用的Linux，Windows类似）使用<code>smb</code>协议连上Windows虚拟机，访问共享文件。对于Linux虚拟机就更简单了，直接在Linux虚拟机里开启<code>SSHD/SSH</code>服务，使用<code>SSHFS</code>挂载Linux的文件系统或者直接<code>SCP</code>，我选择的是使用<strong>VS Code</strong>的远程连接来直接编辑Linux虚拟机里的文件。这个过程在Qemu下更加方便，因为Qemu直接虚拟出一个主机层面的虚拟网卡，也就不需要像VirtualBox那样使用<code>NAT</code>时还得配置端口转发才能从主机连上虚拟机了。</p>
-<hr>
-<h2 id="实际使用中的问题"><a href="#实际使用中的问题" class="headerlink" title="实际使用中的问题"></a>实际使用中的问题</h2><p>使用Docker和部署Github项目就不得不考虑配置代理的问题。因为我在主机使用的是<em>透明代理</em>，所以在VirtualBox虚拟机里就不需要考虑配置网络代理的问题，网络数据自动由主机代理接管。而Qemu虚拟的是主机层面的网卡，导致它的网络数据不由<em>透明代理</em>接管。（也可能是<code>iptables</code>配置的问题，反正我弄了好久也没搞清楚是什么原因在开了<code>cgproxy</code>后Qemu虚拟机就连不上网，似乎可以对外请求，但返回的数据包没能回到虚拟机）</p>
-<p>为了让虚拟机流量走主机代理，就只能是使用配置<code>http_proxy</code>和<code>https_proxy</code>环境变量来试图让流量走主机代理了，但很多应用却并不使用<code>http_proxy</code>和<code>https_proxy</code>环境变量，搞自己的代理配置那一套。其中就包括<code>apt</code>、<code>docker</code>和Python脚本。好在找到了一篇比较全的代理配置博文：<a href="https://qiita.com/daichi-ishida/items/b77c151067427806ede5">UbuntuのProxy設定備忘録</a>。里面包含了对<code>http_proxy</code>和<code>https_proxy</code>环境变量、<code>apt</code>、<code>git</code>、<code>docker</code>和<code>wget</code>的代理配置方法。关于Python的代理配置我参考的是Stack Overflow中的<a href="https://stackoverflow.com/questions/31639742/how-to-pass-all-pythons-traffics-through-a-http-proxy">How to pass all Python’s traffics through a http proxy?</a></p>
-<hr>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>当需要考虑虚拟机性能时，毫无疑问应该选择Qemu&#x2F;KVM。这也是现在许多云服务厂商使用的虚拟方案。但如果只是简单的虚拟需求如尝试各种Linux发行版啥的，那选择VirtualBox还很要更方便的，毕竟VirtualBox对虚拟机的管理配置很全，基本上普通的需求都可以在VirtualBox的设置面板动动鼠标解决，这对新手非常友好。</p>
-<p>折腾网络配置说实话挺烦的，尤其是我还没深入研究过<code>Netfilter</code>和<code>Iptables</code>。一些配置出问题虽然知道大概是哪有问题，但却不会修复&#x3D;-&#x3D;。网上也不一定找得到答案，只能是论坛求助。但折腾的好处则是我可以在解决问题的过程中学到不少新的东西，这些经验会在不经意间发挥意想不到的作用。</p>
+    <title>使用Nginx搭建个人图床，让链接永远有效！</title>
+    <url>/2026/02/01/%E4%BD%BF%E7%94%A8Nginx%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%EF%BC%8C%E8%AE%A9%E9%93%BE%E6%8E%A5%E6%B0%B8%E8%BF%9C%E6%9C%89%E6%95%88%EF%BC%81/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>这周发生了很多有意思的事情。</p>
+<p><code>Clawdbot</code>改名成<code>Moltbot</code>，然后某个B站UP发了条动态：</p>
+<blockquote>
+<p>做个opencode desktop的视频，第二天就爆火Clawdbot，Clawdbot要发了把名字改成了moltbot。这个时代不要为难老人家好不好~</p>
+</blockquote>
+<p>前天一看又把名字改成了<code>OpenClaw</code>，想蹭个热点真不容易啊2333。</p>
+<p>CloudCone机房罕见的出故障了，因为<code>虚拟机WEB控制面板 Virtualizor 上存在一个严重漏洞</code>，本来还准备在周末在CC服务器上整个<a href="https://github.com/mjl-/mox">mjl-&#x2F;mox</a>，结果什么也干不了。</p>
+<p>周末要结束了还没修复：<br><img src="https://img.wastaken.xyz/images/eee0d7a3207cee36a9dc1840d0e89cb9.png"></p>
+<p>于是在用<a href="https://github.com/usememos/memos">Memos</a>记录这些事情的时候，发现Memos不能直接在post里上传图片，只能用图床。</p>
+<p>既然现在没法部署<a href="https://github.com/mjl-/mox">mjl-&#x2F;mox</a>，那就<code>整(shui)个(pian)图(bo)床(ke)</code>好了。</p>
+<p>这次主要用的是Claude + GLM-4.7，体验下Claude和OpenCode的区别。</p>
+<h2 id="为什么要自建"><a href="#为什么要自建" class="headerlink" title="为什么要自建"></a>为什么要自建</h2><p>没怎么用图床，相关的工具倒是收藏了不少。</p>
+<p>其中杀手级的App当属<a href="https://github.com/Molunerfinn/PicGo">Molunerfinn&#x2F;PicGo</a>，功能非常全面，支持各种存储服务，还能和常见的文本编辑器交互：<br><img src="https://raw.githubusercontent.com/Molunerfinn/test/master/picgo/picgo-2.0.gif"></p>
+<p>虽然有很多免费的存储服务可以用，但这些都逃不开一个最大的问题：<strong>很难保证链接长期有效</strong>。</p>
+<p>比如把文件上传到OneDrive，得到一个链接，但如果哪天想要把图床迁移到另一个服务，那就不得不修改原来使用的链接，而用到这个链接的地方可能很多，emmm…</p>
+<p>更不用说有些免费图床用着用着就跑路的。</p>
+<p>而如果是用自己的域名访问的话，就能解决这个痛点。只在域名还在，做好备份恢复，就完全可以保证链接一直有效。</p>
+<h2 id="搭建思路"><a href="#搭建思路" class="headerlink" title="搭建思路"></a>搭建思路</h2><p>图床这种算是静态网站服务，有很多平台可以提供免费部署，比如Vercel，Github等，也能自定义域名。但这里用的是服务器+Nginx，毕竟现在的服务器很便宜了，这样也更方便备份迁移。</p>
+<p>如果追求极致精简，直接把图片放在Nginx的静态文件目录就好。但这样服务器端是简单，客户端操作就有点复杂了，得用<code>rsync</code>, <code>scp</code>之类的工具把文件传上去，不方便也不安全。</p>
+<p>所以设计原则是：<strong>客户端操作尽可能简单，无论在哪都能轻松上传图片</strong>。</p>
+<p>于是我选择使用<code>curl</code>，通过http请求的方式上传图片，这命令是个电脑都应该会有吧，而且命令也不会很长，很容易就能记住。</p>
+<h2 id="开始干活"><a href="#开始干活" class="headerlink" title="开始干活"></a>开始干活</h2><p>当然不是我干活，而是指挥AI干活。</p>
+<p>要实现的功能也不多，需求一描述，用Claude和GLM-4.7生成的代码直接就能跑起来。</p>
+<p>然后不出意外的出意外了，在首次生成的代码上继续改进时，上传图片的权限突然从一开始的<code>600</code>变成了<code>666</code>：<br><img src="https://img.wastaken.xyz/images/e48322358d7625e558ad1027392aea61.png"></p>
+<p>这可不是什么好事。</p>
+<p>让Claude定位原因把图片权限改回去，但Claude并不知道是什么导致的权限改变，虽然加上了改变文件权限的代码，但最后图片权限依旧是<code>666</code>。</p>
+<p>眼看Claude解决不了，只好亲自出手了。</p>
+<p>扫了一眼本就不多的Lua脚本，唯一对图片有修改是调用ImagicMagick压缩图片这段</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- Optimize images (requires ImageMagick)</span></span><br><span class="line"><span class="keyword">local</span> image_extensions = &#123;jpg=<span class="literal">true</span>, jpeg=<span class="literal">true</span>, png=<span class="literal">true</span>, webp=<span class="literal">true</span>, gif=<span class="literal">true</span>, avif=<span class="literal">true</span>&#125;</span><br><span class="line"><span class="keyword">if</span> image_extensions[ext:<span class="built_in">lower</span>()] <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">os</span>.<span class="built_in">execute</span>(<span class="built_in">string</span>.<span class="built_in">format</span>(<span class="string">&quot;/usr/bin/mogrify -quality 85 -strip %s&quot;</span>, target, target))</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>于是把这段lua注掉一试，果然，就是用<code>/usr/bin/mogrify</code>压缩图片后图片文件的权限从<code>600</code>变成了<code>666</code> 。</p>
+<p>而虽然Claude加上了改变文件权限的代码</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="built_in">os</span>.<span class="built_in">execute</span>(<span class="string">&quot;/bin/chmod 600 &quot;</span> .. target .. <span class="string">&quot; 2&gt;/dev/null&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>但因这段代码放在ImagicMagick压缩图片之前，所以没能发挥任何效果。</p>
+<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>最后照例生成了Git项目，把代码传到了Github上：<a href="https://github.com/qspidy/imgng">qspidy&#x2F;imgng</a>。</p>
+<p>不得不夸一下OpenCode生成的README了。相比Claude，OpenCode生成的又有图标又有Badge，看起来很现代。</p>
+<p>最后让Claude参考之前的项目才生成的现在这么现代的README：<br><img src="https://img.wastaken.xyz/images/0545a8d69181719f4419ee3605aee4c2.png"></p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>不得不感慨AI写代码之神速啊，虽然就目前看来还有一定的局限，有些问题还是得有人的配合才能解决。</p>
+<p>但是，如果这次AI可以在本地调试，它应该能很快定位问题吧。</p>
+<p>如果调试也被AI完全掌握，那或许真的就是程序员的末日了。</p>
+<p>感觉也快了啊。</p>
 ]]></content>
-      <categories>
-        <category>折腾合集</category>
-      </categories>
       <tags>
-        <tag>Linux</tag>
-        <tag>Arch</tag>
-        <tag>Virtualization</tag>
-        <tag>tweak/toss</tag>
+        <tag>AI</tag>
+        <tag>Development</tag>
+        <tag>OpenCode</tag>
+        <tag>Github</tag>
+        <tag>Claude</tag>
+        <tag>Nginx</tag>
+        <tag>Image-host</tag>
       </tags>
   </entry>
 </search>
