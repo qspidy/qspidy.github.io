@@ -55,84 +55,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Install and Setup NixOS + Hyprland from Scratch</title>
-    <url>/2025/05/05/Install-and-Setup-NixOS-Hyprland-from-Scratch/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>First of all, though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
-<p>I fell in love with Nix for the first I have it installed cause it is definitely what I am searching for after more than three years of Arch usage. I have reinstalled my Arch many times, and each time I have to reinstall the packages manually and spend time to change the configurations, it’s fun and I enjoy it. But recently I don’t have much time left for it, so NixOS is definitely what I want.</p>
-<p>As for Hyprland, I found it very popular recently and it’s written in cpp, so I tried it with Arch from scratch and found it a fancy wm.</p>
-<hr>
-<h2 id="Download-and-boot-from-image"><a href="#Download-and-boot-from-image" class="headerlink" title="Download  and boot from image"></a>Download  and boot from image</h2><p>Get NixOS image <a href="https://nixos.org/download/">here</a>, I chose Minimal ISO image in my case.</p>
-<p>To begin the installation, you have to boot your computer from the install drive.</p>
-<ol>
-<li>Plug in the install drive. Then turn on or restart your computer.</li>
-<li>Open the boot menu by pressing the appropriate key, which is usually shown on the display on early boot. Select the USB flash drive (the option usually contains the word “USB”). If you choose the incorrect drive, your computer will likely continue to boot as normal. In that case restart your computer and pick a different drive.</li>
-</ol>
-<hr>
-<h2 id="Setup-WIFI-Optional"><a href="#Setup-WIFI-Optional" class="headerlink" title="Setup WIFI (Optional)"></a>Setup WIFI (Optional)</h2><p>There is no <code>iwd</code> preinstalled in NixOS like Arch, so use <code>wpa_supplicant</code> instead.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Bring the interface up</span></span><br><span class="line">sudo ip <span class="built_in">link</span> <span class="built_in">set</span> wlan0 up</span><br><span class="line"></span><br><span class="line"><span class="comment"># Scan avaiable networks</span></span><br><span class="line">sudo iw wlan0 scan | grep SSID</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate a wpa_supplicant config</span></span><br><span class="line">wpa_passphrase <span class="string">&quot;YourSSID&quot;</span> <span class="string">&quot;YourPassword&quot;</span> | sudo <span class="built_in">tee</span> /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Start wpa_supplicant</span></span><br><span class="line">sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get an IP address</span></span><br><span class="line">sudo dhcpcd wlan0</span><br><span class="line"></span><br><span class="line"><span class="comment"># Check connectivity</span></span><br><span class="line">ping -c 4 8.8.8.8</span><br><span class="line"></span><br><span class="line"><span class="comment"># Optional: Stop wpa_supplicant</span></span><br><span class="line"><span class="comment"># sudo pkill wpa_supplicant</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="Try-installing-new-packages"><a href="#Try-installing-new-packages" class="headerlink" title="Try installing new packages"></a>Try installing new packages</h2><p>Before installing a new package, you may want to check if the package exists and how to install from <a href="https://search.nixos.org/packages">here</a>.</p>
-<p>Most of the time, install a package like this:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nix-shell -p cmatrix</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="Partitioning-and-formatting"><a href="#Partitioning-and-formatting" class="headerlink" title="Partitioning and formatting"></a>Partitioning and formatting</h2><p>Run <code>lsblk</code> to see where you gonna install NixOS into, the output may looks like this:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">NAME                         MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">nvme1n1                      259:0    0   3.7T  0 disk</span><br><span class="line">├─nvme1n1p1                  259:1    0    16M  0 part</span><br><span class="line">├─nvme1n1p2                  259:2    0 515.4G  0 part</span><br><span class="line">└─nvme1n1p3                  259:3    0   300G  0 part</span><br></pre></td></tr></table></figure>
-
-<p>Suppose the <code>nvme1n1p3</code> is what you want and you are SURE to format it:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo mkfs.ext4 -L nixos /dev/nvme1n1p3</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="Install-NixOS"><a href="#Install-NixOS" class="headerlink" title="Install NixOS"></a>Install NixOS</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Mount the target file system on which NixOS should be installed on `/mnt`</span></span><br><span class="line">mount /dev/disk/by-label/nixos /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Suppose you UEFI partition is /dev/nvme1n1p1</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /mnt/boot</span><br><span class="line">mount /dev/nvme1n1p1 /mnt/boot</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate default configuration file</span></span><br><span class="line">nixos-generate-config --root /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Edit configuration file</span></span><br><span class="line">vim /mnt/etc/nixos/configuration.nix</span><br></pre></td></tr></table></figure>
-
-<p>(Optinal) 将清华源做为默认源，添加以下内容到配置文件大括号内</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">nix.settings.substituters = [ &quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot; ];</span><br></pre></td></tr></table></figure>
-
-<p>在安装 NixOS 时临时使用清华源</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nixos-install --option substituters <span class="string">&quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>For more detailed processes, check <a href="https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning">this</a></p>
-<hr>
-<h2 id="Start-NixOS"><a href="#Start-NixOS" class="headerlink" title="Start NixOS"></a>Start NixOS</h2><p>Reboot and choose the NixOS just installed. Setup wifi following the same procedure above, and this time you can make it start automatically via <code>systemctl enable --now wpa_supplicant</code>.</p>
-<p>Or you can use NetworkManager instead, procedure will not be presented here.</p>
-<hr>
-<h2 id="Install-Hyprland"><a href="#Install-Hyprland" class="headerlink" title="Install Hyprland"></a>Install Hyprland</h2><p>Edit <code>/etc/nixos/configuration.nix</code> and add following:</p>
-<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  programs.<span class="attr">hyprland</span> = &#123;</span><br><span class="line">    <span class="attr">enable</span> = <span class="literal">true</span>;</span><br><span class="line">    <span class="attr">withUWSM</span> = <span class="literal">true</span>; <span class="comment"># recommended for most users</span></span><br><span class="line">    xwayland.<span class="attr">enable</span> = <span class="literal">true</span>; <span class="comment"># Xwayland can be disabled.</span></span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Then install necessary packages, I use <code>alacritty</code> as my default terminal on Hyprland:</p>
-<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  environment.<span class="attr">systemPackages</span> = <span class="keyword">with</span> pkgs; [</span><br><span class="line">    alacritty</span><br><span class="line">  ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Rebuild NixOS:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo nixos-rebuild switch</span><br></pre></td></tr></table></figure>
-
-<p>Edit Hyprland’s config file <code>~/.config/hypr/hyprland.conf</code>:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># change the default terminal from kitty to alacritty</span><br><span class="line"># $terminal = kitty</span><br><span class="line">$terminal = alacrityy</span><br></pre></td></tr></table></figure>
-
-<p>Start Hyprland.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">uwsm start select</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="The-end"><a href="#The-end" class="headerlink" title="The end"></a>The end</h2><p>The most basic setup has been done, you can now walk around the Hyprland and NixOS’s wiki and forums for more useful configurations and build up the final system that you want.</p>
-<p>Enjoy!</p>
-<hr>
-<h2 id="See-also"><a href="#See-also" class="headerlink" title="See also"></a>See also</h2><ul>
-<li><a href="https://discourse.nixos.org/t/screenshots-on-hyprland-on-nixos/29055">Screenshots on hyprland on nixos</a></li>
-</ul>
-<hr>
-<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
-<li><a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a></li>
-<li><a href="https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/">清华源 Nix Channels</a></li>
-<li><a href="https://wiki.nixos.org/wiki/Hyprland">Hyprland NixOS Wiki</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Linux</tag>
-        <tag>WM</tag>
-        <tag>NixOS</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Implementing An Simple IRC Bot Using Python</title>
     <url>/2024/11/22/Implementing-An-Simple-IRC-Bot-Using-Python/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
@@ -251,6 +173,84 @@
         <tag>Single-Board</tag>
         <tag>Router</tag>
         <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Install and Setup NixOS + Hyprland from Scratch</title>
+    <url>/2025/05/05/Install-and-Setup-NixOS-Hyprland-from-Scratch/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>First of all, though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
+<p>I fell in love with Nix for the first I have it installed cause it is definitely what I am searching for after more than three years of Arch usage. I have reinstalled my Arch many times, and each time I have to reinstall the packages manually and spend time to change the configurations, it’s fun and I enjoy it. But recently I don’t have much time left for it, so NixOS is definitely what I want.</p>
+<p>As for Hyprland, I found it very popular recently and it’s written in cpp, so I tried it with Arch from scratch and found it a fancy wm.</p>
+<hr>
+<h2 id="Download-and-boot-from-image"><a href="#Download-and-boot-from-image" class="headerlink" title="Download  and boot from image"></a>Download  and boot from image</h2><p>Get NixOS image <a href="https://nixos.org/download/">here</a>, I chose Minimal ISO image in my case.</p>
+<p>To begin the installation, you have to boot your computer from the install drive.</p>
+<ol>
+<li>Plug in the install drive. Then turn on or restart your computer.</li>
+<li>Open the boot menu by pressing the appropriate key, which is usually shown on the display on early boot. Select the USB flash drive (the option usually contains the word “USB”). If you choose the incorrect drive, your computer will likely continue to boot as normal. In that case restart your computer and pick a different drive.</li>
+</ol>
+<hr>
+<h2 id="Setup-WIFI-Optional"><a href="#Setup-WIFI-Optional" class="headerlink" title="Setup WIFI (Optional)"></a>Setup WIFI (Optional)</h2><p>There is no <code>iwd</code> preinstalled in NixOS like Arch, so use <code>wpa_supplicant</code> instead.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Bring the interface up</span></span><br><span class="line">sudo ip <span class="built_in">link</span> <span class="built_in">set</span> wlan0 up</span><br><span class="line"></span><br><span class="line"><span class="comment"># Scan avaiable networks</span></span><br><span class="line">sudo iw wlan0 scan | grep SSID</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate a wpa_supplicant config</span></span><br><span class="line">wpa_passphrase <span class="string">&quot;YourSSID&quot;</span> <span class="string">&quot;YourPassword&quot;</span> | sudo <span class="built_in">tee</span> /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Start wpa_supplicant</span></span><br><span class="line">sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get an IP address</span></span><br><span class="line">sudo dhcpcd wlan0</span><br><span class="line"></span><br><span class="line"><span class="comment"># Check connectivity</span></span><br><span class="line">ping -c 4 8.8.8.8</span><br><span class="line"></span><br><span class="line"><span class="comment"># Optional: Stop wpa_supplicant</span></span><br><span class="line"><span class="comment"># sudo pkill wpa_supplicant</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Try-installing-new-packages"><a href="#Try-installing-new-packages" class="headerlink" title="Try installing new packages"></a>Try installing new packages</h2><p>Before installing a new package, you may want to check if the package exists and how to install from <a href="https://search.nixos.org/packages">here</a>.</p>
+<p>Most of the time, install a package like this:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nix-shell -p cmatrix</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Partitioning-and-formatting"><a href="#Partitioning-and-formatting" class="headerlink" title="Partitioning and formatting"></a>Partitioning and formatting</h2><p>Run <code>lsblk</code> to see where you gonna install NixOS into, the output may looks like this:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">NAME                         MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">nvme1n1                      259:0    0   3.7T  0 disk</span><br><span class="line">├─nvme1n1p1                  259:1    0    16M  0 part</span><br><span class="line">├─nvme1n1p2                  259:2    0 515.4G  0 part</span><br><span class="line">└─nvme1n1p3                  259:3    0   300G  0 part</span><br></pre></td></tr></table></figure>
+
+<p>Suppose the <code>nvme1n1p3</code> is what you want and you are SURE to format it:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo mkfs.ext4 -L nixos /dev/nvme1n1p3</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Install-NixOS"><a href="#Install-NixOS" class="headerlink" title="Install NixOS"></a>Install NixOS</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Mount the target file system on which NixOS should be installed on `/mnt`</span></span><br><span class="line">mount /dev/disk/by-label/nixos /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Suppose you UEFI partition is /dev/nvme1n1p1</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /mnt/boot</span><br><span class="line">mount /dev/nvme1n1p1 /mnt/boot</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate default configuration file</span></span><br><span class="line">nixos-generate-config --root /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Edit configuration file</span></span><br><span class="line">vim /mnt/etc/nixos/configuration.nix</span><br></pre></td></tr></table></figure>
+
+<p>(Optinal) 将清华源做为默认源，添加以下内容到配置文件大括号内</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">nix.settings.substituters = [ &quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot; ];</span><br></pre></td></tr></table></figure>
+
+<p>在安装 NixOS 时临时使用清华源</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nixos-install --option substituters <span class="string">&quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>For more detailed processes, check <a href="https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning">this</a></p>
+<hr>
+<h2 id="Start-NixOS"><a href="#Start-NixOS" class="headerlink" title="Start NixOS"></a>Start NixOS</h2><p>Reboot and choose the NixOS just installed. Setup wifi following the same procedure above, and this time you can make it start automatically via <code>systemctl enable --now wpa_supplicant</code>.</p>
+<p>Or you can use NetworkManager instead, procedure will not be presented here.</p>
+<hr>
+<h2 id="Install-Hyprland"><a href="#Install-Hyprland" class="headerlink" title="Install Hyprland"></a>Install Hyprland</h2><p>Edit <code>/etc/nixos/configuration.nix</code> and add following:</p>
+<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  programs.<span class="attr">hyprland</span> = &#123;</span><br><span class="line">    <span class="attr">enable</span> = <span class="literal">true</span>;</span><br><span class="line">    <span class="attr">withUWSM</span> = <span class="literal">true</span>; <span class="comment"># recommended for most users</span></span><br><span class="line">    xwayland.<span class="attr">enable</span> = <span class="literal">true</span>; <span class="comment"># Xwayland can be disabled.</span></span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Then install necessary packages, I use <code>alacritty</code> as my default terminal on Hyprland:</p>
+<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  environment.<span class="attr">systemPackages</span> = <span class="keyword">with</span> pkgs; [</span><br><span class="line">    alacritty</span><br><span class="line">  ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Rebuild NixOS:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo nixos-rebuild switch</span><br></pre></td></tr></table></figure>
+
+<p>Edit Hyprland’s config file <code>~/.config/hypr/hyprland.conf</code>:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># change the default terminal from kitty to alacritty</span><br><span class="line"># $terminal = kitty</span><br><span class="line">$terminal = alacrityy</span><br></pre></td></tr></table></figure>
+
+<p>Start Hyprland.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">uwsm start select</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="The-end"><a href="#The-end" class="headerlink" title="The end"></a>The end</h2><p>The most basic setup has been done, you can now walk around the Hyprland and NixOS’s wiki and forums for more useful configurations and build up the final system that you want.</p>
+<p>Enjoy!</p>
+<hr>
+<h2 id="See-also"><a href="#See-also" class="headerlink" title="See also"></a>See also</h2><ul>
+<li><a href="https://discourse.nixos.org/t/screenshots-on-hyprland-on-nixos/29055">Screenshots on hyprland on nixos</a></li>
+</ul>
+<hr>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a></li>
+<li><a href="https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/">清华源 Nix Channels</a></li>
+<li><a href="https://wiki.nixos.org/wiki/Hyprland">Hyprland NixOS Wiki</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>WM</tag>
+        <tag>NixOS</tag>
       </tags>
   </entry>
   <entry>
@@ -705,18 +705,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Welcome Orangeの小窝!!!</title>
-    <url>/2022/04/12/firstpost/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
-<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
-<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-]]></content>
-      <tags>
-        <tag>Greetings</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>使用Qemu替代VirtualBox并进行相关配置</title>
     <url>/2022/05/29/replace-vbox-with-qemu/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>在使用了很长一段时间（大概6-7个月）的VirtualBox之后，我决定使用Qemu替代它。事实上我使用VirtualBox的体验非常好，尤其是它提供的Host和Guest之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。但对于一些复杂点的网络配置则需要用到命令行工具<code>vboxmanage</code>，比如启用虚拟网卡的dhcp服务。而让我毅然决定放弃VirtualBox选择Qemu的原因是我在油管上看到的一则发表于2022年1月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
@@ -744,45 +732,6 @@
         <tag>Arch</tag>
         <tag>Virtualization</tag>
         <tag>tweak/toss</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>用OpenCode + GLM-4.7给Real-ESRGAN套Web UI，只用了一晚上？</title>
-    <url>/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>前不久在网上找到一张喜欢的壁纸，但是查了半天没找着高清原图，只好先将就用着。而最近看着这略显模糊的壁纸实在是受不了了，就想着给它upscale一下。很自然的想起了以前用过的<a href="https://github.com/xinntao/Real-ESRGAN">xinntao&#x2F;Real-ESRGAN</a>，当时就觉得这东西巨好用，只是一直没有使用的场景，现在是时候给用起来了。</p>
-<h2 id="ComfyUI-vs-Script"><a href="#ComfyUI-vs-Script" class="headerlink" title="ComfyUI vs Script"></a>ComfyUI vs Script</h2><p>虽然说想到要用Real-ESRGAN来让图像更清晰，一开始并没打算直接用它原有的命令行工具，而是准备用<a href="https://github.com/AUTOMATIC1111/stable-diffusion-webui">stable-diffusion-webui</a>或者是<a href="https://github.com/Comfy-Org/ComfyUI">ComfyUI</a>这类功能更丰富的项目。</p>
-<p>花一上午的时间在本地装好了ComfyUI：</p>
-<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/1.jpg" class="">
-<p>用<code>RealESRGAN_x4plus_anime_6B.pth</code>试着增强下壁纸，结果让人哭笑不得：</p>
-<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/2.jpg" class="">
-<p>或许是我的处理方式不对，也或许是因为没有照安装文档说的用最适配的python13&#x2F;12版本导致。</p>
-<p>不过这个模型在ComfyUI里确实有点水土不服，参考<a href="https://github.com/zentrocdot/ComfyUI-RealESRGAN_Upscaler">zentrocdot&#x2F;ComfyUI-RealESRGAN_Upscaler</a>和<a href="https://www.reddit.com/r/comfyui/comments/18fcpk4/reproduce_a1111_hires_fix_with_resrgan_in_comfyui/">Reproduce A1111 hires fix with R-ESRGAN in Comfyui?</a>。</p>
-<p>不得已只好用<a href="https://github.com/xinntao/Real-ESRGAN">xinntao&#x2F;Real-ESRGAN</a>本身提供的安装包和脚本了，好在虽然已经2年多没更新了，它的功能还能正常使用，生成的图也没有问题。</p>
-<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/4.jpg" class="">
-
-<h2 id="OpenCode开始发力"><a href="#OpenCode开始发力" class="headerlink" title="OpenCode开始发力"></a>OpenCode开始发力</h2><p>在对比生成前和生成后的壁纸时突然有了个想法，要是有工具可以直观的对比两张图的区别就好了。</p>
-<p>查了一圈发现这个功能基本都是在线网站在提供，没找着离线工具。</p>
-<p>那就自己做一个好了，正好试试<code>OpenCode + GLM-4.7</code>的本事。</p>
-<p>于是差不多快晚上的时候，我开始用OpenCode生成代码，先是生成了一个可以让两图片通过滑块对比的单html页面，然后在此基础上让它支持上传文件、后台命令调用、文件下载等功能。</p>
-<p>很快啊，这些个小功能它很快就完成了，而且运行得很完美。</p>
-<h2 id="OpenCode开始吃力"><a href="#OpenCode开始吃力" class="headerlink" title="OpenCode开始吃力"></a>OpenCode开始吃力</h2><p>事情发生了转机。</p>
-<p>我让它修改代码以支持在公网上安全部署，它咔咔生成完，结果没法上传文件了。</p>
-<p>我把现象告诉它让它自己找出问题，它整了半天没把问题给找出来，最后我不得不打开了前端控制台：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">(index):309 Executing inline script violates the following Content Security Policy directive <span class="string">&#x27;script-src &#x27;</span>self<span class="string">&#x27; https://unpkg.com&#x27;</span>. Either the <span class="string">&#x27;unsafe-inline&#x27;</span> keyword, a <span class="built_in">hash</span> (<span class="string">&#x27;sha256-b6+B5SDP+VwnXrplXir/gTF5QsRBt5n146EYh701WGM=&#x27;</span>), or a nonce (<span class="string">&#x27;nonce-...&#x27;</span>) is required to <span class="built_in">enable</span> inline execution. The action has been blocked.</span><br></pre></td></tr></table></figure>
-<p>好嘛，原来是安全策略把自己给限了，把错误信息交给它后，终于是把问题修复了。</p>
-<p>之后又用最近流行起来的<a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill">ui-ux-pro-max-skill</a>给项目的前端页面升了个级：</p>
-<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/3.jpg" class="">
-
-<p>已经是个有模有样的工具了。</p>
-<h2 id="OpenCode完美结算"><a href="#OpenCode完美结算" class="headerlink" title="OpenCode完美结算"></a>OpenCode完美结算</h2><p>最后截了几张图，直接让它生成<code>README.md</code>这些上传GitHub需要准备的东西，一气呵成，项目传送门：<a href="https://github.com/qspidy/realesrgan-web-ui">realesrgan-web-ui</a>。</p>
-<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>不得不承认现在的AI发展神速啊，以后这种小工具完全可以用AI直接生成，再也不怕这些冷门的小需求无处安放。不管是让AI基于已有的东西开发新功能，还是直接生成一个小工具用完就扔，简直…</p>
-]]></content>
-      <tags>
-        <tag>AI</tag>
-        <tag>Development</tag>
-        <tag>OpenCode</tag>
-        <tag>Github</tag>
-        <tag>Anime</tag>
       </tags>
   </entry>
   <entry>
@@ -833,10 +782,98 @@
         <tag>AI</tag>
         <tag>Development</tag>
         <tag>OpenCode</tag>
-        <tag>Github</tag>
         <tag>Claude</tag>
+        <tag>Github</tag>
         <tag>Nginx</tag>
         <tag>Image-host</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Welcome Orangeの小窝!!!</title>
+    <url>/2022/04/12/firstpost/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
+<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
+<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+]]></content>
+      <tags>
+        <tag>Greetings</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>图床，但是命令行，在任何地方</title>
+    <url>/2026/04/24/%E5%9B%BE%E5%BA%8A%EF%BC%8C%E4%BD%86%E6%98%AF%E5%91%BD%E4%BB%A4%E8%A1%8C%EF%BC%8C%E5%9C%A8%E4%BB%BB%E4%BD%95%E5%9C%B0%E6%96%B9/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>前段时间用<code>claude+glm4.7</code>整了个使用<code>nginx+lua</code>脚本实现的<a href="https://github.com/qspidy/imgng">个人图床方案</a>，很简洁啊，主要逻辑都集中在一个<a href="https://github.com/qspidy/imgng/blob/master/img-host-full.conf">nginx配置文件</a>内，不到120行，兼具性能（nginx特性）和访问速度（套cdn）。</p>
+<p>然而这种部署方式绕不开一个问题：得有一台服务器。专门搞一台服务器做个人图床多少是有点大材小用了，个人使用又能存多少东西呢？不如先薅大厂羊毛，等到羊毛不够用了再换不迟。</p>
+<p>于是这个<del>轮子</del>(项目)诞生了，在<code>codex+gpt5.4</code>和本人的努力下，花了一晚上时间。<br><img src="https://img.wastaken.xyz/images/978820ea1ddaa21db8a8ca8ea2144424.png"></p>
+<h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><blockquote>
+<p>curl-powered image hosting for hackers. One-click deploy on Cloudflare, or integrate with existing nginx server.</p>
+</blockquote>
+<p>该项目<a href="https://github.com/qspidy/imgng">qspidy&#x2F;imgng</a>的设计理念是，能在身边任何一台联网的机器上传图片到图床并获取链接，只要记住这条几乎不能再短的<code>curl</code>命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -u user:pass --data-binary @photo.jpg https://example.com/upload</span><br></pre></td></tr></table></figure>
+
+<p>之所以说是“几乎”不能再短，是因为还可以使用<code>alias</code>或者<code>shell函数</code>给它<a href="https://github.com/qspidy/imgng#upload-api">设置别名</a>，然后像使用一个普通linux命令一样使用它：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">imgng</span></span>() &#123;</span><br><span class="line">  curl -s -u user:pass --data-binary @<span class="string">&quot;<span class="variable">$1</span>&quot;</span> https://example.com/upload</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">imgng photo.jpg</span><br></pre></td></tr></table></figure>
+<p><img src="https://img.wastaken.xyz/images/62b8125d3f136a9ebb51e85070584fc6.gif"></p>
+<p>这次相比上一篇博客<a href="https://orange.wastaken.xyz/2026/02/01/%E4%BD%BF%E7%94%A8Nginx%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%9B%BE%E5%BA%8A%EF%BC%8C%E8%AE%A9%E9%93%BE%E6%8E%A5%E6%B0%B8%E8%BF%9C%E6%9C%89%E6%95%88%EF%BC%81">使用Nginx搭建个人图床，让链接永远有效！</a>的主要变化是，提供一个零成本的服务端部署方案，使用<code>Cloudflare+R2</code>。当然还有很多其它<del>薅羊毛</del>（免费部署）方案，参考文末的<a href="#%E5%A4%96%E9%83%A8%E9%93%BE%E6%8E%A5">外部链接</a>，相信各路大神都能找到适合自己的方案。</p>
+<p>从某种程度上而言，它更像是提供了一个相较传统<code>S3 API</code>而言更简洁的接口，在客户端做到了极致的简洁（命令行爱好者狂喜！）。</p>
+<p>结合当前<code>CLI</code>越来越热的趋势，这小项目还有更多存在和参考的意义，后续或许可以进一步发展成一整套图床命令行<del>增删改查</del>(接口方案)。再者可以通过Skills&#x2F;MCP等方式和Agent无缝集成，成为Agent工作流的一部分。</p>
+<p>要长期使用的话，它目前还缺少一些关键的功能：图片展示列表，重复图片处理等。接下来会继续完善这些关键的功能。</p>
+<p>另外还有些可选功能：支持多用户，备份恢复等。因为它当前的定位是个人使用，所以支持多用户暂不考虑，而文件存储在R2上也基本不用担心文件丢失的问题，所以目前不急（备份也就一条命令的事，考虑到前段时间Cloudflare还崩了一次，备份还是有必要的）。</p>
+<h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>用了codex+gpt5.4才知道原来不是Agent不好用，而是<del>钱没到位</del>（选错了模型和Agent），回想当初用 claude+glm4.7，那真是改了又改，5小时额度用完了都没跑通。这次几乎是首次提示词一下去出来的东西就能用，后面只需做些功能完善和文档生成的工作。</p>
+<p>心情很复杂。很兴奋，在AI有加持下个人能力边界得到了极大的扩张，很悲伤，AI对程序员群体造成了很大的冲击，许多知识与技能似乎都没有了意义。</p>
+<p>虽然如此，技术在发展，时代在进步，拥抱未来是唯一能走的路。</p>
+<h2 id="外部链接"><a href="#外部链接" class="headerlink" title="外部链接"></a>外部链接</h2><h3 id="类似项目（更适合广大人类GUI用户食用）"><a href="#类似项目（更适合广大人类GUI用户食用）" class="headerlink" title="类似项目（更适合广大人类GUI用户食用）"></a>类似项目（更适合<del>广大人类</del>GUI用户食用）</h3><ul>
+<li><a href="https://github.com/MarSeventh/CloudFlare-ImgBed">https://github.com/MarSeventh/CloudFlare-ImgBed</a></li>
+<li><a href="https://github.com/Molunerfinn/picgo">https://github.com/Molunerfinn/picgo</a></li>
+</ul>
+<h3 id="其它基于CF的薅羊毛项目"><a href="#其它基于CF的薅羊毛项目" class="headerlink" title="其它基于CF的薅羊毛项目"></a><a href="https://github.com/topics/cloudflare-r2">其它基于CF的<del>薅羊毛</del>项目</a></h3>]]></content>
+      <tags>
+        <tag>AI</tag>
+        <tag>Github</tag>
+        <tag>Image-host</tag>
+        <tag>Cloudflare</tag>
+        <tag>Free</tag>
+        <tag>CLI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>用OpenCode + GLM-4.7给Real-ESRGAN套Web UI，只用了一晚上？</title>
+    <url>/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>前不久在网上找到一张喜欢的壁纸，但是查了半天没找着高清原图，只好先将就用着。而最近看着这略显模糊的壁纸实在是受不了了，就想着给它upscale一下。很自然的想起了以前用过的<a href="https://github.com/xinntao/Real-ESRGAN">xinntao&#x2F;Real-ESRGAN</a>，当时就觉得这东西巨好用，只是一直没有使用的场景，现在是时候给用起来了。</p>
+<h2 id="ComfyUI-vs-Script"><a href="#ComfyUI-vs-Script" class="headerlink" title="ComfyUI vs Script"></a>ComfyUI vs Script</h2><p>虽然说想到要用Real-ESRGAN来让图像更清晰，一开始并没打算直接用它原有的命令行工具，而是准备用<a href="https://github.com/AUTOMATIC1111/stable-diffusion-webui">stable-diffusion-webui</a>或者是<a href="https://github.com/Comfy-Org/ComfyUI">ComfyUI</a>这类功能更丰富的项目。</p>
+<p>花一上午的时间在本地装好了ComfyUI：</p>
+<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/1.jpg" class="">
+<p>用<code>RealESRGAN_x4plus_anime_6B.pth</code>试着增强下壁纸，结果让人哭笑不得：</p>
+<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/2.jpg" class="">
+<p>或许是我的处理方式不对，也或许是因为没有照安装文档说的用最适配的python13&#x2F;12版本导致。</p>
+<p>不过这个模型在ComfyUI里确实有点水土不服，参考<a href="https://github.com/zentrocdot/ComfyUI-RealESRGAN_Upscaler">zentrocdot&#x2F;ComfyUI-RealESRGAN_Upscaler</a>和<a href="https://www.reddit.com/r/comfyui/comments/18fcpk4/reproduce_a1111_hires_fix_with_resrgan_in_comfyui/">Reproduce A1111 hires fix with R-ESRGAN in Comfyui?</a>。</p>
+<p>不得已只好用<a href="https://github.com/xinntao/Real-ESRGAN">xinntao&#x2F;Real-ESRGAN</a>本身提供的安装包和脚本了，好在虽然已经2年多没更新了，它的功能还能正常使用，生成的图也没有问题。</p>
+<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/4.jpg" class="">
+
+<h2 id="OpenCode开始发力"><a href="#OpenCode开始发力" class="headerlink" title="OpenCode开始发力"></a>OpenCode开始发力</h2><p>在对比生成前和生成后的壁纸时突然有了个想法，要是有工具可以直观的对比两张图的区别就好了。</p>
+<p>查了一圈发现这个功能基本都是在线网站在提供，没找着离线工具。</p>
+<p>那就自己做一个好了，正好试试<code>OpenCode + GLM-4.7</code>的本事。</p>
+<p>于是差不多快晚上的时候，我开始用OpenCode生成代码，先是生成了一个可以让两图片通过滑块对比的单html页面，然后在此基础上让它支持上传文件、后台命令调用、文件下载等功能。</p>
+<p>很快啊，这些个小功能它很快就完成了，而且运行得很完美。</p>
+<h2 id="OpenCode开始吃力"><a href="#OpenCode开始吃力" class="headerlink" title="OpenCode开始吃力"></a>OpenCode开始吃力</h2><p>事情发生了转机。</p>
+<p>我让它修改代码以支持在公网上安全部署，它咔咔生成完，结果没法上传文件了。</p>
+<p>我把现象告诉它让它自己找出问题，它整了半天没把问题给找出来，最后我不得不打开了前端控制台：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">(index):309 Executing inline script violates the following Content Security Policy directive <span class="string">&#x27;script-src &#x27;</span>self<span class="string">&#x27; https://unpkg.com&#x27;</span>. Either the <span class="string">&#x27;unsafe-inline&#x27;</span> keyword, a <span class="built_in">hash</span> (<span class="string">&#x27;sha256-b6+B5SDP+VwnXrplXir/gTF5QsRBt5n146EYh701WGM=&#x27;</span>), or a nonce (<span class="string">&#x27;nonce-...&#x27;</span>) is required to <span class="built_in">enable</span> inline execution. The action has been blocked.</span><br></pre></td></tr></table></figure>
+<p>好嘛，原来是安全策略把自己给限了，把错误信息交给它后，终于是把问题修复了。</p>
+<p>之后又用最近流行起来的<a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill">ui-ux-pro-max-skill</a>给项目的前端页面升了个级：</p>
+<img src="/2026/01/25/%E7%94%A8OpenCode-GLM-4-7%E7%BB%99Real-ESRGAN%E5%A5%97Web-UI%EF%BC%8C%E5%8F%AA%E7%94%A8%E4%BA%86%E4%B8%80%E6%99%9A%E4%B8%8A%EF%BC%9F/3.jpg" class="">
+
+<p>已经是个有模有样的工具了。</p>
+<h2 id="OpenCode完美结算"><a href="#OpenCode完美结算" class="headerlink" title="OpenCode完美结算"></a>OpenCode完美结算</h2><p>最后截了几张图，直接让它生成<code>README.md</code>这些上传GitHub需要准备的东西，一气呵成，项目传送门：<a href="https://github.com/qspidy/realesrgan-web-ui">realesrgan-web-ui</a>。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>不得不承认现在的AI发展神速啊，以后这种小工具完全可以用AI直接生成，再也不怕这些冷门的小需求无处安放。不管是让AI基于已有的东西开发新功能，还是直接生成一个小工具用完就扔，简直…</p>
+]]></content>
+      <tags>
+        <tag>AI</tag>
+        <tag>Development</tag>
+        <tag>OpenCode</tag>
+        <tag>Github</tag>
+        <tag>Anime</tag>
       </tags>
   </entry>
 </search>
