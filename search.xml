@@ -364,6 +364,79 @@
       </tags>
   </entry>
   <entry>
+    <title>【DST Dedicated Server】简单开服流程（Writen by MrOrange)</title>
+    <url>/2023/10/13/dst-dedicate-server-start/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><hr>
+<h2 id="拥有一台服务器"><a href="#拥有一台服务器" class="headerlink" title="拥有一台服务器"></a>拥有一台服务器</h2><ul>
+<li>首先，当然是有一台已经装好Debian的服务器（1Mbps带宽大概对应2~4人，一个存档2核就够，棱镜+勋章至少得3G内存），不建议Ubuntu，一些依赖似乎无法安装。</li>
+<li>安装之后可能用到的包：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install tmux btop htop fish ranger git</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="配置基础环境（steamcmd-dst服务器）："><a href="#配置基础环境（steamcmd-dst服务器）：" class="headerlink" title="配置基础环境（steamcmd, dst服务器）："></a>配置基础环境（steamcmd, dst服务器）：</h2><ul>
+<li>一行行复制运行，注意是否报错</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dpkg --add-architecture i386 <span class="comment"># If running a 64bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get update</span><br><span class="line"><span class="built_in">sudo</span> apt-get install lib32gcc1    <span class="comment"># If running a 64bit OS</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> apt-get install lib32stdc++6 <span class="comment"># If running a 64bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install libgcc1      <span class="comment"># If running a 32bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install libcurl4-gnutls-dev:i386</span><br><span class="line"><span class="built_in">sudo</span> useradd -m steam</span><br><span class="line"><span class="built_in">sudo</span> su - steam</span><br><span class="line"><span class="built_in">mkdir</span> ~/steamcmd</span><br><span class="line"><span class="built_in">cd</span> ~/steamcmd</span><br><span class="line">wget &lt;https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz&gt;</span><br><span class="line">tar -xvzf steamcmd_linux.tar.gz</span><br><span class="line">./steamcmd.sh</span><br><span class="line">force_install_dir /home/steam/steamapps/DST (or whatever absolute path is wanted)</span><br><span class="line">login anonymous</span><br><span class="line">app_update 343050 validate</span><br><span class="line">quit</span><br><span class="line"><span class="built_in">cd</span> /home/steam/steamapps/DST/bin/</span><br><span class="line">./dontstarve_dedicated_server_nullrenderer</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>最后一句尝试启动服务器，会生成一些简单的配置，如无报错则基本环境已经配置好。</li>
+</ul>
+<hr>
+<h2 id="克隆MrOrange的服务器管理脚本，给予执行权限："><a href="#克隆MrOrange的服务器管理脚本，给予执行权限：" class="headerlink" title="克隆MrOrange的服务器管理脚本，给予执行权限："></a>克隆MrOrange的服务器管理脚本，给予执行权限：</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/qspidy/dst-dedicated-server-admin-scripts.git</span><br><span class="line"><span class="built_in">chmod</span> +x dst-dedicated-server-admin-scripts/dst*</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="生成并上传cluster-token-txt"><a href="#生成并上传cluster-token-txt" class="headerlink" title="生成并上传cluster_token.txt"></a>生成并上传cluster_token.txt</h2><ul>
+<li>本地DST控制台运行<code>TheNet:GenerateClusterToken()</code>生成令牌文件<code>cluster_token.txt</code>，位置在<code>C:/Users/&lt;yourusername&gt;/Documents/Klei/DoNotStarveTogether</code>（大概，也可能在某个子文件夹），然后上传至服务器<code>/home/steam/.klei/DoNotStarveTogether/</code>目录。该文件相当于身份认证，即只有买了这游戏的人才能创服务器（当然也可以白嫖其它人的）。</li>
+</ul>
+<hr>
+<h2 id="常规开服步骤"><a href="#常规开服步骤" class="headerlink" title="常规开服步骤"></a>常规开服步骤</h2><h3 id="创建新世界"><a href="#创建新世界" class="headerlink" title="创建新世界"></a>创建新世界</h3><ul>
+<li>在本地DST游戏中创建新世界，配置想要的模组，世界类型等等。</li>
+</ul>
+<h3 id="上传存档文件夹"><a href="#上传存档文件夹" class="headerlink" title="上传存档文件夹"></a>上传存档文件夹</h3><ul>
+<li>找到新世界的存档文件夹（游戏里存档设置页有“打开世界文件夹”选项），通常叫<code>Cluster_xx</code>，把<code>Cluster_xx</code>文件夹上传到服务器的存档目录<code>/home/steam/.klei/DoNotStarveTogether/</code>。</li>
+</ul>
+<h3 id="修改相应配置（主要是cluster-ini）"><a href="#修改相应配置（主要是cluster-ini）" class="headerlink" title="修改相应配置（主要是cluster.ini）"></a>修改相应配置（主要是cluster.ini）</h3><ul>
+<li>打开服务器新世界存档文件夹<code>Cluster_xx</code>里的<code>cluster.ini</code>文件，修改相应的配置，主要是修改人数。</li>
+<li>[可选]直连端口在<code>Cluster_xx/Master/server.ini</code>里可以查看和修改。同时开不同的存档需要修改<code>Cluster_xx/Master/server.ini</code>和<code>Cluster_xx/Caves/server.ini</code>里的<code>server_port</code>，以及<code>cluster.ini</code>里的<code>master_port</code>，以避免端口冲突。</li>
+</ul>
+<hr>
+<h2 id="启动和维护"><a href="#启动和维护" class="headerlink" title="启动和维护"></a>启动和维护</h2><h3 id="启动dst服务器-这里假设存档文件夹为Cluster-12-："><a href="#启动dst服务器-这里假设存档文件夹为Cluster-12-：" class="headerlink" title="启动dst服务器(这里假设存档文件夹为Cluster_12 )："></a>启动dst服务器(这里假设存档文件夹为<code>Cluster_12</code> )：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_start.sh -C 12</span><br><span class="line"><span class="comment"># 如要进行服务器交互和查看输出（默认 dst-12 为对应的tmux会话名）</span></span><br><span class="line">tmux attach -t dst-12</span><br></pre></td></tr></table></figure>
+
+<h3 id="完全关闭dst服务器："><a href="#完全关闭dst服务器：" class="headerlink" title="完全关闭dst服务器："></a>完全关闭dst服务器：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_shutdown.sh -C 12</span><br></pre></td></tr></table></figure>
+
+<h3 id="生成备份文件："><a href="#生成备份文件：" class="headerlink" title="生成备份文件："></a>生成备份文件：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_backup_cluster.sh -C 12</span><br></pre></td></tr></table></figure>
+
+<h3 id="单独更新dst服务器和mods："><a href="#单独更新dst服务器和mods：" class="headerlink" title="单独更新dst服务器和mods："></a>单独更新dst服务器和mods：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_update_modlist.sh 12</span><br><span class="line">./dst-dedicated-server-admin-scripts/dst_update.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="更新中-发送服务器指令（如保存世界、踢出某人）："><a href="#更新中-发送服务器指令（如保存世界、踢出某人）：" class="headerlink" title="(更新中)发送服务器指令（如保存世界、踢出某人）："></a>(更新中)发送服务器指令（如保存世界、踢出某人）：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 保存世界</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_save()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 踢出某人</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_kill(<span class="string">&quot;player_id&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>常用指令（大概）：<code>c_save()</code> , <code>c_shutdown()</code> , <code>c_announce(&quot;message&quot;)</code> , <code>c_regenerateworld()</code> , <code>c_rollback()</code> , <code>c_listallplayers()</code> , <code>c_kill(&quot;player_id&quot;)</code> .</li>
+<li>打印当前世界信息（天数、季节、时段）指令： <code>TheNet:Announce(&quot;Current day: &quot;..TheWorld.state.cycles..&quot; Season: &quot;..TheWorld.state.season..&quot;, Phase: &quot;..TheWorld.state.phase)</code></li>
+</ul>
+<h3 id="查看跟踪日志："><a href="#查看跟踪日志：" class="headerlink" title="查看跟踪日志："></a>查看跟踪日志：</h3><ul>
+<li>查看跟踪当前服务器日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_log.txt</code></li>
+<li>查看跟踪当前服务器聊天日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_chat_log.txt</code></li>
+</ul>
+<hr>
+<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><ol>
+<li><a href="https://dontstarve.fandom.com/wiki/Guides/Don%E2%80%99t_Starve_Together_Dedicated_Servers">Guides&#x2F;Don’t Starve Together Dedicated Servers - FANDOM</a></li>
+<li><a href="https://forums.kleientertainment.com/forums/topic/64441-dedicated-server-quick-setup-guide-linux/">Dedicated Server Quick Setup Guide - Linux</a></li>
+<li><strong><a href="https://www.youtube.com/watch?v=ZkGPlQsiXzQ&list=PLaovyrM6DB1BIqTXAF6LZjQHSZHWqSIYz&ab_channel=Jazzy%27sGames">DEDICATED SERVER QUICK SETUP (Windows) | Don’t Starve Together</a></strong></li>
+<li><strong><a href="https://steamcommunity.com/sharedfiles/filedetails/?l=schinese&id=1616647350">Dedicated Server配置项和命令行参数详解</a></strong></li>
+</ol>
+]]></content>
+      <categories>
+        <category>折腾合集</category>
+        <category>Game</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Game</tag>
+        <tag>DST</tag>
+        <tag>Server</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Welcome Orangeの小窝!!!</title>
     <url>/2022/04/12/firstpost/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
@@ -624,7 +697,7 @@
 </li>
 </ol>
 <hr>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总的来说，这个作业难度不高，代码用到的都是最基本的逻辑和计算。但想要顺利的解出答案，除了要对 <strong>gdb</strong> 的操作和命令熟练外，还要对程序的基本运行原理和相关汇编指令有一定程度的掌握。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>总的来说，这个作业难度不高，代码用到的都是最基本的逻辑和计算。但想要顺利的解出答案，除了要对 <strong>gdb</strong> 的操作和命令熟练外，还要对程序的基本运行原理和相关汇编指令有一定程度的掌握。</p>
 <p>我认为这 6 个 Phase 中唯一棘手的是最后一个，几乎全是循环逻辑，甚至是双重循环，对这种逻辑的处理没太多经验的话很容易望而却步，哪怕是硬着头皮上，也会身心俱疲。但总之，程序的运行逻辑无非几种：顺序、分支、循环。基本逻辑搞定了，分析解决再复杂的逻辑也不过是时间问题。</p>
 <p>当然，问题通常都不会只有一种解法，比如 <strong>phase_4</strong> 可以还能配合暴力枚举找出答案，节省大量时间。灵活运用工具，善于思考，尝试用不同的角度去审视难题，可以让思维更加开阔。</p>
 <p>该篇是本博客第一个技术长篇，或许还有许多表述不周的地方，欢迎在下方评论，我们一起，变得更强！</p>
@@ -672,79 +745,6 @@
         <tag>Arch</tag>
         <tag>Virtualization</tag>
         <tag>tweak/toss</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【DST Dedicated Server】简单开服流程（Writen by MrOrange)</title>
-    <url>/2023/10/13/dst-dedicate-server-start/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><hr>
-<h2 id="拥有一台服务器"><a href="#拥有一台服务器" class="headerlink" title="拥有一台服务器"></a>拥有一台服务器</h2><ul>
-<li>首先，当然是有一台已经装好Debian的服务器（1Mbps带宽大概对应2~4人，一个存档2核就够，棱镜+勋章至少得3G内存），不建议Ubuntu，一些依赖似乎无法安装。</li>
-<li>安装之后可能用到的包：</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install tmux btop htop fish ranger git</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="配置基础环境（steamcmd-dst服务器）："><a href="#配置基础环境（steamcmd-dst服务器）：" class="headerlink" title="配置基础环境（steamcmd, dst服务器）："></a>配置基础环境（steamcmd, dst服务器）：</h2><ul>
-<li>一行行复制运行，注意是否报错</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dpkg --add-architecture i386 <span class="comment"># If running a 64bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get update</span><br><span class="line"><span class="built_in">sudo</span> apt-get install lib32gcc1    <span class="comment"># If running a 64bit OS</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> apt-get install lib32stdc++6 <span class="comment"># If running a 64bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install libgcc1      <span class="comment"># If running a 32bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install libcurl4-gnutls-dev:i386</span><br><span class="line"><span class="built_in">sudo</span> useradd -m steam</span><br><span class="line"><span class="built_in">sudo</span> su - steam</span><br><span class="line"><span class="built_in">mkdir</span> ~/steamcmd</span><br><span class="line"><span class="built_in">cd</span> ~/steamcmd</span><br><span class="line">wget &lt;https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz&gt;</span><br><span class="line">tar -xvzf steamcmd_linux.tar.gz</span><br><span class="line">./steamcmd.sh</span><br><span class="line">force_install_dir /home/steam/steamapps/DST (or whatever absolute path is wanted)</span><br><span class="line">login anonymous</span><br><span class="line">app_update 343050 validate</span><br><span class="line">quit</span><br><span class="line"><span class="built_in">cd</span> /home/steam/steamapps/DST/bin/</span><br><span class="line">./dontstarve_dedicated_server_nullrenderer</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>最后一句尝试启动服务器，会生成一些简单的配置，如无报错则基本环境已经配置好。</li>
-</ul>
-<hr>
-<h2 id="克隆MrOrange的服务器管理脚本，给予执行权限："><a href="#克隆MrOrange的服务器管理脚本，给予执行权限：" class="headerlink" title="克隆MrOrange的服务器管理脚本，给予执行权限："></a>克隆MrOrange的服务器管理脚本，给予执行权限：</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/qspidy/dst-dedicated-server-admin-scripts.git</span><br><span class="line"><span class="built_in">chmod</span> +x dst-dedicated-server-admin-scripts/dst*</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="生成并上传cluster-token-txt"><a href="#生成并上传cluster-token-txt" class="headerlink" title="生成并上传cluster_token.txt"></a>生成并上传cluster_token.txt</h2><ul>
-<li>本地DST控制台运行<code>TheNet:GenerateClusterToken()</code>生成令牌文件<code>cluster_token.txt</code>，位置在<code>C:/Users/&lt;yourusername&gt;/Documents/Klei/DoNotStarveTogether</code>（大概，也可能在某个子文件夹），然后上传至服务器<code>/home/steam/.klei/DoNotStarveTogether/</code>目录。该文件相当于身份认证，即只有买了这游戏的人才能创服务器（当然也可以白嫖其它人的）。</li>
-</ul>
-<hr>
-<h2 id="常规开服步骤"><a href="#常规开服步骤" class="headerlink" title="常规开服步骤"></a>常规开服步骤</h2><h3 id="创建新世界"><a href="#创建新世界" class="headerlink" title="创建新世界"></a>创建新世界</h3><ul>
-<li>在本地DST游戏中创建新世界，配置想要的模组，世界类型等等。</li>
-</ul>
-<h3 id="上传存档文件夹"><a href="#上传存档文件夹" class="headerlink" title="上传存档文件夹"></a>上传存档文件夹</h3><ul>
-<li>找到新世界的存档文件夹（游戏里存档设置页有“打开世界文件夹”选项），通常叫<code>Cluster_xx</code>，把<code>Cluster_xx</code>文件夹上传到服务器的存档目录<code>/home/steam/.klei/DoNotStarveTogether/</code>。</li>
-</ul>
-<h3 id="修改相应配置（主要是cluster-ini）"><a href="#修改相应配置（主要是cluster-ini）" class="headerlink" title="修改相应配置（主要是cluster.ini）"></a>修改相应配置（主要是cluster.ini）</h3><ul>
-<li>打开服务器新世界存档文件夹<code>Cluster_xx</code>里的<code>cluster.ini</code>文件，修改相应的配置，主要是修改人数。</li>
-<li>[可选]直连端口在<code>Cluster_xx/Master/server.ini</code>里可以查看和修改。同时开不同的存档需要修改<code>Cluster_xx/Master/server.ini</code>和<code>Cluster_xx/Caves/server.ini</code>里的<code>server_port</code>，以及<code>cluster.ini</code>里的<code>master_port</code>，以避免端口冲突。</li>
-</ul>
-<hr>
-<h2 id="启动和维护"><a href="#启动和维护" class="headerlink" title="启动和维护"></a>启动和维护</h2><h3 id="启动dst服务器-这里假设存档文件夹为Cluster-12-："><a href="#启动dst服务器-这里假设存档文件夹为Cluster-12-：" class="headerlink" title="启动dst服务器(这里假设存档文件夹为Cluster_12 )："></a>启动dst服务器(这里假设存档文件夹为<code>Cluster_12</code> )：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_start.sh -C 12</span><br><span class="line"><span class="comment"># 如要进行服务器交互和查看输出（默认 dst-12 为对应的tmux会话名）</span></span><br><span class="line">tmux attach -t dst-12</span><br></pre></td></tr></table></figure>
-
-<h3 id="完全关闭dst服务器："><a href="#完全关闭dst服务器：" class="headerlink" title="完全关闭dst服务器："></a>完全关闭dst服务器：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_shutdown.sh -C 12</span><br></pre></td></tr></table></figure>
-
-<h3 id="生成备份文件："><a href="#生成备份文件：" class="headerlink" title="生成备份文件："></a>生成备份文件：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_backup_cluster.sh -C 12</span><br></pre></td></tr></table></figure>
-
-<h3 id="单独更新dst服务器和mods："><a href="#单独更新dst服务器和mods：" class="headerlink" title="单独更新dst服务器和mods："></a>单独更新dst服务器和mods：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./dst-dedicated-server-admin-scripts/dst_update_modlist.sh 12</span><br><span class="line">./dst-dedicated-server-admin-scripts/dst_update.sh</span><br></pre></td></tr></table></figure>
-
-<h3 id="更新中-发送服务器指令（如保存世界、踢出某人）："><a href="#更新中-发送服务器指令（如保存世界、踢出某人）：" class="headerlink" title="(更新中)发送服务器指令（如保存世界、踢出某人）："></a>(更新中)发送服务器指令（如保存世界、踢出某人）：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 保存世界</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_save()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 踢出某人</span></span><br><span class="line">./dst-dedicated-server-admin-scripts/albin/tmux_send.al dst-12 c_kill(<span class="string">&quot;player_id&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>常用指令（大概）：<code>c_save()</code> , <code>c_shutdown()</code> , <code>c_announce(&quot;message&quot;)</code> , <code>c_regenerateworld()</code> , <code>c_rollback()</code> , <code>c_listallplayers()</code> , <code>c_kill(&quot;player_id&quot;)</code> .</li>
-<li>打印当前世界信息（天数、季节、时段）指令： <code>TheNet:Announce(&quot;Current day: &quot;..TheWorld.state.cycles..&quot; Season: &quot;..TheWorld.state.season..&quot;, Phase: &quot;..TheWorld.state.phase)</code></li>
-</ul>
-<h3 id="查看跟踪日志："><a href="#查看跟踪日志：" class="headerlink" title="查看跟踪日志："></a>查看跟踪日志：</h3><ul>
-<li>查看跟踪当前服务器日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_log.txt</code></li>
-<li>查看跟踪当前服务器聊天日志：<code>tail -f ~/.klei/DoNotStarveTogether/Cluster_12/Master/server_chat_log.txt</code></li>
-</ul>
-<hr>
-<h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><ol>
-<li><a href="https://dontstarve.fandom.com/wiki/Guides/Don%E2%80%99t_Starve_Together_Dedicated_Servers">Guides&#x2F;Don’t Starve Together Dedicated Servers - FANDOM</a></li>
-<li><a href="https://forums.kleientertainment.com/forums/topic/64441-dedicated-server-quick-setup-guide-linux/">Dedicated Server Quick Setup Guide - Linux</a></li>
-<li><strong><a href="https://www.youtube.com/watch?v=ZkGPlQsiXzQ&list=PLaovyrM6DB1BIqTXAF6LZjQHSZHWqSIYz&ab_channel=Jazzy%27sGames">DEDICATED SERVER QUICK SETUP (Windows) | Don’t Starve Together</a></strong></li>
-<li><strong><a href="https://steamcommunity.com/sharedfiles/filedetails/?l=schinese&id=1616647350">Dedicated Server配置项和命令行参数详解</a></strong></li>
-</ol>
-]]></content>
-      <categories>
-        <category>折腾合集</category>
-        <category>Game</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>Game</tag>
-        <tag>DST</tag>
-        <tag>Server</tag>
       </tags>
   </entry>
   <entry>
