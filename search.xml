@@ -92,6 +92,84 @@
       </tags>
   </entry>
   <entry>
+    <title>Install and Setup NixOS + Hyprland from Scratch</title>
+    <url>/2025/05/05/Install-and-Setup-NixOS-Hyprland-from-Scratch/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>First of all, though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
+<p>I fell in love with Nix for the first I have it installed cause it is definitely what I am searching for after more than three years of Arch usage. I have reinstalled my Arch many times, and each time I have to reinstall the packages manually and spend time to change the configurations, it’s fun and I enjoy it. But recently I don’t have much time left for it, so NixOS is definitely what I want.</p>
+<p>As for Hyprland, I found it very popular recently and it’s written in cpp, so I tried it with Arch from scratch and found it a fancy wm.</p>
+<hr>
+<h2 id="Download-and-boot-from-image"><a href="#Download-and-boot-from-image" class="headerlink" title="Download  and boot from image"></a>Download  and boot from image</h2><p>Get NixOS image <a href="https://nixos.org/download/">here</a>, I chose Minimal ISO image in my case.</p>
+<p>To begin the installation, you have to boot your computer from the install drive.</p>
+<ol>
+<li>Plug in the install drive. Then turn on or restart your computer.</li>
+<li>Open the boot menu by pressing the appropriate key, which is usually shown on the display on early boot. Select the USB flash drive (the option usually contains the word “USB”). If you choose the incorrect drive, your computer will likely continue to boot as normal. In that case restart your computer and pick a different drive.</li>
+</ol>
+<hr>
+<h2 id="Setup-WIFI-Optional"><a href="#Setup-WIFI-Optional" class="headerlink" title="Setup WIFI (Optional)"></a>Setup WIFI (Optional)</h2><p>There is no <code>iwd</code> preinstalled in NixOS like Arch, so use <code>wpa_supplicant</code> instead.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Bring the interface up</span></span><br><span class="line"><span class="built_in">sudo</span> ip <span class="built_in">link</span> <span class="built_in">set</span> wlan0 up</span><br><span class="line"></span><br><span class="line"><span class="comment"># Scan avaiable networks</span></span><br><span class="line"><span class="built_in">sudo</span> iw wlan0 scan | grep SSID</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate a wpa_supplicant config</span></span><br><span class="line">wpa_passphrase <span class="string">&quot;YourSSID&quot;</span> <span class="string">&quot;YourPassword&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Start wpa_supplicant</span></span><br><span class="line"><span class="built_in">sudo</span> wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get an IP address</span></span><br><span class="line"><span class="built_in">sudo</span> dhcpcd wlan0</span><br><span class="line"></span><br><span class="line"><span class="comment"># Check connectivity</span></span><br><span class="line">ping -c 4 8.8.8.8</span><br><span class="line"></span><br><span class="line"><span class="comment"># Optional: Stop wpa_supplicant</span></span><br><span class="line"><span class="comment"># sudo pkill wpa_supplicant</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Try-installing-new-packages"><a href="#Try-installing-new-packages" class="headerlink" title="Try installing new packages"></a>Try installing new packages</h2><p>Before installing a new package, you may want to check if the package exists and how to install from <a href="https://search.nixos.org/packages">here</a>.</p>
+<p>Most of the time, install a package like this:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nix-shell -p cmatrix</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Partitioning-and-formatting"><a href="#Partitioning-and-formatting" class="headerlink" title="Partitioning and formatting"></a>Partitioning and formatting</h2><p>Run <code>lsblk</code> to see where you gonna install NixOS into, the output may looks like this:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">NAME                         MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">nvme1n1                      259:0    0   3.7T  0 disk</span><br><span class="line">├─nvme1n1p1                  259:1    0    16M  0 part</span><br><span class="line">├─nvme1n1p2                  259:2    0 515.4G  0 part</span><br><span class="line">└─nvme1n1p3                  259:3    0   300G  0 part</span><br></pre></td></tr></table></figure>
+
+<p>Suppose the <code>nvme1n1p3</code> is what you want and you are SURE to format it:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> mkfs.ext4 -L nixos /dev/nvme1n1p3</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Install-NixOS"><a href="#Install-NixOS" class="headerlink" title="Install NixOS"></a>Install NixOS</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Mount the target file system on which NixOS should be installed on `/mnt`</span></span><br><span class="line">mount /dev/disk/by-label/nixos /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Suppose you UEFI partition is /dev/nvme1n1p1</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /mnt/boot</span><br><span class="line">mount /dev/nvme1n1p1 /mnt/boot</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate default configuration file</span></span><br><span class="line">nixos-generate-config --root /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Edit configuration file</span></span><br><span class="line">vim /mnt/etc/nixos/configuration.nix</span><br></pre></td></tr></table></figure>
+
+<p>(Optinal) 将清华源做为默认源，添加以下内容到配置文件大括号内</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">nix.settings.substituters = [ &quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot; ];</span><br></pre></td></tr></table></figure>
+
+<p>在安装 NixOS 时临时使用清华源</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nixos-install --option substituters <span class="string">&quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>For more detailed processes, check <a href="https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning">this</a></p>
+<hr>
+<h2 id="Start-NixOS"><a href="#Start-NixOS" class="headerlink" title="Start NixOS"></a>Start NixOS</h2><p>Reboot and choose the NixOS just installed. Setup wifi following the same procedure above, and this time you can make it start automatically via <code>systemctl enable --now wpa_supplicant</code>.</p>
+<p>Or you can use NetworkManager instead, procedure will not be presented here.</p>
+<hr>
+<h2 id="Install-Hyprland"><a href="#Install-Hyprland" class="headerlink" title="Install Hyprland"></a>Install Hyprland</h2><p>Edit <code>/etc/nixos/configuration.nix</code> and add following:</p>
+<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">programs.hyprland</span> <span class="operator">=</span> &#123;</span><br><span class="line">    <span class="attr">enable</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="attr">withUWSM</span> <span class="operator">=</span> <span class="literal">true</span>; <span class="comment"># recommended for most users</span></span><br><span class="line">    <span class="attr">xwayland.enable</span> <span class="operator">=</span> <span class="literal">true</span>; <span class="comment"># Xwayland can be disabled.</span></span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Then install necessary packages, I use <code>alacritty</code> as my default terminal on Hyprland:</p>
+<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">environment.systemPackages</span> <span class="operator">=</span> <span class="keyword">with</span> pkgs; [</span><br><span class="line">    alacritty</span><br><span class="line">  ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Rebuild NixOS:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nixos-rebuild switch</span><br></pre></td></tr></table></figure>
+
+<p>Edit Hyprland’s config file <code>~/.config/hypr/hyprland.conf</code>:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># change the default terminal from kitty to alacritty</span><br><span class="line"># $terminal = kitty</span><br><span class="line">$terminal = alacrityy</span><br></pre></td></tr></table></figure>
+
+<p>Start Hyprland.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">uwsm start <span class="keyword">select</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="The-end"><a href="#The-end" class="headerlink" title="The end"></a>The end</h2><p>The most basic setup has been done, you can now walk around the Hyprland and NixOS’s wiki and forums for more useful configurations and build up the final system that you want.</p>
+<p>Enjoy!</p>
+<hr>
+<h2 id="See-also"><a href="#See-also" class="headerlink" title="See also"></a>See also</h2><ul>
+<li><a href="https://discourse.nixos.org/t/screenshots-on-hyprland-on-nixos/29055">Screenshots on hyprland on nixos</a></li>
+</ul>
+<hr>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a></li>
+<li><a href="https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/">清华源 Nix Channels</a></li>
+<li><a href="https://wiki.nixos.org/wiki/Hyprland">Hyprland NixOS Wiki</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>WM</tag>
+        <tag>NixOS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Setup Orange Pi Zero 3 as a Debian Server</title>
     <url>/2025/01/05/Setup-Orange-Pi-Zero-3-as-a-Debian-Server/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>I got the board several days ago, and now it’s time to get it to work. However I got stuck on WiFi configuration again though I did it many times before. So I write this post to make the steps more clear in my mind.</p>
@@ -173,84 +251,6 @@
         <tag>Single-Board</tag>
         <tag>Router</tag>
         <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Install and Setup NixOS + Hyprland from Scratch</title>
-    <url>/2025/05/05/Install-and-Setup-NixOS-Hyprland-from-Scratch/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>First of all, though it’s from SCRATCH, I suppose the reader know basic Linux concepts and commands and is able to use basic tools for os installation such as Vectory. Of course this is mainly based on my walk through, so remember using google to finish what is not mentioned for you.</p>
-<p>I fell in love with Nix for the first I have it installed cause it is definitely what I am searching for after more than three years of Arch usage. I have reinstalled my Arch many times, and each time I have to reinstall the packages manually and spend time to change the configurations, it’s fun and I enjoy it. But recently I don’t have much time left for it, so NixOS is definitely what I want.</p>
-<p>As for Hyprland, I found it very popular recently and it’s written in cpp, so I tried it with Arch from scratch and found it a fancy wm.</p>
-<hr>
-<h2 id="Download-and-boot-from-image"><a href="#Download-and-boot-from-image" class="headerlink" title="Download  and boot from image"></a>Download  and boot from image</h2><p>Get NixOS image <a href="https://nixos.org/download/">here</a>, I chose Minimal ISO image in my case.</p>
-<p>To begin the installation, you have to boot your computer from the install drive.</p>
-<ol>
-<li>Plug in the install drive. Then turn on or restart your computer.</li>
-<li>Open the boot menu by pressing the appropriate key, which is usually shown on the display on early boot. Select the USB flash drive (the option usually contains the word “USB”). If you choose the incorrect drive, your computer will likely continue to boot as normal. In that case restart your computer and pick a different drive.</li>
-</ol>
-<hr>
-<h2 id="Setup-WIFI-Optional"><a href="#Setup-WIFI-Optional" class="headerlink" title="Setup WIFI (Optional)"></a>Setup WIFI (Optional)</h2><p>There is no <code>iwd</code> preinstalled in NixOS like Arch, so use <code>wpa_supplicant</code> instead.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Bring the interface up</span></span><br><span class="line">sudo ip <span class="built_in">link</span> <span class="built_in">set</span> wlan0 up</span><br><span class="line"></span><br><span class="line"><span class="comment"># Scan avaiable networks</span></span><br><span class="line">sudo iw wlan0 scan | grep SSID</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate a wpa_supplicant config</span></span><br><span class="line">wpa_passphrase <span class="string">&quot;YourSSID&quot;</span> <span class="string">&quot;YourPassword&quot;</span> | sudo <span class="built_in">tee</span> /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Start wpa_supplicant</span></span><br><span class="line">sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get an IP address</span></span><br><span class="line">sudo dhcpcd wlan0</span><br><span class="line"></span><br><span class="line"><span class="comment"># Check connectivity</span></span><br><span class="line">ping -c 4 8.8.8.8</span><br><span class="line"></span><br><span class="line"><span class="comment"># Optional: Stop wpa_supplicant</span></span><br><span class="line"><span class="comment"># sudo pkill wpa_supplicant</span></span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="Try-installing-new-packages"><a href="#Try-installing-new-packages" class="headerlink" title="Try installing new packages"></a>Try installing new packages</h2><p>Before installing a new package, you may want to check if the package exists and how to install from <a href="https://search.nixos.org/packages">here</a>.</p>
-<p>Most of the time, install a package like this:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nix-shell -p cmatrix</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="Partitioning-and-formatting"><a href="#Partitioning-and-formatting" class="headerlink" title="Partitioning and formatting"></a>Partitioning and formatting</h2><p>Run <code>lsblk</code> to see where you gonna install NixOS into, the output may looks like this:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">NAME                         MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">nvme1n1                      259:0    0   3.7T  0 disk</span><br><span class="line">├─nvme1n1p1                  259:1    0    16M  0 part</span><br><span class="line">├─nvme1n1p2                  259:2    0 515.4G  0 part</span><br><span class="line">└─nvme1n1p3                  259:3    0   300G  0 part</span><br></pre></td></tr></table></figure>
-
-<p>Suppose the <code>nvme1n1p3</code> is what you want and you are SURE to format it:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo mkfs.ext4 -L nixos /dev/nvme1n1p3</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="Install-NixOS"><a href="#Install-NixOS" class="headerlink" title="Install NixOS"></a>Install NixOS</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Mount the target file system on which NixOS should be installed on `/mnt`</span></span><br><span class="line">mount /dev/disk/by-label/nixos /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Suppose you UEFI partition is /dev/nvme1n1p1</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /mnt/boot</span><br><span class="line">mount /dev/nvme1n1p1 /mnt/boot</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate default configuration file</span></span><br><span class="line">nixos-generate-config --root /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># Edit configuration file</span></span><br><span class="line">vim /mnt/etc/nixos/configuration.nix</span><br></pre></td></tr></table></figure>
-
-<p>(Optinal) 将清华源做为默认源，添加以下内容到配置文件大括号内</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">nix.settings.substituters = [ &quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot; ];</span><br></pre></td></tr></table></figure>
-
-<p>在安装 NixOS 时临时使用清华源</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nixos-install --option substituters <span class="string">&quot;https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>For more detailed processes, check <a href="https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning">this</a></p>
-<hr>
-<h2 id="Start-NixOS"><a href="#Start-NixOS" class="headerlink" title="Start NixOS"></a>Start NixOS</h2><p>Reboot and choose the NixOS just installed. Setup wifi following the same procedure above, and this time you can make it start automatically via <code>systemctl enable --now wpa_supplicant</code>.</p>
-<p>Or you can use NetworkManager instead, procedure will not be presented here.</p>
-<hr>
-<h2 id="Install-Hyprland"><a href="#Install-Hyprland" class="headerlink" title="Install Hyprland"></a>Install Hyprland</h2><p>Edit <code>/etc/nixos/configuration.nix</code> and add following:</p>
-<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  programs.<span class="attr">hyprland</span> = &#123;</span><br><span class="line">    <span class="attr">enable</span> = <span class="literal">true</span>;</span><br><span class="line">    <span class="attr">withUWSM</span> = <span class="literal">true</span>; <span class="comment"># recommended for most users</span></span><br><span class="line">    xwayland.<span class="attr">enable</span> = <span class="literal">true</span>; <span class="comment"># Xwayland can be disabled.</span></span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Then install necessary packages, I use <code>alacritty</code> as my default terminal on Hyprland:</p>
-<figure class="highlight nix"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  environment.<span class="attr">systemPackages</span> = <span class="keyword">with</span> pkgs; [</span><br><span class="line">    alacritty</span><br><span class="line">  ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Rebuild NixOS:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo nixos-rebuild switch</span><br></pre></td></tr></table></figure>
-
-<p>Edit Hyprland’s config file <code>~/.config/hypr/hyprland.conf</code>:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># change the default terminal from kitty to alacritty</span><br><span class="line"># $terminal = kitty</span><br><span class="line">$terminal = alacrityy</span><br></pre></td></tr></table></figure>
-
-<p>Start Hyprland.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">uwsm start select</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="The-end"><a href="#The-end" class="headerlink" title="The end"></a>The end</h2><p>The most basic setup has been done, you can now walk around the Hyprland and NixOS’s wiki and forums for more useful configurations and build up the final system that you want.</p>
-<p>Enjoy!</p>
-<hr>
-<h2 id="See-also"><a href="#See-also" class="headerlink" title="See also"></a>See also</h2><ul>
-<li><a href="https://discourse.nixos.org/t/screenshots-on-hyprland-on-nixos/29055">Screenshots on hyprland on nixos</a></li>
-</ul>
-<hr>
-<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
-<li><a href="https://nixos.org/manual/nixos/stable/">NixOS Manual</a></li>
-<li><a href="https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/">清华源 Nix Channels</a></li>
-<li><a href="https://wiki.nixos.org/wiki/Hyprland">Hyprland NixOS Wiki</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Linux</tag>
-        <tag>WM</tag>
-        <tag>NixOS</tag>
       </tags>
   </entry>
   <entry>
@@ -639,12 +639,12 @@
 <li>首先，当然是有一台已经装好Debian的服务器（1Mbps带宽大概对应2~4人，一个存档2核就够，棱镜+勋章至少得3G内存），不建议Ubuntu，一些依赖似乎无法安装。</li>
 <li>安装之后可能用到的包：</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install tmux btop htop fish ranger git</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install tmux btop htop fish ranger git</span><br></pre></td></tr></table></figure>
 <hr>
 <h2 id="配置基础环境（steamcmd-dst服务器）："><a href="#配置基础环境（steamcmd-dst服务器）：" class="headerlink" title="配置基础环境（steamcmd, dst服务器）："></a>配置基础环境（steamcmd, dst服务器）：</h2><ul>
 <li>一行行复制运行，注意是否报错</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo dpkg --add-architecture i386 <span class="comment"># If running a 64bit OS</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install lib32gcc1    <span class="comment"># If running a 64bit OS</span></span><br><span class="line"></span><br><span class="line">sudo apt-get install lib32stdc++6 <span class="comment"># If running a 64bit OS</span></span><br><span class="line">sudo apt-get install libgcc1      <span class="comment"># If running a 32bit OS</span></span><br><span class="line">sudo apt-get install libcurl4-gnutls-dev:i386</span><br><span class="line">sudo useradd -m steam</span><br><span class="line">sudo su - steam</span><br><span class="line"><span class="built_in">mkdir</span> ~/steamcmd</span><br><span class="line"><span class="built_in">cd</span> ~/steamcmd</span><br><span class="line">wget &lt;https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz&gt;</span><br><span class="line">tar -xvzf steamcmd_linux.tar.gz</span><br><span class="line">./steamcmd.sh</span><br><span class="line">force_install_dir /home/steam/steamapps/DST (or whatever absolute path is wanted)</span><br><span class="line">login anonymous</span><br><span class="line">app_update 343050 validate</span><br><span class="line">quit</span><br><span class="line"><span class="built_in">cd</span> /home/steam/steamapps/DST/bin/</span><br><span class="line">./dontstarve_dedicated_server_nullrenderer</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dpkg --add-architecture i386 <span class="comment"># If running a 64bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get update</span><br><span class="line"><span class="built_in">sudo</span> apt-get install lib32gcc1    <span class="comment"># If running a 64bit OS</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> apt-get install lib32stdc++6 <span class="comment"># If running a 64bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install libgcc1      <span class="comment"># If running a 32bit OS</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install libcurl4-gnutls-dev:i386</span><br><span class="line"><span class="built_in">sudo</span> useradd -m steam</span><br><span class="line"><span class="built_in">sudo</span> su - steam</span><br><span class="line"><span class="built_in">mkdir</span> ~/steamcmd</span><br><span class="line"><span class="built_in">cd</span> ~/steamcmd</span><br><span class="line">wget &lt;https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz&gt;</span><br><span class="line">tar -xvzf steamcmd_linux.tar.gz</span><br><span class="line">./steamcmd.sh</span><br><span class="line">force_install_dir /home/steam/steamapps/DST (or whatever absolute path is wanted)</span><br><span class="line">login anonymous</span><br><span class="line">app_update 343050 validate</span><br><span class="line">quit</span><br><span class="line"><span class="built_in">cd</span> /home/steam/steamapps/DST/bin/</span><br><span class="line">./dontstarve_dedicated_server_nullrenderer</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>最后一句尝试启动服务器，会生成一些简单的配置，如无报错则基本环境已经配置好。</li>
@@ -702,6 +702,18 @@
         <tag>Game</tag>
         <tag>DST</tag>
         <tag>Server</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Welcome Orangeの小窝!!!</title>
+    <url>/2022/04/12/firstpost/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
+<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
+<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+]]></content>
+      <tags>
+        <tag>Greetings</tag>
       </tags>
   </entry>
   <entry>
@@ -786,18 +798,6 @@
         <tag>Github</tag>
         <tag>Nginx</tag>
         <tag>Image-host</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Welcome Orangeの小窝!!!</title>
-    <url>/2022/04/12/firstpost/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
-<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
-<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-]]></content>
-      <tags>
-        <tag>Greetings</tag>
       </tags>
   </entry>
   <entry>
