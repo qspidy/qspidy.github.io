@@ -540,7 +540,7 @@
   </entry>
   <entry>
     <title>Implementing An Simple IRC Bot Using Python</title>
-    <url>/2024/11/22/implementing-an-simple-irc-bot-using-python/</url>
+    <url>/2024/11/22/implementing-an-simple-irc-bot-with-python/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>最近用国补买了台MiniPC，整了个PVE丢家里当小服务器使，在上面跑了几个docker服务，以及ollama，8854H + 32g 内存跑<code>llama3.1</code>基本没有压力。由于平时上班不在家，也就有了远程管理这MiniPC的想法，正好以前瞎整的IRC服务器SSL证书过期提醒了我，以及最近在整些Python脚本，于是就有了现在这个项目：</p>
 <p><a href="https://github.com/qspidy/albot"><strong>Python实现简单IRC聊天机器人(A Simple IRC BOT Written in Python)</strong></a></p>
 <hr>
