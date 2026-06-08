@@ -14,7 +14,7 @@
 <p>BPI-R3mini 有两种启动方式，分别是从 Nand 启动和从 eMMC 启动，一般来说是把 Nand 当成外插 SD 卡，所以 Nand 启动一般只是用来做特殊操作时候用，比如手动更新 eMMC 里的镜像时。切换方式是拨动板上面的一个开关：</p>
 <img src="/2024/12/01/bpi-r3mini-start-end/image20241201163809.jpg" class="">
 <p>eMMC 和 Nand 里面都是默认装有镜像的，所以只用把开关调到左边 eMMC 位置，然后通电启动（与图中相反）。如果 eMMC 和 Nand 没有默认装镜像可以参考官方 Wiki 的<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#Warnning">镜像烧录手册</a>操作。</p>
-<p>装好通上电后，风扇就开始转了，默认镜像里有配置风扇 PWM (Pulse Width Modulation &#x2F; 脉宽调制)，所以不用再做其它修改，如果要修改的话可参考 Wiki：<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#FAN">PWM FAN Control</a>操作。</p>
+<p>装好通上电后，风扇就开始转了，默认镜像里有配置风扇 PWM (Pulse Width Modulation &#x2F; 脉宽调制)，所以不用再做其它修改，如果要修改的话可参考 Wiki：<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#FAN">PWM FAN Control</a> 操作。</p>
 <p>不得不说这玩意发热量有点大的，难怪要整成全金属的外壳，只要它在跑，那金属外壳就烫手。风扇效果大不大，不好说，没感受到这小风扇的作用。</p>
 <h2 id="软件配置"><a href="#软件配置" class="headerlink" title="软件配置"></a>软件配置</h2><p>通过 eMMC 启动，里面默认配置了 WiFi，分别是 <code>MTK_MT7986_AP_AX4200_5G</code> 和 <code>MTK_MT7986_AP_AX4200_2.4G</code>，直接连上，访问默认网关 <code>192.168.1.1</code>，默认密码是 <code>bananapi</code>，登录成功后界面如下图：</p>
 <img src="/2024/12/01/bpi-r3mini-start-end/image20241201170323.jpg" class="">
@@ -33,12 +33,13 @@
 <p>通过端口扫描可以看到它默认开了 445 端口，也就是 SMB 服务，所以可以直接使用 Windows 访问它的共享目录：</p>
 <img src="/2024/12/01/bpi-r3mini-start-end/image20241201175737.jpg" class="">
 <img src="/2024/12/01/bpi-r3mini-start-end/image20241201175803.jpg" class="">
-<p>也就是说可以把它当成一个小 NAS 来用，但这默认配置似乎是只读的（也可能是我登录用户的原因），所以想往里放东西的话还得再配置一下，我这里还没用到这功能就不详说了。不过有件事不得不提，我专门买了个美光 P310 2230 SSD，2T，结果插上后它无法识别（可以通过 <code>fdisk -l</code> 看到它的信息，但这信息里的设备路径事实上不存在，也就挂载不了），是因为 2T 容量太大了还是驱动啥的问题，还没整明白。</p>
+<p>也就是说可以把它当成一个小 NAS 来用，但这默认配置似乎是只读的（也可能是我登录用户的原因），所以想往里放东西的话还得再配置一下，我这里还没用到这功能就不详说了。不过有件事不得不提，我专门买了个美光 P310 2230 SSD，2T，结果插上后它无法识别（可以通过 <code>fdisk -l</code> 看到它的信息，但这信息里的设备路径事实上不存在，也就挂载不了），估计是因为 2T 容量太大了不支持吧。</p>
 <p>这玩意似乎并不能桥接 WiFi，也就是不能当我的手机热点信号中继放大器，因为它似乎不支持作为 AP Client 去连 WiFi：</p>
 <img src="/2024/12/01/bpi-r3mini-start-end/image20241201181736.jpg" class="">
-<p>这点巡天都可以做到。是我的操作有问题？还是少了什么驱动？触及到知识盲区了，也找不着相关资料😔。</p>
+<p>而这点巡天可以做到。是我的操作有问题？还是少了什么驱动？</p>
 <hr>
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>作为一个软路由它是合格的，另外我准备给它安上 5G 模块，这样就可以直接插 SIM 卡连网，不用再拿手机当热点了，如果能再把 NAS 功能，Xray 配置好的话，就算大功告成，这样它就能完全顶替巡天。之后应该还会记录安装这些功能的过程和效果，然后再水一篇博客。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>作为一个软路由它是合格的，另外计划给它安上 5G 模块，这样就可以直插 SIM 卡连网，不用再拿手机当热点了，如果能再把 NAS 功能，Xray 配置好的话，就算大功告成，这样它就能完全顶替巡天。</p>
+<p>之后应该还会记录安装这些功能的过程和效果，然后再水一篇博客。</p>
 <h2 id="参考-x2F-引用"><a href="#参考-x2F-引用" class="headerlink" title="参考&#x2F;引用"></a>参考&#x2F;引用</h2><ol>
 <li><a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI">Getting Started with BPI-R3 MINI</a></li>
 <li><a href="https://wiki.banana-pi.org/Banana_Pi_BPI-R3_Mini">Banana Pi BPI-R3 Mini</a></li>
@@ -362,18 +363,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Welcome to Orangeの小窝!!!</title>
-    <url>/2022/04/12/firstpost/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
-<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
-<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-]]></content>
-      <tags>
-        <tag>Greetings</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DST Dedicated Server 简单开服流程</title>
     <url>/2023/10/13/dst-dedicate-server-start/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><hr>
@@ -444,6 +433,18 @@
         <tag>Game</tag>
         <tag>DST</tag>
         <tag>Server</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Welcome to Orangeの小窝!!!</title>
+    <url>/2022/04/12/firstpost/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
+<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
+<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+]]></content>
+      <tags>
+        <tag>Greetings</tag>
       </tags>
   </entry>
   <entry>
