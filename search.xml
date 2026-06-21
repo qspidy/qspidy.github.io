@@ -346,60 +346,6 @@
       </tags>
   </entry>
   <entry>
-    <title>BPI-R3mini 从入门到入土</title>
-    <url>/2024/12/01/bpi-r3mini-start-end/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>今年早些时候入手了巡天 AX3000Pro+，本以为可以一步到位，结果发现它没法刷 OpenWrt，无法配置 DHCP 分配固定 IP 以及配置 DNS 解析，使的我只能使用 IP 来访问内网设备，设备 IP 甚至还会不停的变，买之前还是功课做少了啊。所以又看了一圈，相中了 BPI-R3mini，虽然有点贵，但由于喜欢折腾，且 BPI-R3mini 有官方提供 OpenWrt 镜像支持，就咬牙入手了。</p>
-<hr>
-<h2 id="硬件组装"><a href="#硬件组装" class="headerlink" title="硬件组装"></a>硬件组装</h2><p>到手后的东西如下：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201141956.jpg" class="">
-<p>安装方法参考：<a href="https://www.bilibili.com/video/BV1XM411D7hm">Banana Pi BPI-R3 Mini 迷你开源路由器开发板外壳安装教学视频</a></p>
-<p>组装完的效果长这样：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201150613.jpg" class="">
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201151724.jpg" class="">
-<p>BPI-R3mini 有两种启动方式，分别是从 Nand 启动和从 eMMC 启动，一般来说是把 Nand 当成外插 SD 卡，所以 Nand 启动一般只是用来做特殊操作时候用，比如手动更新 eMMC 里的镜像时。切换方式是拨动板上面的一个开关：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201163809.jpg" class="">
-<p>eMMC 和 Nand 里面都是默认装有镜像的，所以只用把开关调到左边 eMMC 位置，然后通电启动（与图中相反）。如果 eMMC 和 Nand 没有默认装镜像可以参考官方 Wiki 的<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#Warnning">镜像烧录手册</a>操作。</p>
-<p>装好通上电后，风扇就开始转了，默认镜像里有配置风扇 PWM (Pulse Width Modulation &#x2F; 脉宽调制)，所以不用再做其它修改，如果要修改的话可参考 Wiki：<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#FAN">PWM FAN Control</a> 操作。</p>
-<p>不得不说这玩意发热量有点大的，难怪要整成全金属的外壳，只要它在跑，那金属外壳就烫手。风扇效果大不大，不好说，没感受到这小风扇的作用。</p>
-<h2 id="软件配置"><a href="#软件配置" class="headerlink" title="软件配置"></a>软件配置</h2><p>通过 eMMC 启动，里面默认配置了 WiFi，分别是 <code>MTK_MT7986_AP_AX4200_5G</code> 和 <code>MTK_MT7986_AP_AX4200_2.4G</code>，直接连上，访问默认网关 <code>192.168.1.1</code>，默认密码是 <code>bananapi</code>，登录成功后界面如下图：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201170323.jpg" class="">
-<p>在 <code>System -&gt; Aministration</code> 下可以修改网关密码，在 <code>MTK -&gt; WiFi configuration</code> 下可以修改 WiFi 的 SSID 以及添加 WiFi 密码，下图是 WiFi 配置页：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201170839.jpg" class="">
-<p>可配置的东西有不少，我这只要加个 WiFi 密码改个 WiFi 名就够用了。</p>
-<p>另外它还能配置许多有用的工具，比如 Xray 等。可以在 <code>System -&gt; Software -&gt; Installed</code> 下看到已经安装的软件包，也可以在这里安装新的软件包：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201172503.jpg" class="">
-<p>可玩性还是很高的，只是可选的包似乎不是很多，大概是因为这玩意用的人少吧。</p>
-<h2 id="使用SSH远程访问"><a href="#使用SSH远程访问" class="headerlink" title="使用SSH远程访问"></a>使用SSH远程访问</h2><p>BPI-R3mini 默认有启用 SSH Server（<a href="https://github.com/mkj/dropbear">Dropbear SSH</a>），所以可以通过 SSH 连上去，使用之前配置的密码，或者是在 <code>System -&gt; Aministration</code> 配置 SSH 公钥。连上后查看系统信息：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201173627.jpg" class="">
-<p>里面用的 Busybox 默认包管理器 <code>opkg</code>，官方介绍在<a href="https://openwrt.org/docs/guide-user/additional-software/opkg">这里</a>，比起常见的 <code>apt</code>, <code>pacman</code>还是有点不太好使。</p>
-<p>可以在 <code>/etc/opkg.conf</code> 里给 <code>opkg</code> 配置代理，执行 <code>vim /etc/opkg.conf</code> 在文件末添加下面两行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">option http_proxy http://your.proxy.server:port</span><br><span class="line">option https_proxy https://your.proxy.server:port</span><br></pre></td></tr></table></figure>
-
-<p>通过端口扫描可以看到它默认开了 445 端口，也就是 SMB 服务，所以可以直接使用 Windows 访问它的共享目录：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201175737.jpg" class="">
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201175803.jpg" class="">
-<p>也就是说可以把它当成一个小 NAS 来用，但这默认配置似乎是只读的（也可能是我登录用户的原因），所以想往里放东西的话还得再配置一下，我这里还没用到这功能就不详说了。不过有件事不得不提，我专门买了个美光 P310 2230 SSD，2T，结果插上后它无法识别（可以通过 <code>fdisk -l</code> 看到它的信息，但这信息里的设备路径事实上不存在，也就挂载不了），估计是因为 2T 容量太大了不支持吧。</p>
-<p>这玩意似乎并不能桥接 WiFi，也就是不能当我的手机热点信号中继放大器，因为它似乎不支持作为 AP Client 去连 WiFi：</p>
-<img src="/2024/12/01/bpi-r3mini-start-end/image20241201181736.jpg" class="">
-<p>而这点巡天可以做到。是我的操作有问题？还是少了什么驱动？</p>
-<hr>
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>作为一个软路由它是合格的，另外计划给它安上 5G 模块，这样就可以直插 SIM 卡连网，不用再拿手机当热点了，如果能再把 NAS 功能，Xray 配置好的话，就算大功告成，这样它就能完全顶替巡天。</p>
-<p>之后应该还会记录安装这些功能的过程和效果，然后再水一篇博客。</p>
-<h2 id="参考-引用"><a href="#参考-引用" class="headerlink" title="参考&#x2F;引用"></a>参考&#x2F;引用</h2><ol>
-<li><a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI">Getting Started with BPI-R3 MINI</a></li>
-<li><a href="https://wiki.banana-pi.org/Banana_Pi_BPI-R3_Mini">Banana Pi BPI-R3 Mini</a></li>
-<li><a href="https://www.bilibili.com/video/BV1XM411D7hm?spm_id_from=333.880.my_history.page.click">Banana Pi BPI-R3 Mini 迷你开源路由器开发板外壳安装教学视频</a>]</li>
-</ol>
-]]></content>
-      <tags>
-        <tag>Linux</tag>
-        <tag>WiFi</tag>
-        <tag>OpenWrt</tag>
-        <tag>Single-Board</tag>
-        <tag>Router</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DST Dedicated Server 简单开服流程</title>
     <url>/2023/10/13/dst-dedicate-server-start/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><hr>
@@ -473,15 +419,57 @@
       </tags>
   </entry>
   <entry>
-    <title>Welcome to Orangeの小窝!!!</title>
-    <url>/2022/04/12/firstpost/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
-<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
-<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
-<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+    <title>BPI-R3mini 从入门到入土</title>
+    <url>/2024/12/01/bpi-r3mini-start-end/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>今年早些时候入手了巡天 AX3000Pro+，本以为可以一步到位，结果发现它没法刷 OpenWrt，无法配置 DHCP 分配固定 IP 以及配置 DNS 解析，使的我只能使用 IP 来访问内网设备，设备 IP 甚至还会不停的变，买之前还是功课做少了啊。所以又看了一圈，相中了 BPI-R3mini，虽然有点贵，但由于喜欢折腾，且 BPI-R3mini 有官方提供 OpenWrt 镜像支持，就咬牙入手了。</p>
+<hr>
+<h2 id="硬件组装"><a href="#硬件组装" class="headerlink" title="硬件组装"></a>硬件组装</h2><p>到手后的东西如下：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201141956.jpg" class="">
+<p>安装方法参考：<a href="https://www.bilibili.com/video/BV1XM411D7hm">Banana Pi BPI-R3 Mini 迷你开源路由器开发板外壳安装教学视频</a></p>
+<p>组装完的效果长这样：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201150613.jpg" class="">
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201151724.jpg" class="">
+<p>BPI-R3mini 有两种启动方式，分别是从 Nand 启动和从 eMMC 启动，一般来说是把 Nand 当成外插 SD 卡，所以 Nand 启动一般只是用来做特殊操作时候用，比如手动更新 eMMC 里的镜像时。切换方式是拨动板上面的一个开关：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201163809.jpg" class="">
+<p>eMMC 和 Nand 里面都是默认装有镜像的，所以只用把开关调到左边 eMMC 位置，然后通电启动（与图中相反）。如果 eMMC 和 Nand 没有默认装镜像可以参考官方 Wiki 的<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#Warnning">镜像烧录手册</a>操作。</p>
+<p>装好通上电后，风扇就开始转了，默认镜像里有配置风扇 PWM (Pulse Width Modulation &#x2F; 脉宽调制)，所以不用再做其它修改，如果要修改的话可参考 Wiki：<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#FAN">PWM FAN Control</a> 操作。</p>
+<p>不得不说这玩意发热量有点大的，难怪要整成全金属的外壳，只要它在跑，那金属外壳就烫手。风扇效果大不大，不好说，没感受到这小风扇的作用。</p>
+<h2 id="软件配置"><a href="#软件配置" class="headerlink" title="软件配置"></a>软件配置</h2><p>通过 eMMC 启动，里面默认配置了 WiFi，分别是 <code>MTK_MT7986_AP_AX4200_5G</code> 和 <code>MTK_MT7986_AP_AX4200_2.4G</code>，直接连上，访问默认网关 <code>192.168.1.1</code>，默认密码是 <code>bananapi</code>，登录成功后界面如下图：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201170323.jpg" class="">
+<p>在 <code>System -&gt; Aministration</code> 下可以修改网关密码，在 <code>MTK -&gt; WiFi configuration</code> 下可以修改 WiFi 的 SSID 以及添加 WiFi 密码，下图是 WiFi 配置页：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201170839.jpg" class="">
+<p>可配置的东西有不少，我这只要加个 WiFi 密码改个 WiFi 名就够用了。</p>
+<p>另外它还能配置许多有用的工具，比如 Xray 等。可以在 <code>System -&gt; Software -&gt; Installed</code> 下看到已经安装的软件包，也可以在这里安装新的软件包：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201172503.jpg" class="">
+<p>可玩性还是很高的，只是可选的包似乎不是很多，大概是因为这玩意用的人少吧。</p>
+<h2 id="使用SSH远程访问"><a href="#使用SSH远程访问" class="headerlink" title="使用SSH远程访问"></a>使用SSH远程访问</h2><p>BPI-R3mini 默认有启用 SSH Server（<a href="https://github.com/mkj/dropbear">Dropbear SSH</a>），所以可以通过 SSH 连上去，使用之前配置的密码，或者是在 <code>System -&gt; Aministration</code> 配置 SSH 公钥。连上后查看系统信息：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201173627.jpg" class="">
+<p>里面用的 Busybox 默认包管理器 <code>opkg</code>，官方介绍在<a href="https://openwrt.org/docs/guide-user/additional-software/opkg">这里</a>，比起常见的 <code>apt</code>, <code>pacman</code>还是有点不太好使。</p>
+<p>可以在 <code>/etc/opkg.conf</code> 里给 <code>opkg</code> 配置代理，执行 <code>vim /etc/opkg.conf</code> 在文件末添加下面两行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">option http_proxy http://your.proxy.server:port</span><br><span class="line">option https_proxy https://your.proxy.server:port</span><br></pre></td></tr></table></figure>
+
+<p>通过端口扫描可以看到它默认开了 445 端口，也就是 SMB 服务，所以可以直接使用 Windows 访问它的共享目录：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201175737.jpg" class="">
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201175803.jpg" class="">
+<p>也就是说可以把它当成一个小 NAS 来用，但这默认配置似乎是只读的（也可能是我登录用户的原因），所以想往里放东西的话还得再配置一下，我这里还没用到这功能就不详说了。不过有件事不得不提，我专门买了个美光 P310 2230 SSD，2T，结果插上后它无法识别（可以通过 <code>fdisk -l</code> 看到它的信息，但这信息里的设备路径事实上不存在，也就挂载不了），估计是因为 2T 容量太大了不支持吧。</p>
+<p>这玩意似乎并不能桥接 WiFi，也就是不能当我的手机热点信号中继放大器，因为它似乎不支持作为 AP Client 去连 WiFi：</p>
+<img src="/2024/12/01/bpi-r3mini-start-end/image20241201181736.jpg" class="">
+<p>而这点巡天可以做到。是我的操作有问题？还是少了什么驱动？</p>
+<hr>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>作为一个软路由它是合格的，另外计划给它安上 5G 模块，这样就可以直插 SIM 卡连网，不用再拿手机当热点了，如果能再把 NAS 功能，Xray 配置好的话，就算大功告成，这样它就能完全顶替巡天。</p>
+<p>之后应该还会记录安装这些功能的过程和效果，然后再水一篇博客。</p>
+<h2 id="参考-引用"><a href="#参考-引用" class="headerlink" title="参考&#x2F;引用"></a>参考&#x2F;引用</h2><ol>
+<li><a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI">Getting Started with BPI-R3 MINI</a></li>
+<li><a href="https://wiki.banana-pi.org/Banana_Pi_BPI-R3_Mini">Banana Pi BPI-R3 Mini</a></li>
+<li><a href="https://www.bilibili.com/video/BV1XM411D7hm?spm_id_from=333.880.my_history.page.click">Banana Pi BPI-R3 Mini 迷你开源路由器开发板外壳安装教学视频</a>]</li>
+</ol>
 ]]></content>
       <tags>
-        <tag>Greetings</tag>
+        <tag>Linux</tag>
+        <tag>WiFi</tag>
+        <tag>OpenWrt</tag>
+        <tag>Single-Board</tag>
+        <tag>Router</tag>
       </tags>
   </entry>
   <entry>
@@ -539,40 +527,15 @@
       </tags>
   </entry>
   <entry>
-    <title>图床，但是命令行，在任何地方</title>
-    <url>/2026/04/24/image-host-based-on-terminal/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>前段时间用 <code>claude + glm4.7</code> 整了个使用 <code>nginx + lua</code> 脚本实现的<a href="https://github.com/qspidy/imgng">个人图床方案</a>，很简洁啊，主要逻辑都集中在一个 <a href="https://github.com/qspidy/imgng/blob/master/img-host-full.conf">nginx 配置文件</a>内，不到 120 行，兼具性能（nginx 特性）和访问速度（套 cdn）。</p>
-<p>然而这种部署方式绕不开一个问题：得有一台服务器。专门搞一台服务器做个人图床多少是有点大材小用了，个人使用又能存多少东西呢？不如先薅大厂羊毛，等到羊毛不够用了再换不迟。</p>
-<p>于是这个<del>轮子</del>(项目)诞生了，在 <code>codex + gpt5.4</code> 和本人的努力下，花了一晚上时间。<br><img src="https://img.wastaken.xyz/images/978820ea1ddaa21db8a8ca8ea2144424.png"></p>
-<h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><blockquote>
-<p>curl-powered image hosting for hackers. One-click deploy on Cloudflare, or integrate with existing nginx server.</p>
-</blockquote>
-<p>该项目 <a href="https://github.com/qspidy/imgng">qspidy&#x2F;imgng</a> 的设计理念是，能在身边任何一台联网的机器上传图片到图床并获取链接，只要记住这条几乎不能再短的 <code>curl</code> 命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -u user:pass --data-binary @photo.jpg https://example.com/upload</span><br></pre></td></tr></table></figure>
-
-<p>之所以说是“几乎”不能再短，是因为还可以使用 <code>alias</code> 或者 <code>shell函数</code> 给它<a href="https://github.com/qspidy/imgng#upload-api">设置别名</a>，然后像使用一个普通 linux 命令一样使用它：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">imgng</span></span>() &#123;</span><br><span class="line">  curl -s -u user:pass --data-binary @<span class="string">&quot;<span class="variable">$1</span>&quot;</span> https://example.com/upload</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">imgng photo.jpg</span><br></pre></td></tr></table></figure>
-<p><img src="https://img.wastaken.xyz/images/62b8125d3f136a9ebb51e85070584fc6.gif"></p>
-<p>这次相比上一篇博客<a href="https://orange.wastaken.xyz/2026/02/01/image-host-based-on-nginx/">使用 Nginx 搭建个人图床，让链接永远有效！</a>的主要变化是，提供一个零成本的服务端部署方案，使用 <code>Cloudflare + R2</code>。当然还有很多其它<del>薅羊毛</del>（免费部署）方案，参考文末的<a href="#%E5%A4%96%E9%83%A8%E9%93%BE%E6%8E%A5">外部链接</a>，相信各路大神都能找到适合自己的方案。</p>
-<p>从某种程度上而言，它更像是提供了一个相较传统 <code>S3 API</code> 而言更简洁的接口，在客户端做到了极致的简洁（命令行爱好者狂喜！）。</p>
-<p>结合当前 <code>CLI</code> 越来越热的趋势，这小项目还有更多存在和参考的意义，后续或许可以进一步发展成一整套图床命令行<del>增删改查</del>(接口方案)。再者可以通过 Skills&#x2F;MCP 等方式和 Agent 无缝集成，成为 Agent 工作流的一部分。</p>
-<p>要长期使用的话，它目前还缺少一些关键的功能：图片展示列表，重复图片处理等。接下来会继续完善这些关键的功能。</p>
-<p>另外还有些可选功能：支持多用户，备份恢复等。因为它当前的定位是个人使用，所以支持多用户暂不考虑，而文件存储在 R2 上也基本不用担心文件丢失的问题，所以目前不急（备份也就一条命令的事，考虑到前段时间 Cloudflare 还崩了一次，备份还是有必要的）。</p>
-<h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>用了 codex + gpt5.4 才知道原来不是 Agent 不好用，而是<del>钱没到位</del>（选错了模型和 Agent），回想当初用 claude + glm4.7，那真是改了又改，5 小时额度用完了都没跑通。这次几乎是首次提示词一下去出来的东西就能用，后面只需做些功能完善和文档生成的工作。</p>
-<p>心情很复杂。很兴奋，在 AI 加持下个人能力边界得到了极大的扩张，很悲伤，AI 对程序员群体造成了很大的冲击，许多知识与技能似乎都没有了意义。</p>
-<p>虽然如此，技术在发展，时代在进步，拥抱未来是唯一能走的路。</p>
-<h2 id="外部链接"><a href="#外部链接" class="headerlink" title="外部链接"></a>外部链接</h2><h3 id="类似项目（更适合广大人类-GUI-用户食用）"><a href="#类似项目（更适合广大人类-GUI-用户食用）" class="headerlink" title="类似项目（更适合广大人类 GUI 用户食用）"></a>类似项目（更适合<del>广大人类</del> GUI 用户食用）</h3><ul>
-<li><a href="https://github.com/MarSeventh/CloudFlare-ImgBed">https://github.com/MarSeventh/CloudFlare-ImgBed</a></li>
-<li><a href="https://github.com/Molunerfinn/picgo">https://github.com/Molunerfinn/picgo</a></li>
-</ul>
-<h3 id="其它基于-CF-的薅羊毛项目"><a href="#其它基于-CF-的薅羊毛项目" class="headerlink" title="其它基于 CF 的薅羊毛项目"></a><a href="https://github.com/topics/cloudflare-r2">其它基于 CF 的<del>薅羊毛</del>项目</a></h3>]]></content>
+    <title>Welcome to Orangeの小窝!!!</title>
+    <url>/2022/04/12/firstpost/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>Welcome to <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+<p>This is my first blog in the site, mainly for testing and will be removed when the site is fully built.</p>
+<p>If you are new here and like this blog site, feel free to fav the website and leave your opinions of the site below as comments, anyway, it’s free, and you can always change your mind.</p>
+<p>Enjoy the <a href="https://orange.wastaken.xyz/">Orangeの小窝</a>!!!</p>
+]]></content>
       <tags>
-        <tag>AI</tag>
-        <tag>Github</tag>
-        <tag>Image-host</tag>
-        <tag>Cloudflare</tag>
-        <tag>Free</tag>
-        <tag>CLI</tag>
+        <tag>Greetings</tag>
       </tags>
   </entry>
   <entry>
@@ -691,49 +654,124 @@
       </tags>
   </entry>
   <entry>
-    <title>使用 Qemu 替代 VirtualBox 并进行相关配置</title>
-    <url>/2022/05/29/replace-vbox-with-qemu/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>在使用了很长一段时间（大概 6-7 个月）的 VirtualBox 之后，我决定使用 Qemu 替代它。事实上我使用 VirtualBox 的体验非常好，尤其是它提供的 Host 和 Guest 之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。</p>
-<p>但对于一些复杂点的网络配置则需要用到命令行工具 <code>vboxmanage</code>，比如启用虚拟网卡的 dhcp 服务。</p>
-<p>让我毅然决定放弃 VirtualBox 选择 Qemu 的原因是我在油管上看到的一则发表于 2022 年 1 月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
-<p>油管博主 <em>Chris Titus</em> 在视频里展示了相同的虚拟机 Guest 在 Qemu 下和在 VirtualBox 下的启动时间，结论是 <code>11.17s</code> 比 <code>35.28s</code>！</p>
-<p>我震惊了。如果说只是快个百分之二三十，我还可以认为只是简单的因为 VirtualBox 提供了更多的管理功能而导致的性能下降，但事实摆在我面前，速度提升 <code>68.3%</code>！</p>
-<p>什么概念，要知道实际性能的提升和启动速度的提升并不是成正比的，通常来说实际性能的提升的比例会高于启动速度的提升比例，也就是说使用 Qemu 的虚拟机性能效果比 VirtualBox 的虚拟机性能效果提升超过一倍甚至更多。</p>
-<p>这让我没有理由不选择使用 Qemu。</p>
+    <title>图床，但是命令行，在任何地方</title>
+    <url>/2026/04/24/image-host-based-on-terminal/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>前段时间用 <code>claude + glm4.7</code> 整了个使用 <code>nginx + lua</code> 脚本实现的<a href="https://github.com/qspidy/imgng">个人图床方案</a>，很简洁啊，主要逻辑都集中在一个 <a href="https://github.com/qspidy/imgng/blob/master/img-host-full.conf">nginx 配置文件</a>内，不到 120 行，兼具性能（nginx 特性）和访问速度（套 cdn）。</p>
+<p>然而这种部署方式绕不开一个问题：得有一台服务器。专门搞一台服务器做个人图床多少是有点大材小用了，个人使用又能存多少东西呢？不如先薅大厂羊毛，等到羊毛不够用了再换不迟。</p>
+<p>于是这个<del>轮子</del>(项目)诞生了，在 <code>codex + gpt5.4</code> 和本人的努力下，花了一晚上时间。<br><img src="https://img.wastaken.xyz/images/978820ea1ddaa21db8a8ca8ea2144424.png"></p>
+<h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><blockquote>
+<p>curl-powered image hosting for hackers. One-click deploy on Cloudflare, or integrate with existing nginx server.</p>
+</blockquote>
+<p>该项目 <a href="https://github.com/qspidy/imgng">qspidy&#x2F;imgng</a> 的设计理念是，能在身边任何一台联网的机器上传图片到图床并获取链接，只要记住这条几乎不能再短的 <code>curl</code> 命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -u user:pass --data-binary @photo.jpg https://example.com/upload</span><br></pre></td></tr></table></figure>
+
+<p>之所以说是“几乎”不能再短，是因为还可以使用 <code>alias</code> 或者 <code>shell函数</code> 给它<a href="https://github.com/qspidy/imgng#upload-api">设置别名</a>，然后像使用一个普通 linux 命令一样使用它：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">imgng</span></span>() &#123;</span><br><span class="line">  curl -s -u user:pass --data-binary @<span class="string">&quot;<span class="variable">$1</span>&quot;</span> https://example.com/upload</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">imgng photo.jpg</span><br></pre></td></tr></table></figure>
+<p><img src="https://img.wastaken.xyz/images/62b8125d3f136a9ebb51e85070584fc6.gif"></p>
+<p>这次相比上一篇博客<a href="https://orange.wastaken.xyz/2026/02/01/image-host-based-on-nginx/">使用 Nginx 搭建个人图床，让链接永远有效！</a>的主要变化是，提供一个零成本的服务端部署方案，使用 <code>Cloudflare + R2</code>。当然还有很多其它<del>薅羊毛</del>（免费部署）方案，参考文末的<a href="#%E5%A4%96%E9%83%A8%E9%93%BE%E6%8E%A5">外部链接</a>，相信各路大神都能找到适合自己的方案。</p>
+<p>从某种程度上而言，它更像是提供了一个相较传统 <code>S3 API</code> 而言更简洁的接口，在客户端做到了极致的简洁（命令行爱好者狂喜！）。</p>
+<p>结合当前 <code>CLI</code> 越来越热的趋势，这小项目还有更多存在和参考的意义，后续或许可以进一步发展成一整套图床命令行<del>增删改查</del>(接口方案)。再者可以通过 Skills&#x2F;MCP 等方式和 Agent 无缝集成，成为 Agent 工作流的一部分。</p>
+<p>要长期使用的话，它目前还缺少一些关键的功能：图片展示列表，重复图片处理等。接下来会继续完善这些关键的功能。</p>
+<p>另外还有些可选功能：支持多用户，备份恢复等。因为它当前的定位是个人使用，所以支持多用户暂不考虑，而文件存储在 R2 上也基本不用担心文件丢失的问题，所以目前不急（备份也就一条命令的事，考虑到前段时间 Cloudflare 还崩了一次，备份还是有必要的）。</p>
+<h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>用了 codex + gpt5.4 才知道原来不是 Agent 不好用，而是<del>钱没到位</del>（选错了模型和 Agent），回想当初用 claude + glm4.7，那真是改了又改，5 小时额度用完了都没跑通。这次几乎是首次提示词一下去出来的东西就能用，后面只需做些功能完善和文档生成的工作。</p>
+<p>心情很复杂。很兴奋，在 AI 加持下个人能力边界得到了极大的扩张，很悲伤，AI 对程序员群体造成了很大的冲击，许多知识与技能似乎都没有了意义。</p>
+<p>虽然如此，技术在发展，时代在进步，拥抱未来是唯一能走的路。</p>
+<h2 id="外部链接"><a href="#外部链接" class="headerlink" title="外部链接"></a>外部链接</h2><h3 id="类似项目（更适合广大人类-GUI-用户食用）"><a href="#类似项目（更适合广大人类-GUI-用户食用）" class="headerlink" title="类似项目（更适合广大人类 GUI 用户食用）"></a>类似项目（更适合<del>广大人类</del> GUI 用户食用）</h3><ul>
+<li><a href="https://github.com/MarSeventh/CloudFlare-ImgBed">https://github.com/MarSeventh/CloudFlare-ImgBed</a></li>
+<li><a href="https://github.com/Molunerfinn/picgo">https://github.com/Molunerfinn/picgo</a></li>
+</ul>
+<h3 id="其它基于-CF-的薅羊毛项目"><a href="#其它基于-CF-的薅羊毛项目" class="headerlink" title="其它基于 CF 的薅羊毛项目"></a><a href="https://github.com/topics/cloudflare-r2">其它基于 CF 的<del>薅羊毛</del>项目</a></h3>]]></content>
+      <tags>
+        <tag>AI</tag>
+        <tag>Github</tag>
+        <tag>Image-host</tag>
+        <tag>Cloudflare</tag>
+        <tag>Free</tag>
+        <tag>CLI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Setup Orange Pi Zero 3 as a Debian Server</title>
+    <url>/2025/01/05/setup-orange-pi-zero-3-as-a-server/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>I got the board several days ago, and now it’s time to get it to work. However I got stuck on WiFi configuration again though I did it many times before. So I write this post to make the steps more clear in my mind.</p>
 <hr>
-<h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><p>Qemu 本身只提供了命令行工具来管理虚拟机，也不会保存虚拟机的相关配置信息。实际使用时通常是同时安装 <code>Libvert</code>（一套用于管理硬件虚拟化的开源API、守护进程与管理工具）配合 <code>Libvert clients</code> 来实现使用图形界面管理 Qemu 虚拟机。</p>
-<p><code>Libvert clients</code> 是 <code>Libvert</code> 的前端，常用的 <code>Libvert clients</code> 在<a href="https://wiki.archlinux.org/title/Libvirt#Client">这里</a>。我使用的是 Virt-Manager 来管理 Qemu 虚拟机，因为在使用过程中 Virt-Manager 提供的管理功能和 VirtualBox 比较接近。使用教程参考 <em>Derek Taylor</em> 的 <a href="https://www.youtube.com/watch?v=p1d_b_91YlU">Virt-Manager Is The Better Way To Manage VMs</a>。</p>
-<p>使用 Virt-Manager 创建虚拟机的过程和 VirtualBox 类似，通常（对我来说）只需要改一下内存大小、CPU 数量和磁盘容量，其它无脑下一步就行。</p>
-<p>与 VirtualBox 不同的是 Virt-Manager 还提供了通过网络安装（HTTP, HTTPS or FTP），安装过程要提供操作系统安装 URL，估计进行大规模安装的时候会用到，一般来说还是使用镜像文件来安装。</p>
+<h2 id="About-the-board"><a href="#About-the-board" class="headerlink" title="About the board"></a>About the board</h2><p>It’s <a href="http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-Zero-3.html">Orange Pi Zero 3</a>, a really small and powerful single-board computer! Here is its introduction from official:</p>
+<blockquote>
+<p>Orange Pi Zero 3 is powered by Allwinner H618 quad-core Cortex-A53 processor, Arm Mali-G31 MP2 GPU, supports OpenGL ES 1.0&#x2F;2.0&#x2F;3.2, OpenCL 2.0, Vulkan 1.1, etc.,with 1GB&#x2F;1.5GB&#x2F;2GB&#x2F;4GB memory options, decoding of multiple video formats is supported, and the Micro-HDMI output supports 4K display. In addition, Orange Pi Zero 3 can also be extended with headphones, TVout, USB2.0, IR reception and other functions via 13Pin expansion ports with an adapter board, in addition to the 26Pin expansion function port on the board, further enriching the functional interface of the motherboard.</p>
+</blockquote>
+<p>In my case, it has 4GB LPDDR4 which makes it sufficient for my various services.</p>
+<p>Here is what I got:</p>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.1.jpg" class="">
+
+<p>It’s easy to setup, and here is finally what I got:</p>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.2.jpg" class="">
+
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.3.jpg" class="">
+
+<h2 id="Burn-the-image"><a href="#Burn-the-image" class="headerlink" title="Burn the image"></a>Burn the image</h2><p>There are several images on official site:</p>
+<ul>
+<li>Orange Pi OS(Arch)</li>
+<li>Ubuntu Image</li>
+<li>Debian Image</li>
+<li>Android Image</li>
+<li>OpenWRT</li>
+</ul>
+<p>I chose debian as it’s one of my most familiar distros, there are also imaging tools on official site:</p>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.4.jpg" class="">
+
+<p>Burning…</p>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.5.jpg" class="">
+
+<p>Insert sd card and power on:</p>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.6.jpg" class="">
+
+<p>Finally got to the shell (BTW, the default password for orangepi is <code>orangepi</code>):</p>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.7.jpg" class="">
+
+<h2 id="Basic-setup"><a href="#Basic-setup" class="headerlink" title="Basic setup"></a>Basic setup</h2><h3 id="WiFi"><a href="#WiFi" class="headerlink" title="WiFi"></a>WiFi</h3><p>The first thing to do about this new sever must be setting up wifi connection cause I don’t have another net cable.</p>
+<p>There are generally three choices or tools on command line to manage wifi connections: <code>iwconfig</code>, <code>wpa_supplicant</code> and <code>nmcli</code>. After asking chatgpt for assistance, I finally decide to leave all of them behind and just edit <code>/etc/network/interfaces</code> to setup the wifi.</p>
+<p>Actually when I asked chatgpt about how to setup wifi connection on linux,  it didn’t mention editing <code>/etc/network/interfaces</code>. I happened to know it when I was configuring network for pve, and it is really a simple and basic way to setup wifi connections. And this time, I happened to know that I can setup a roaming wifi, so it can auto connect to different wifi if the current wifi connection corrupts, it’s useful but I don’t need it for the moment.</p>
+<p>Edit <code>/etc/network/interfaces</code> and add following like this</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">auto wlan0</span><br><span class="line">iface wlan0 inet dhcp</span><br><span class="line">	wpa-ssid &lt;wifi-name&gt;</span><br><span class="line">	wpa-psk &lt;password&gt;</span><br></pre></td></tr></table></figure>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.8.jpg" class="">
+
+<p>Save and then restart, then the wifi will automatic be connected and got an ip:</p>
+<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.9.jpg" class="">
+
+<h3 id="Mirror-source"><a href="#Mirror-source" class="headerlink" title="Mirror source"></a>Mirror source</h3><p>The default mirror source is rather slow, so I change <code>/etc/apt/sources.list</code> to the following:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">deb http://mirrors.ustc.edu.cn/debian bookworm main contrib non-free non-free-firmware</span><br><span class="line"><span class="comment">#deb http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware</span></span><br><span class="line"><span class="comment">#deb-src http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware</span></span><br><span class="line"></span><br><span class="line">deb http://mirrors.ustc.edu.cn/debian bookworm-updates main contrib non-free non-free-firmware</span><br><span class="line"><span class="comment">#deb http://repo.huaweicloud.com/debian bookworm-updates main contrib non-free non-free-firmware</span></span><br><span class="line"><span class="comment">#deb-src http://repo.huaweicloud.com/debian bookworm-updates main contrib non-free non-free-firmware</span></span><br><span class="line"></span><br><span class="line">deb http://mirrors.ustc.edu.cn/debian bookworm-backports main contrib non-free non-free-firmware</span><br><span class="line"><span class="comment">#deb http://repo.huaweicloud.com/debian bookworm-backports main contrib non-free non-free-firmware</span></span><br><span class="line"><span class="comment">#deb-src http://repo.huaweicloud.com/debian bookworm-backports main contrib non-free non-free-firmware</span></span><br></pre></td></tr></table></figure>
+<p>and remove the useless source in <code>/etc/apt/sources.list.d/docker.list</code>.</p>
+<h3 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h3><p>It surprised me that the image preinstalled zsh and oh-my-zsh, also tools like tmux, git, docker. here is the default <code>.zshrc</code> file:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># If you come from bash you might have to change your $PATH.</span></span><br><span class="line"><span class="comment"># export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Path to your Oh My Zsh installation.</span></span><br><span class="line"><span class="built_in">export</span> ZSH=/etc/oh-my-zsh</span><br><span class="line"><span class="built_in">export</span> ZSH_CACHE_DIR=~/.oh-my-zsh/cache</span><br><span class="line"></span><br><span class="line"><span class="comment"># Set name of the theme to load --- if set to &quot;random&quot;, it will</span></span><br><span class="line"><span class="comment"># load a random theme each time Oh My Zsh is loaded, in which case,</span></span><br><span class="line"><span class="comment"># to know which specific one was loaded, run: echo $RANDOM_THEME</span></span><br><span class="line"><span class="comment"># See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes</span></span><br><span class="line">ZSH_THEME=<span class="string">&quot;mrtazz&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set list of themes to pick from when loading at random</span></span><br><span class="line"><span class="comment"># Setting this variable when ZSH_THEME=random will cause zsh to load</span></span><br><span class="line"><span class="comment"># a theme from this variable instead of looking in $ZSH/themes/</span></span><br><span class="line"><span class="comment"># If set to an empty array, this variable will have no effect.</span></span><br><span class="line"><span class="comment"># ZSH_THEME_RANDOM_CANDIDATES=( &quot;robbyrussell&quot; &quot;agnoster&quot; )</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to use case-sensitive completion.</span></span><br><span class="line"><span class="comment"># CASE_SENSITIVE=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to use hyphen-insensitive completion.</span></span><br><span class="line"><span class="comment"># Case-sensitive completion must be off. _ and - will be interchangeable.</span></span><br><span class="line"><span class="comment"># HYPHEN_INSENSITIVE=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment one of the following lines to change the auto-update behavior</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; mode disabled  # disable automatic updates</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; mode auto      # update automatically without asking</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; mode reminder  # just remind me to update when it&#x27;s time</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to change how often to auto-update (in days).</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; frequency 13</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line if pasting URLs and other text is messed up.</span></span><br><span class="line"><span class="comment"># DISABLE_MAGIC_FUNCTIONS=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to disable colors in ls.</span></span><br><span class="line"><span class="comment"># DISABLE_LS_COLORS=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to disable auto-setting terminal title.</span></span><br><span class="line"><span class="comment"># DISABLE_AUTO_TITLE=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to enable command auto-correction.</span></span><br><span class="line"><span class="comment"># ENABLE_CORRECTION=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to display red dots whilst waiting for completion.</span></span><br><span class="line"><span class="comment"># You can also set it to another string to have that shown instead of the default red dots.</span></span><br><span class="line"><span class="comment"># e.g. COMPLETION_WAITING_DOTS=&quot;%F&#123;yellow&#125;waiting...%f&quot;</span></span><br><span class="line"><span class="comment"># Caution: this setting can cause issues with multiline prompts in zsh &lt; 5.7.1 (see #5765)</span></span><br><span class="line"><span class="comment"># COMPLETION_WAITING_DOTS=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line if you want to disable marking untracked files</span></span><br><span class="line"><span class="comment"># under VCS as dirty. This makes repository status check for large repositories</span></span><br><span class="line"><span class="comment"># much, much faster.</span></span><br><span class="line"><span class="comment"># DISABLE_UNTRACKED_FILES_DIRTY=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line if you want to change the command execution time</span></span><br><span class="line"><span class="comment"># stamp shown in the history command output.</span></span><br><span class="line"><span class="comment"># You can set one of the optional three formats:</span></span><br><span class="line"><span class="comment"># &quot;mm/dd/yyyy&quot;|&quot;dd.mm.yyyy&quot;|&quot;yyyy-mm-dd&quot;</span></span><br><span class="line"><span class="comment"># or set a custom format using the strftime function format specifications,</span></span><br><span class="line"><span class="comment"># see &#x27;man strftime&#x27; for details.</span></span><br><span class="line"><span class="comment"># HIST_STAMPS=&quot;mm/dd/yyyy&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Would you like to use another custom folder than $ZSH/custom?</span></span><br><span class="line"><span class="comment"># ZSH_CUSTOM=/path/to/new-custom-folder</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Which plugins would you like to load?</span></span><br><span class="line"><span class="comment"># Standard plugins can be found in $ZSH/plugins/</span></span><br><span class="line"><span class="comment"># Custom plugins may be added to $ZSH_CUSTOM/plugins/</span></span><br><span class="line"><span class="comment"># Example format: plugins=(rails git textmate ruby lighthouse)</span></span><br><span class="line"><span class="comment"># Add wisely, as too many plugins slow down shell startup.</span></span><br><span class="line">plugins=(evalcache git git-extras debian tmux screen <span class="built_in">history</span> extract colorize web-search docker)</span><br><span class="line"></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$ZSH</span>/oh-my-zsh.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># User configuration</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># export MANPATH=&quot;/usr/local/man:$MANPATH&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># You may need to manually set your language environment</span></span><br><span class="line"><span class="comment"># export LANG=en_US.UTF-8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Preferred editor for local and remote sessions</span></span><br><span class="line"><span class="comment"># if [[ -n $SSH_CONNECTION ]]; then</span></span><br><span class="line"><span class="comment">#   export EDITOR=&#x27;vim&#x27;</span></span><br><span class="line"><span class="comment"># else</span></span><br><span class="line"><span class="comment">#   export EDITOR=&#x27;mvim&#x27;</span></span><br><span class="line"><span class="comment"># fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Compilation flags</span></span><br><span class="line"><span class="comment"># export ARCHFLAGS=&quot;-arch x86_64&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set personal aliases, overriding those provided by Oh My Zsh libs,</span></span><br><span class="line"><span class="comment"># plugins, and themes. Aliases can be placed here, though Oh My Zsh</span></span><br><span class="line"><span class="comment"># users are encouraged to define aliases within a top-level file in</span></span><br><span class="line"><span class="comment"># the $ZSH_CUSTOM folder, with .zsh extension. Examples:</span></span><br><span class="line"><span class="comment"># - $ZSH_CUSTOM/aliases.zsh</span></span><br><span class="line"><span class="comment"># - $ZSH_CUSTOM/macos.zsh</span></span><br><span class="line"><span class="comment"># For a full list of active aliases, run `alias`.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Example aliases</span></span><br><span class="line"><span class="comment"># alias zshconfig=&quot;mate ~/.zshrc&quot;</span></span><br><span class="line"><span class="comment"># alias ohmyzsh=&quot;mate ~/.oh-my-zsh&quot;</span></span><br></pre></td></tr></table></figure>
+<p>I leave the shell configurations be cause it is well enough.</p>
+<h3 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h3><p>Note that it’s defaultly installed docker, however, I can’t use <code>docker compose</code> to start a container from compose file cause it said <code>docker: &#39;compose&#39; is not a docker command.</code>.</p>
+<p>I have to reinstall the docker. It’s rather easy, just run:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://get.docker.com | sh</span><br></pre></td></tr></table></figure>
+
+<p>After waiting for a while, it’s done. Now I can use  <code>docker compose</code> to start a container from compose file.</p>
+<h3 id="Disable-auto-login-optional"><a href="#Disable-auto-login-optional" class="headerlink" title="Disable auto login (optional)"></a>Disable auto login (optional)</h3><p>By default, when I’m use the tty to start a session, it will automaticly logs in to the terminal as orangepi. But I don’t want it to be like this after I setted it up so that it is necessary to disable it. There is document on official doc site on <strong>How to set automatic terminal login in linux system</strong>, the url is at the end of the post.</p>
+<blockquote>
+<p>Use the following command to set the root user to automatically log in to the terminal<br><code>orangepi@orangepi:~$ sudo auto_login_cli.sh root</code></p>
+<p>Use the following command to disable automatic login terminal<br><code>orangepi@orangepi:~$ sudo auto_login_cli.sh -d</code></p>
+<p>Use the following command to set the orangepi user to automatically log in to the terminal again<br><code>orangepi@orangepi:~$ sudo auto_login_cli.sh orangepi</code></p>
+</blockquote>
 <hr>
-<h2 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h2><p>不得不承认，Qemu 虚拟机的启动速度是肉眼可见的提升了，对 CPU 的占用也比 VirtualBox 少。除了没有剪切板共享功能有点不方便之外，其它使用体验和 VirtualBox 基本一致。</p>
-<p>我主要使用虚拟机来调试一些应用程序，比如在 Windows 上运行 IDA，在 Linux 上运行 GDB。另外也会在 Linux 上运行些有意思的 Github 项目，比如 QQ Bot。</p>
-<p>顺便提一嘴文件共享的问题。我不喜欢使用虚拟机软件提供的文件共享服务，一个是麻烦，有时还得重启配置才能生效；另一个是不灵活，不方便配置多个共享文件夹和控制权限。</p>
-<p>我使用网络来实现文件共享，因为对这方面比较熟。</p>
-<p>对于 Windows 虚拟机，只要开启网络文件共享，然后把想要共享的文件夹设置为对指定用户共享，就可以在宿主机（我这里用的 Linux，Windows 类似）使用 <code>smb</code> 协议连上 Windows 虚拟机，访问共享文件。</p>
-<p>对于 Linux 虚拟机就更简单了，在 Linux 虚拟机里开启 <code>SSHD/SSH</code> 服务，使用 <code>SSHFS</code> 挂载 Linux 的文件系统或者直接 <code>SCP</code>，又或者使用 <strong>VS Code</strong> 的远程连接来直接编辑 Linux 虚拟机里的文件。</p>
-<p>这个过程在 Qemu 下更加方便，因为 Qemu 直接虚拟出一个主机层面的虚拟网卡，也就不需要像 VirtualBox 那样使用 <code>NAT</code> 时还得配置端口转发才能从主机连上虚拟机。</p>
-<hr>
-<h2 id="实际使用中的问题"><a href="#实际使用中的问题" class="headerlink" title="实际使用中的问题"></a>实际使用中的问题</h2><p>使用 Docker 和部署 Github 项目就不得不考虑配置代理的问题。</p>
-<p>因为我在宿主机使用的是<em>透明代理</em>，所以在 VirtualBox 虚拟机里就不需要考虑配置网络代理的问题，网络数据自动由主机代理接管。</p>
-<p>而 Qemu 虚拟的是主机层面的网卡，导致它的网络数据不由<em>透明代理</em>接管。（也可能是 <code>iptables</code> 配置的问题，弄了好久也没搞清楚是什么原因在开了 <code>cgproxy</code> 后 Qemu 虚拟机就连不上网，似乎可以对外请求，但返回的数据包没能回到虚拟机）</p>
-<p>为了让虚拟机流量走主机代理，就只能是在虚拟机内使用配置 <code>http_proxy</code> 和 <code>https_proxy</code> 环境变量来试图让流量走主机代理了，但很多应用却并不使用 <code>http_proxy</code> 和 <code>https_proxy</code> 环境变量，搞自己的代理配置那一套。其中就包括 <code>apt</code>、<code>docker</code> 和 Python 脚本。</p>
-<p>好在找到了一篇比较全的代理配置博文：<a href="https://qiita.com/daichi-ishida/items/b77c151067427806ede5">UbuntuのProxy設定備忘録</a>。里面包含了对 <code>http_proxy</code> 和 <code>https_proxy</code> 环境变量、<code>apt</code>、<code>git</code>、<code>docker</code> 和 <code>wget</code> 的代理配置方法。</p>
-<p>关于 Python 的代理配置我参考的是 Stack Overflow 中的 <a href="https://stackoverflow.com/questions/31639742/how-to-pass-all-pythons-traffics-through-a-http-proxy">How to pass all Python’s traffics through a http proxy?</a></p>
-<hr>
-<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>当需要考虑虚拟机性能时，毫无疑问应该选择 Qemu&#x2F;KVM，这也是现在许多云服务厂商在使用的主流虚拟化方案。</p>
-<p>但如果只是简单的虚拟需求如尝试各种 Linux 发行版啥的，那选择 VirtualBox 还是要更方便的，毕竟 VirtualBox 对虚拟机的管理配置很全，大部分需求都可以在 VirtualBox 的配置面板动动鼠标解决，这对新手非常友好。</p>
-<p>折腾网络配置说实话挺烦的，尤其是还没深入研究过 <code>Netfilter</code> 和 <code>Iptables</code>。一些配置出问题虽然知道大概是哪有问题，但却不会修复。网上也不一定找得到答案，只能是论坛求助。</p>
-<p>但折腾的好处则是我可以在解决问题的过程中学到不少新的东西，而这些经验会在未来不经意间发挥意想不到的作用。</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Orange Pi Zero 3 is small, powerful and flexible. I can burn different images to different sd cards to achieve easily switching to different operating systems and performing various expriments which would be a quite fancy journey. </p>
+<p>In this blog post, I just present the most basic use case for the Orange Pi Zero 3 and explore its capabilities and there are a lot more to be explored. Wish it can help those who are new to Orange Pi Zero 3.</p>
+<p>Feel free to leave comments below! :)</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-Zero-3.html">Orange Pi Zero3 Introduction</a></li>
+<li><a href="http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-Zero-3.html">Orange Pi Zero 3 Downloads</a></li>
+<li><a href="http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3#How_to_set_automatic_terminal_login_in_linux_system">How to set automatic terminal login in linux system</a></li>
+</ul>
 ]]></content>
-      <categories>
-        <category>折腾合集</category>
-      </categories>
       <tags>
         <tag>Linux</tag>
-        <tag>Arch</tag>
-        <tag>Virtualization</tag>
-        <tag>tweak/toss</tag>
+        <tag>WiFi</tag>
+        <tag>OpenWrt</tag>
+        <tag>Single-Board</tag>
+        <tag>Router</tag>
+        <tag>Tech</tag>
       </tags>
   </entry>
   <entry>
@@ -847,87 +885,49 @@
       </tags>
   </entry>
   <entry>
-    <title>Setup Orange Pi Zero 3 as a Debian Server</title>
-    <url>/2025/01/05/setup-orange-pi-zero-3-as-a-server/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>I got the board several days ago, and now it’s time to get it to work. However I got stuck on WiFi configuration again though I did it many times before. So I write this post to make the steps more clear in my mind.</p>
+    <title>使用 Qemu 替代 VirtualBox 并进行相关配置</title>
+    <url>/2022/05/29/replace-vbox-with-qemu/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>在使用了很长一段时间（大概 6-7 个月）的 VirtualBox 之后，我决定使用 Qemu 替代它。事实上我使用 VirtualBox 的体验非常好，尤其是它提供的 Host 和 Guest 之间的文件传输，剪切板共享功能，它对于网络的配置也非常的方便。</p>
+<p>但对于一些复杂点的网络配置则需要用到命令行工具 <code>vboxmanage</code>，比如启用虚拟网卡的 dhcp 服务。</p>
+<p>让我毅然决定放弃 VirtualBox 选择 Qemu 的原因是我在油管上看到的一则发表于 2022 年 1 月视频：<a href="https://www.youtube.com/watch?v=Kq849CpGd88">Stop using Virtualbox, Here’s how to use QEMU instead</a></p>
+<p>油管博主 <em>Chris Titus</em> 在视频里展示了相同的虚拟机 Guest 在 Qemu 下和在 VirtualBox 下的启动时间，结论是 <code>11.17s</code> 比 <code>35.28s</code>！</p>
+<p>我震惊了。如果说只是快个百分之二三十，我还可以认为只是简单的因为 VirtualBox 提供了更多的管理功能而导致的性能下降，但事实摆在我面前，速度提升 <code>68.3%</code>！</p>
+<p>什么概念，要知道实际性能的提升和启动速度的提升并不是成正比的，通常来说实际性能的提升的比例会高于启动速度的提升比例，也就是说使用 Qemu 的虚拟机性能效果比 VirtualBox 的虚拟机性能效果提升超过一倍甚至更多。</p>
+<p>这让我没有理由不选择使用 Qemu。</p>
 <hr>
-<h2 id="About-the-board"><a href="#About-the-board" class="headerlink" title="About the board"></a>About the board</h2><p>It’s <a href="http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-Zero-3.html">Orange Pi Zero 3</a>, a really small and powerful single-board computer! Here is its introduction from official:</p>
-<blockquote>
-<p>Orange Pi Zero 3 is powered by Allwinner H618 quad-core Cortex-A53 processor, Arm Mali-G31 MP2 GPU, supports OpenGL ES 1.0&#x2F;2.0&#x2F;3.2, OpenCL 2.0, Vulkan 1.1, etc.,with 1GB&#x2F;1.5GB&#x2F;2GB&#x2F;4GB memory options, decoding of multiple video formats is supported, and the Micro-HDMI output supports 4K display. In addition, Orange Pi Zero 3 can also be extended with headphones, TVout, USB2.0, IR reception and other functions via 13Pin expansion ports with an adapter board, in addition to the 26Pin expansion function port on the board, further enriching the functional interface of the motherboard.</p>
-</blockquote>
-<p>In my case, it has 4GB LPDDR4 which makes it sufficient for my various services.</p>
-<p>Here is what I got:</p>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.1.jpg" class="">
-
-<p>It’s easy to setup, and here is finally what I got:</p>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.2.jpg" class="">
-
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.3.jpg" class="">
-
-<h2 id="Burn-the-image"><a href="#Burn-the-image" class="headerlink" title="Burn the image"></a>Burn the image</h2><p>There are several images on official site:</p>
-<ul>
-<li>Orange Pi OS(Arch)</li>
-<li>Ubuntu Image</li>
-<li>Debian Image</li>
-<li>Android Image</li>
-<li>OpenWRT</li>
-</ul>
-<p>I chose debian as it’s one of my most familiar distros, there are also imaging tools on official site:</p>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.4.jpg" class="">
-
-<p>Burning…</p>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.5.jpg" class="">
-
-<p>Insert sd card and power on:</p>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.6.jpg" class="">
-
-<p>Finally got to the shell (BTW, the default password for orangepi is <code>orangepi</code>):</p>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.7.jpg" class="">
-
-<h2 id="Basic-setup"><a href="#Basic-setup" class="headerlink" title="Basic setup"></a>Basic setup</h2><h3 id="WiFi"><a href="#WiFi" class="headerlink" title="WiFi"></a>WiFi</h3><p>The first thing to do about this new sever must be setting up wifi connection cause I don’t have another net cable.</p>
-<p>There are generally three choices or tools on command line to manage wifi connections: <code>iwconfig</code>, <code>wpa_supplicant</code> and <code>nmcli</code>. After asking chatgpt for assistance, I finally decide to leave all of them behind and just edit <code>/etc/network/interfaces</code> to setup the wifi.</p>
-<p>Actually when I asked chatgpt about how to setup wifi connection on linux,  it didn’t mention editing <code>/etc/network/interfaces</code>. I happened to know it when I was configuring network for pve, and it is really a simple and basic way to setup wifi connections. And this time, I happened to know that I can setup a roaming wifi, so it can auto connect to different wifi if the current wifi connection corrupts, it’s useful but I don’t need it for the moment.</p>
-<p>Edit <code>/etc/network/interfaces</code> and add following like this</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">auto wlan0</span><br><span class="line">iface wlan0 inet dhcp</span><br><span class="line">	wpa-ssid &lt;wifi-name&gt;</span><br><span class="line">	wpa-psk &lt;password&gt;</span><br></pre></td></tr></table></figure>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.8.jpg" class="">
-
-<p>Save and then restart, then the wifi will automatic be connected and got an ip:</p>
-<img src="/2025/01/05/setup-orange-pi-zero-3-as-a-server/1.9.jpg" class="">
-
-<h3 id="Mirror-source"><a href="#Mirror-source" class="headerlink" title="Mirror source"></a>Mirror source</h3><p>The default mirror source is rather slow, so I change <code>/etc/apt/sources.list</code> to the following:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">deb http://mirrors.ustc.edu.cn/debian bookworm main contrib non-free non-free-firmware</span><br><span class="line"><span class="comment">#deb http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware</span></span><br><span class="line"><span class="comment">#deb-src http://repo.huaweicloud.com/debian bookworm main contrib non-free non-free-firmware</span></span><br><span class="line"></span><br><span class="line">deb http://mirrors.ustc.edu.cn/debian bookworm-updates main contrib non-free non-free-firmware</span><br><span class="line"><span class="comment">#deb http://repo.huaweicloud.com/debian bookworm-updates main contrib non-free non-free-firmware</span></span><br><span class="line"><span class="comment">#deb-src http://repo.huaweicloud.com/debian bookworm-updates main contrib non-free non-free-firmware</span></span><br><span class="line"></span><br><span class="line">deb http://mirrors.ustc.edu.cn/debian bookworm-backports main contrib non-free non-free-firmware</span><br><span class="line"><span class="comment">#deb http://repo.huaweicloud.com/debian bookworm-backports main contrib non-free non-free-firmware</span></span><br><span class="line"><span class="comment">#deb-src http://repo.huaweicloud.com/debian bookworm-backports main contrib non-free non-free-firmware</span></span><br></pre></td></tr></table></figure>
-<p>and remove the useless source in <code>/etc/apt/sources.list.d/docker.list</code>.</p>
-<h3 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h3><p>It surprised me that the image preinstalled zsh and oh-my-zsh, also tools like tmux, git, docker. here is the default <code>.zshrc</code> file:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># If you come from bash you might have to change your $PATH.</span></span><br><span class="line"><span class="comment"># export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Path to your Oh My Zsh installation.</span></span><br><span class="line"><span class="built_in">export</span> ZSH=/etc/oh-my-zsh</span><br><span class="line"><span class="built_in">export</span> ZSH_CACHE_DIR=~/.oh-my-zsh/cache</span><br><span class="line"></span><br><span class="line"><span class="comment"># Set name of the theme to load --- if set to &quot;random&quot;, it will</span></span><br><span class="line"><span class="comment"># load a random theme each time Oh My Zsh is loaded, in which case,</span></span><br><span class="line"><span class="comment"># to know which specific one was loaded, run: echo $RANDOM_THEME</span></span><br><span class="line"><span class="comment"># See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes</span></span><br><span class="line">ZSH_THEME=<span class="string">&quot;mrtazz&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set list of themes to pick from when loading at random</span></span><br><span class="line"><span class="comment"># Setting this variable when ZSH_THEME=random will cause zsh to load</span></span><br><span class="line"><span class="comment"># a theme from this variable instead of looking in $ZSH/themes/</span></span><br><span class="line"><span class="comment"># If set to an empty array, this variable will have no effect.</span></span><br><span class="line"><span class="comment"># ZSH_THEME_RANDOM_CANDIDATES=( &quot;robbyrussell&quot; &quot;agnoster&quot; )</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to use case-sensitive completion.</span></span><br><span class="line"><span class="comment"># CASE_SENSITIVE=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to use hyphen-insensitive completion.</span></span><br><span class="line"><span class="comment"># Case-sensitive completion must be off. _ and - will be interchangeable.</span></span><br><span class="line"><span class="comment"># HYPHEN_INSENSITIVE=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment one of the following lines to change the auto-update behavior</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; mode disabled  # disable automatic updates</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; mode auto      # update automatically without asking</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; mode reminder  # just remind me to update when it&#x27;s time</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to change how often to auto-update (in days).</span></span><br><span class="line"><span class="comment"># zstyle &#x27;:omz:update&#x27; frequency 13</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line if pasting URLs and other text is messed up.</span></span><br><span class="line"><span class="comment"># DISABLE_MAGIC_FUNCTIONS=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to disable colors in ls.</span></span><br><span class="line"><span class="comment"># DISABLE_LS_COLORS=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to disable auto-setting terminal title.</span></span><br><span class="line"><span class="comment"># DISABLE_AUTO_TITLE=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to enable command auto-correction.</span></span><br><span class="line"><span class="comment"># ENABLE_CORRECTION=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line to display red dots whilst waiting for completion.</span></span><br><span class="line"><span class="comment"># You can also set it to another string to have that shown instead of the default red dots.</span></span><br><span class="line"><span class="comment"># e.g. COMPLETION_WAITING_DOTS=&quot;%F&#123;yellow&#125;waiting...%f&quot;</span></span><br><span class="line"><span class="comment"># Caution: this setting can cause issues with multiline prompts in zsh &lt; 5.7.1 (see #5765)</span></span><br><span class="line"><span class="comment"># COMPLETION_WAITING_DOTS=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line if you want to disable marking untracked files</span></span><br><span class="line"><span class="comment"># under VCS as dirty. This makes repository status check for large repositories</span></span><br><span class="line"><span class="comment"># much, much faster.</span></span><br><span class="line"><span class="comment"># DISABLE_UNTRACKED_FILES_DIRTY=&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Uncomment the following line if you want to change the command execution time</span></span><br><span class="line"><span class="comment"># stamp shown in the history command output.</span></span><br><span class="line"><span class="comment"># You can set one of the optional three formats:</span></span><br><span class="line"><span class="comment"># &quot;mm/dd/yyyy&quot;|&quot;dd.mm.yyyy&quot;|&quot;yyyy-mm-dd&quot;</span></span><br><span class="line"><span class="comment"># or set a custom format using the strftime function format specifications,</span></span><br><span class="line"><span class="comment"># see &#x27;man strftime&#x27; for details.</span></span><br><span class="line"><span class="comment"># HIST_STAMPS=&quot;mm/dd/yyyy&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Would you like to use another custom folder than $ZSH/custom?</span></span><br><span class="line"><span class="comment"># ZSH_CUSTOM=/path/to/new-custom-folder</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Which plugins would you like to load?</span></span><br><span class="line"><span class="comment"># Standard plugins can be found in $ZSH/plugins/</span></span><br><span class="line"><span class="comment"># Custom plugins may be added to $ZSH_CUSTOM/plugins/</span></span><br><span class="line"><span class="comment"># Example format: plugins=(rails git textmate ruby lighthouse)</span></span><br><span class="line"><span class="comment"># Add wisely, as too many plugins slow down shell startup.</span></span><br><span class="line">plugins=(evalcache git git-extras debian tmux screen <span class="built_in">history</span> extract colorize web-search docker)</span><br><span class="line"></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$ZSH</span>/oh-my-zsh.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># User configuration</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># export MANPATH=&quot;/usr/local/man:$MANPATH&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># You may need to manually set your language environment</span></span><br><span class="line"><span class="comment"># export LANG=en_US.UTF-8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Preferred editor for local and remote sessions</span></span><br><span class="line"><span class="comment"># if [[ -n $SSH_CONNECTION ]]; then</span></span><br><span class="line"><span class="comment">#   export EDITOR=&#x27;vim&#x27;</span></span><br><span class="line"><span class="comment"># else</span></span><br><span class="line"><span class="comment">#   export EDITOR=&#x27;mvim&#x27;</span></span><br><span class="line"><span class="comment"># fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Compilation flags</span></span><br><span class="line"><span class="comment"># export ARCHFLAGS=&quot;-arch x86_64&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set personal aliases, overriding those provided by Oh My Zsh libs,</span></span><br><span class="line"><span class="comment"># plugins, and themes. Aliases can be placed here, though Oh My Zsh</span></span><br><span class="line"><span class="comment"># users are encouraged to define aliases within a top-level file in</span></span><br><span class="line"><span class="comment"># the $ZSH_CUSTOM folder, with .zsh extension. Examples:</span></span><br><span class="line"><span class="comment"># - $ZSH_CUSTOM/aliases.zsh</span></span><br><span class="line"><span class="comment"># - $ZSH_CUSTOM/macos.zsh</span></span><br><span class="line"><span class="comment"># For a full list of active aliases, run `alias`.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Example aliases</span></span><br><span class="line"><span class="comment"># alias zshconfig=&quot;mate ~/.zshrc&quot;</span></span><br><span class="line"><span class="comment"># alias ohmyzsh=&quot;mate ~/.oh-my-zsh&quot;</span></span><br></pre></td></tr></table></figure>
-<p>I leave the shell configurations be cause it is well enough.</p>
-<h3 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h3><p>Note that it’s defaultly installed docker, however, I can’t use <code>docker compose</code> to start a container from compose file cause it said <code>docker: &#39;compose&#39; is not a docker command.</code>.</p>
-<p>I have to reinstall the docker. It’s rather easy, just run:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://get.docker.com | sh</span><br></pre></td></tr></table></figure>
-
-<p>After waiting for a while, it’s done. Now I can use  <code>docker compose</code> to start a container from compose file.</p>
-<h3 id="Disable-auto-login-optional"><a href="#Disable-auto-login-optional" class="headerlink" title="Disable auto login (optional)"></a>Disable auto login (optional)</h3><p>By default, when I’m use the tty to start a session, it will automaticly logs in to the terminal as orangepi. But I don’t want it to be like this after I setted it up so that it is necessary to disable it. There is document on official doc site on <strong>How to set automatic terminal login in linux system</strong>, the url is at the end of the post.</p>
-<blockquote>
-<p>Use the following command to set the root user to automatically log in to the terminal<br><code>orangepi@orangepi:~$ sudo auto_login_cli.sh root</code></p>
-<p>Use the following command to disable automatic login terminal<br><code>orangepi@orangepi:~$ sudo auto_login_cli.sh -d</code></p>
-<p>Use the following command to set the orangepi user to automatically log in to the terminal again<br><code>orangepi@orangepi:~$ sudo auto_login_cli.sh orangepi</code></p>
-</blockquote>
+<h2 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h2><p>Qemu 本身只提供了命令行工具来管理虚拟机，也不会保存虚拟机的相关配置信息。实际使用时通常是同时安装 <code>Libvert</code>（一套用于管理硬件虚拟化的开源API、守护进程与管理工具）配合 <code>Libvert clients</code> 来实现使用图形界面管理 Qemu 虚拟机。</p>
+<p><code>Libvert clients</code> 是 <code>Libvert</code> 的前端，常用的 <code>Libvert clients</code> 在<a href="https://wiki.archlinux.org/title/Libvirt#Client">这里</a>。我使用的是 Virt-Manager 来管理 Qemu 虚拟机，因为在使用过程中 Virt-Manager 提供的管理功能和 VirtualBox 比较接近。使用教程参考 <em>Derek Taylor</em> 的 <a href="https://www.youtube.com/watch?v=p1d_b_91YlU">Virt-Manager Is The Better Way To Manage VMs</a>。</p>
+<p>使用 Virt-Manager 创建虚拟机的过程和 VirtualBox 类似，通常（对我来说）只需要改一下内存大小、CPU 数量和磁盘容量，其它无脑下一步就行。</p>
+<p>与 VirtualBox 不同的是 Virt-Manager 还提供了通过网络安装（HTTP, HTTPS or FTP），安装过程要提供操作系统安装 URL，估计进行大规模安装的时候会用到，一般来说还是使用镜像文件来安装。</p>
 <hr>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Orange Pi Zero 3 is small, powerful and flexible. I can burn different images to different sd cards to achieve easily switching to different operating systems and performing various expriments which would be a quite fancy journey. </p>
-<p>In this blog post, I just present the most basic use case for the Orange Pi Zero 3 and explore its capabilities and there are a lot more to be explored. Wish it can help those who are new to Orange Pi Zero 3.</p>
-<p>Feel free to leave comments below! :)</p>
-<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
-<li><a href="http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-Zero-3.html">Orange Pi Zero3 Introduction</a></li>
-<li><a href="http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-Zero-3.html">Orange Pi Zero 3 Downloads</a></li>
-<li><a href="http://www.orangepi.org/orangepiwiki/index.php/Orange_Pi_Zero_3#How_to_set_automatic_terminal_login_in_linux_system">How to set automatic terminal login in linux system</a></li>
-</ul>
+<h2 id="运行效果"><a href="#运行效果" class="headerlink" title="运行效果"></a>运行效果</h2><p>不得不承认，Qemu 虚拟机的启动速度是肉眼可见的提升了，对 CPU 的占用也比 VirtualBox 少。除了没有剪切板共享功能有点不方便之外，其它使用体验和 VirtualBox 基本一致。</p>
+<p>我主要使用虚拟机来调试一些应用程序，比如在 Windows 上运行 IDA，在 Linux 上运行 GDB。另外也会在 Linux 上运行些有意思的 Github 项目，比如 QQ Bot。</p>
+<p>顺便提一嘴文件共享的问题。我不喜欢使用虚拟机软件提供的文件共享服务，一个是麻烦，有时还得重启配置才能生效；另一个是不灵活，不方便配置多个共享文件夹和控制权限。</p>
+<p>我使用网络来实现文件共享，因为对这方面比较熟。</p>
+<p>对于 Windows 虚拟机，只要开启网络文件共享，然后把想要共享的文件夹设置为对指定用户共享，就可以在宿主机（我这里用的 Linux，Windows 类似）使用 <code>smb</code> 协议连上 Windows 虚拟机，访问共享文件。</p>
+<p>对于 Linux 虚拟机就更简单了，在 Linux 虚拟机里开启 <code>SSHD/SSH</code> 服务，使用 <code>SSHFS</code> 挂载 Linux 的文件系统或者直接 <code>SCP</code>，又或者使用 <strong>VS Code</strong> 的远程连接来直接编辑 Linux 虚拟机里的文件。</p>
+<p>这个过程在 Qemu 下更加方便，因为 Qemu 直接虚拟出一个主机层面的虚拟网卡，也就不需要像 VirtualBox 那样使用 <code>NAT</code> 时还得配置端口转发才能从主机连上虚拟机。</p>
+<hr>
+<h2 id="实际使用中的问题"><a href="#实际使用中的问题" class="headerlink" title="实际使用中的问题"></a>实际使用中的问题</h2><p>使用 Docker 和部署 Github 项目就不得不考虑配置代理的问题。</p>
+<p>因为我在宿主机使用的是<em>透明代理</em>，所以在 VirtualBox 虚拟机里就不需要考虑配置网络代理的问题，网络数据自动由主机代理接管。</p>
+<p>而 Qemu 虚拟的是主机层面的网卡，导致它的网络数据不由<em>透明代理</em>接管。（也可能是 <code>iptables</code> 配置的问题，弄了好久也没搞清楚是什么原因在开了 <code>cgproxy</code> 后 Qemu 虚拟机就连不上网，似乎可以对外请求，但返回的数据包没能回到虚拟机）</p>
+<p>为了让虚拟机流量走主机代理，就只能是在虚拟机内使用配置 <code>http_proxy</code> 和 <code>https_proxy</code> 环境变量来试图让流量走主机代理了，但很多应用却并不使用 <code>http_proxy</code> 和 <code>https_proxy</code> 环境变量，搞自己的代理配置那一套。其中就包括 <code>apt</code>、<code>docker</code> 和 Python 脚本。</p>
+<p>好在找到了一篇比较全的代理配置博文：<a href="https://qiita.com/daichi-ishida/items/b77c151067427806ede5">UbuntuのProxy設定備忘録</a>。里面包含了对 <code>http_proxy</code> 和 <code>https_proxy</code> 环境变量、<code>apt</code>、<code>git</code>、<code>docker</code> 和 <code>wget</code> 的代理配置方法。</p>
+<p>关于 Python 的代理配置我参考的是 Stack Overflow 中的 <a href="https://stackoverflow.com/questions/31639742/how-to-pass-all-pythons-traffics-through-a-http-proxy">How to pass all Python’s traffics through a http proxy?</a></p>
+<hr>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>当需要考虑虚拟机性能时，毫无疑问应该选择 Qemu&#x2F;KVM，这也是现在许多云服务厂商在使用的主流虚拟化方案。</p>
+<p>但如果只是简单的虚拟需求如尝试各种 Linux 发行版啥的，那选择 VirtualBox 还是要更方便的，毕竟 VirtualBox 对虚拟机的管理配置很全，大部分需求都可以在 VirtualBox 的配置面板动动鼠标解决，这对新手非常友好。</p>
+<p>折腾网络配置说实话挺烦的，尤其是还没深入研究过 <code>Netfilter</code> 和 <code>Iptables</code>。一些配置出问题虽然知道大概是哪有问题，但却不会修复。网上也不一定找得到答案，只能是论坛求助。</p>
+<p>但折腾的好处则是我可以在解决问题的过程中学到不少新的东西，而这些经验会在未来不经意间发挥意想不到的作用。</p>
 ]]></content>
+      <categories>
+        <category>折腾合集</category>
+      </categories>
       <tags>
         <tag>Linux</tag>
-        <tag>WiFi</tag>
-        <tag>OpenWrt</tag>
-        <tag>Single-Board</tag>
-        <tag>Router</tag>
-        <tag>Tech</tag>
+        <tag>Arch</tag>
+        <tag>Virtualization</tag>
+        <tag>tweak/toss</tag>
       </tags>
   </entry>
 </search>
