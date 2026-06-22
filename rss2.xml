@@ -99,11 +99,11 @@
         <![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="]]>
       </description>
       <author>MrOrange</author>
-      <category domain="https://orange.wastaken.xyz/tags/Linux/">Linux</category>
       <category domain="https://orange.wastaken.xyz/tags/WiFi/">WiFi</category>
       <category domain="https://orange.wastaken.xyz/tags/OpenWrt/">OpenWrt</category>
       <category domain="https://orange.wastaken.xyz/tags/Single-Board/">Single-Board</category>
       <category domain="https://orange.wastaken.xyz/tags/Router/">Router</category>
+      <category domain="https://orange.wastaken.xyz/tags/Linux/">Linux</category>
       <category domain="https://orange.wastaken.xyz/tags/Tech/">Tech</category>
       <pubDate>Sun, 05 Jan 2025 04:29:31 GMT</pubDate>
       <content:encoded>
@@ -117,11 +117,11 @@
         <![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="]]>
       </description>
       <author>MrOrange</author>
-      <category domain="https://orange.wastaken.xyz/tags/Linux/">Linux</category>
       <category domain="https://orange.wastaken.xyz/tags/WiFi/">WiFi</category>
       <category domain="https://orange.wastaken.xyz/tags/OpenWrt/">OpenWrt</category>
       <category domain="https://orange.wastaken.xyz/tags/Single-Board/">Single-Board</category>
       <category domain="https://orange.wastaken.xyz/tags/Router/">Router</category>
+      <category domain="https://orange.wastaken.xyz/tags/Linux/">Linux</category>
       <pubDate>Sun, 01 Dec 2024 11:25:26 GMT</pubDate>
       <content:encoded>
         <![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script><p>今年早些时候入手了巡天 AX3000Pro+，本以为可以一步到位，结果发现它没法刷 OpenWrt，无法配置 DHCP 分配固定 IP 以及配置 DNS 解析，使的我只能使用 IP 来访问内网设备，设备 IP 甚至还会不停的变，买之前还是功课做少了啊。所以又看了一圈，相中了 BPI-R3mini，虽然有点贵，但由于喜欢折腾，且 BPI-R3mini 有官方提供 OpenWrt 镜像支持，就咬牙入手了。</p><hr><h2 id="硬件组装"><a href="#硬件组装" class="headerlink" title="硬件组装"></a>硬件组装</h2><p>到手后的东西如下：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201141956.jpg" class=""><p>安装方法参考：<a href="https://www.bilibili.com/video/BV1XM411D7hm">Banana Pi BPI-R3 Mini 迷你开源路由器开发板外壳安装教学视频</a></p><p>组装完的效果长这样：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201150613.jpg" class=""><img src="/2024/12/01/bpi-r3mini-start-end/image20241201151724.jpg" class=""><p>BPI-R3mini 有两种启动方式，分别是从 Nand 启动和从 eMMC 启动，一般来说是把 Nand 当成外插 SD 卡，所以 Nand 启动一般只是用来做特殊操作时候用，比如手动更新 eMMC 里的镜像时。切换方式是拨动板上面的一个开关：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201163809.jpg" class=""><p>eMMC 和 Nand 里面都是默认装有镜像的，所以只用把开关调到左边 eMMC 位置，然后通电启动（与图中相反）。如果 eMMC 和 Nand 没有默认装镜像可以参考官方 Wiki 的<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#Warnning">镜像烧录手册</a>操作。</p><p>装好通上电后，风扇就开始转了，默认镜像里有配置风扇 PWM (Pulse Width Modulation &#x2F; 脉宽调制)，所以不用再做其它修改，如果要修改的话可参考 Wiki：<a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI#FAN">PWM FAN Control</a> 操作。</p><p>不得不说这玩意发热量有点大的，难怪要整成全金属的外壳，只要它在跑，那金属外壳就烫手。风扇效果大不大，不好说，没感受到这小风扇的作用。</p><h2 id="软件配置"><a href="#软件配置" class="headerlink" title="软件配置"></a>软件配置</h2><p>通过 eMMC 启动，里面默认配置了 WiFi，分别是 <code>MTK_MT7986_AP_AX4200_5G</code> 和 <code>MTK_MT7986_AP_AX4200_2.4G</code>，直接连上，访问默认网关 <code>192.168.1.1</code>，默认密码是 <code>bananapi</code>，登录成功后界面如下图：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201170323.jpg" class=""><p>在 <code>System -&gt; Aministration</code> 下可以修改网关密码，在 <code>MTK -&gt; WiFi configuration</code> 下可以修改 WiFi 的 SSID 以及添加 WiFi 密码，下图是 WiFi 配置页：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201170839.jpg" class=""><p>可配置的东西有不少，我这只要加个 WiFi 密码改个 WiFi 名就够用了。</p><p>另外它还能配置许多有用的工具，比如 Xray 等。可以在 <code>System -&gt; Software -&gt; Installed</code> 下看到已经安装的软件包，也可以在这里安装新的软件包：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201172503.jpg" class=""><p>可玩性还是很高的，只是可选的包似乎不是很多，大概是因为这玩意用的人少吧。</p><h2 id="使用SSH远程访问"><a href="#使用SSH远程访问" class="headerlink" title="使用SSH远程访问"></a>使用SSH远程访问</h2><p>BPI-R3mini 默认有启用 SSH Server（<a href="https://github.com/mkj/dropbear">Dropbear SSH</a>），所以可以通过 SSH 连上去，使用之前配置的密码，或者是在 <code>System -&gt; Aministration</code> 配置 SSH 公钥。连上后查看系统信息：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201173627.jpg" class=""><p>里面用的 Busybox 默认包管理器 <code>opkg</code>，官方介绍在<a href="https://openwrt.org/docs/guide-user/additional-software/opkg">这里</a>，比起常见的 <code>apt</code>, <code>pacman</code>还是有点不太好使。</p><p>可以在 <code>/etc/opkg.conf</code> 里给 <code>opkg</code> 配置代理，执行 <code>vim /etc/opkg.conf</code> 在文件末添加下面两行：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">option http_proxy http://your.proxy.server:port</span><br><span class="line">option https_proxy https://your.proxy.server:port</span><br></pre></td></tr></table></figure><p>通过端口扫描可以看到它默认开了 445 端口，也就是 SMB 服务，所以可以直接使用 Windows 访问它的共享目录：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201175737.jpg" class=""><img src="/2024/12/01/bpi-r3mini-start-end/image20241201175803.jpg" class=""><p>也就是说可以把它当成一个小 NAS 来用，但这默认配置似乎是只读的（也可能是我登录用户的原因），所以想往里放东西的话还得再配置一下，我这里还没用到这功能就不详说了。不过有件事不得不提，我专门买了个美光 P310 2230 SSD，2T，结果插上后它无法识别（可以通过 <code>fdisk -l</code> 看到它的信息，但这信息里的设备路径事实上不存在，也就挂载不了），估计是因为 2T 容量太大了不支持吧。</p><p>这玩意似乎并不能桥接 WiFi，也就是不能当我的手机热点信号中继放大器，因为它似乎不支持作为 AP Client 去连 WiFi：</p><img src="/2024/12/01/bpi-r3mini-start-end/image20241201181736.jpg" class=""><p>而这点巡天可以做到。是我的操作有问题？还是少了什么驱动？</p><hr><h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>作为一个软路由它是合格的，另外计划给它安上 5G 模块，这样就可以直插 SIM 卡连网，不用再拿手机当热点了，如果能再把 NAS 功能，Xray 配置好的话，就算大功告成，这样它就能完全顶替巡天。</p><p>之后应该还会记录安装这些功能的过程和效果，然后再水一篇博客。</p><h2 id="参考-引用"><a href="#参考-引用" class="headerlink" title="参考&#x2F;引用"></a>参考&#x2F;引用</h2><ol><li><a href="https://wiki.banana-pi.org/Getting_Started_with_BPI-R3_MINI">Getting Started with BPI-R3 MINI</a></li><li><a href="https://wiki.banana-pi.org/Banana_Pi_BPI-R3_Mini">Banana Pi BPI-R3 Mini</a></li><li><a href="https://www.bilibili.com/video/BV1XM411D7hm?spm_id_from=333.880.my_history.page.click">Banana Pi BPI-R3 Mini 迷你开源路由器开发板外壳安装教学视频</a>]</li></ol>]]>
@@ -134,8 +134,8 @@
         <![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="]]>
       </description>
       <author>MrOrange</author>
-      <category domain="https://orange.wastaken.xyz/tags/AI/">AI</category>
       <category domain="https://orange.wastaken.xyz/tags/Linux/">Linux</category>
+      <category domain="https://orange.wastaken.xyz/tags/AI/">AI</category>
       <category domain="https://orange.wastaken.xyz/tags/Python/">Python</category>
       <category domain="https://orange.wastaken.xyz/tags/IRC/">IRC</category>
       <category domain="https://orange.wastaken.xyz/tags/MultiThread/">MultiThread</category>
@@ -188,6 +188,7 @@
       </description>
       <author>MrOrange</author>
       <category domain="https://orange.wastaken.xyz/categories/CS-APP2e-Lab-Assignments/">CS:APP2e Lab Assignments</category>
+      <category domain="https://orange.wastaken.xyz/tags/Linux/">Linux</category>
       <category domain="https://orange.wastaken.xyz/tags/gdb/">gdb</category>
       <category domain="https://orange.wastaken.xyz/tags/Binarybomb/">Binarybomb</category>
       <category domain="https://orange.wastaken.xyz/tags/C-Cpp/">C/Cpp</category>
@@ -195,7 +196,6 @@
       <category domain="https://orange.wastaken.xyz/tags/Reverse/">Reverse</category>
       <category domain="https://orange.wastaken.xyz/tags/CTF/">CTF</category>
       <category domain="https://orange.wastaken.xyz/tags/Assembly/">Assembly</category>
-      <category domain="https://orange.wastaken.xyz/tags/Linux/">Linux</category>
       <category domain="https://orange.wastaken.xyz/tags/Arch/">Arch</category>
       <pubDate>Thu, 21 Apr 2022 15:11:47 GMT</pubDate>
       <content:encoded>
