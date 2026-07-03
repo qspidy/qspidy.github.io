@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>用 OpenCode + GLM-4.7 给 Real-ESRGAN 套 Web UI，只花了一晚上？ | Orangeの小窝</title><meta name="author" content="MrOrange"><meta name="copyright" content="MrOrange"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="前不久在网上找到一张喜欢的壁纸，但是查了半天没找着高清原图，只好先将就用着。而最近看着这略显模糊的壁纸实在是受不了了，就想着给它 upscale 一下。很自然的想起了以前用过的 xinntao&#x2F;Real-ESRGAN，当时觉得这东西巨好用，只是一直没有使用的场景，现在是时候给用起来了。 ComfyUI vs Script虽然说想到要用 Real-ESRGAN 来让图像更清晰，一开始并没打">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用 OpenCode + GLM-4.7 给 Real-ESRGAN 套 Web UI，只花了一晚上？">
-<meta property="og:url" content="https://orange.wastaken.xyz/2026/01/25/develop-web-ui-for-real-esrgan-using-opencode/index.html">
+<meta property="og:url" content="https://orange.wastaken.xyz/2026/01/25/develop-web-ui-for-real-esrgan-using-opencode/">
 <meta property="og:site_name" content="Orangeの小窝">
 <meta property="og:description" content="前不久在网上找到一张喜欢的壁纸，但是查了半天没找着高清原图，只好先将就用着。而最近看着这略显模糊的壁纸实在是受不了了，就想着给它 upscale 一下。很自然的想起了以前用过的 xinntao&#x2F;Real-ESRGAN，当时觉得这东西巨好用，只是一直没有使用的场景，现在是时候给用起来了。 ComfyUI vs Script虽然说想到要用 Real-ESRGAN 来让图像更清晰，一开始并没打">
 <meta property="og:locale" content="en_US">
@@ -30,7 +30,7 @@
       "url": "https://orange.wastaken.xyz"
     }
   ]
-}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://orange.wastaken.xyz/2026/01/25/develop-web-ui-for-real-esrgan-using-opencode/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="6B7S0YVrlo-tvuyYzaWk9obim6ToWCWvUIXyaZEyfdQ"/><link rel="stylesheet" href="/css/index.css?v=5.5.5"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css"><script>
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://orange.wastaken.xyz/2026/01/25/develop-web-ui-for-real-esrgan-using-opencode/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//static.cloudflareinsights.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="6B7S0YVrlo-tvuyYzaWk9obim6ToWCWvUIXyaZEyfdQ"/><link rel="stylesheet" href="/css/index.css?v=5.5.5"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css"><script>
     (() => {
       
     const saveToLocal = {
