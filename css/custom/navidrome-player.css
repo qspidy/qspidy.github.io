@@ -1,0 +1,55 @@
+#navidrome-player.aplayer.aplayer-fixed .aplayer-body {
+  background: rgba(31, 36, 45, 0.96) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28) !important;
+}
+
+#navidrome-player.aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+  left: -66px !important;
+}
+
+#navidrome-player .aplayer-info {
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+#navidrome-player .aplayer-title,
+#navidrome-player .aplayer-list-title {
+  color: #f5f1e8 !important;
+}
+
+#navidrome-player .aplayer-author,
+#navidrome-player .aplayer-list-author,
+#navidrome-player .aplayer-list-index {
+  color: #aab2c0 !important;
+}
+
+#navidrome-player .aplayer-icon {
+  color: #d9dee8 !important;
+}
+
+#navidrome-player .aplayer-list {
+  background: rgba(31, 36, 45, 0.97) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+#navidrome-player .aplayer-list ol li {
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f5f1e8 !important;
+}
+
+#navidrome-player .aplayer-list ol li:hover,
+#navidrome-player .aplayer-list ol li.aplayer-list-light {
+  background: #39414f !important;
+}
+
+#navidrome-player .aplayer-list-cur {
+  background-color: #ff9f30 !important;
+}
+
+#navidrome-player .aplayer-lrc p {
+  color: rgba(245, 241, 232, 0.72) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+#navidrome-player .aplayer-lrc p.aplayer-lrc-current {
+  color: #ffb35c !important;
+}

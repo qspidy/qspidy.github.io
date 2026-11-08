@@ -1,0 +1,1 @@
+window.NAVIDROME_PLAYER_CONFIG = Object.freeze({"enabled":true,"server":"https://mus.wastaken.xyz","username":"orange","playlistId":"55ty6PsJ6poSXwjYDoxTGI","songCount":50,"format":"mp3","maxBitRate":320,"lyrics":true,"clientName":"hexo-qspidy","apiVersion":"1.16.1","theme":"#FF9F30","salt":"4652d2872616bb8298bbbd6b","token":"d51a05fab2685f56f04a7a1835539461"});
